@@ -124,7 +124,8 @@ if verktyg == "Bash":
         (r"\bgit\s+(clean|rm|reset\s+--hard|filter-branch|push\b.*(\s--force|\s-f\b|\s\+))", "Git-kommandot kan radera historik eller filer."),
         (r"(^|[\s;&|(`$])(curl|wget|ssh|scp|sftp|ftp|rsync|nc|ncat|netcat|telnet|http|https)(\s|$)", "Nätverksanrop från skalet är spärrade. Kopplingar går via MCP."),
         (r"\bgit\s+(fetch|ls-remote)\b.*(--upload-pack|\s-u\b|\s--force\b|\s-f\b|\s\+)", "git fetch och git ls-remote får inte köra egna program eller skriva över referenser."),
-        (r"(^|[\s;&|(`$])gh(\s|$).*\bdelete\b", "Radering via gh är spärrad."),
+        (r"\bgit\b.*(--receive-pack|\bext::|\bfd::)", "git får inte köra egna program via transporten."),
+        (r"(^|[\s;&|(`$])gh(\s|$).*(\bdelete\b|\s(-X|--method)[\s=]*['\"]?DELETE\b)", "Radering via gh är spärrad."),
         (r"\b(truncate|dd|mkfs)\b", "Kommandot kan skriva över eller radera data."),
         (r"\.env\b(?!\.example)", "Hemligheter i .env rörs aldrig."),
     ]

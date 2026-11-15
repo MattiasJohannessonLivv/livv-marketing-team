@@ -44,6 +44,7 @@ livv-marketing-team/
   tests/
     test_sparr.sh               tester för spärren
     test_sokvagar.py            tester för servern, utan nätverk
+    test_excel.py               rullistor och loggkolumner efter skrivning via servern
 ```
 
 ## Så hålls reglerna tekniskt
@@ -70,6 +71,8 @@ Reglerna står i livv-grund, men de hålls också i kod, i tre lager:
 - `gh` får bara användas i utvecklingsläge.
 - A3 och A4 har egna rollspärrar utöver sina verktygslistor.
 
+Servern sparar aldrig om Excel-filerna med ett bibliotek som tolkar hela arbetsboken. Den ändrar bara de berörda cellerna i bladets XML och kopierar resten av filen oförändrad. Annars försvinner rullistor som Excel lagrar som tillägg, till exempel listorna som pekar på det dolda bladet Listor. `tests/test_excel.py` kontrollerar detta och kan köras mot riktiga kopior, se nedan.
+
 **3. Verktygslistor per agent** i `.claude/agents/`. A3 och A4 har varken skal eller lokala skrivverktyg.
 
 ## Kom igång
@@ -92,6 +95,21 @@ Reglerna står i livv-grund, men de hålls också i kod, i tre lager:
    ```bash
    python3 -m unittest discover -s tests
    ```
+
+   Testa mot riktiga kopior av Innehallsregister och en loggfil. Kopiorna läses bara:
+   ```bash
+   LIVV_KOPIOR=/sökväg/till/kopiorna python3 -m unittest discover -s tests
+   ```
+
+### Drift och utveckling i separata miljöer
+Håll drift och utveckling i separata miljöer redan nu, även i fas 1. Miljövariabeln `LIVV_UTVECKLING` avgör vad spärren tillåter, och den ska aldrig behöva ändras för hand i en pågående session.
+
+| Miljö | LIVV_UTVECKLING | Används till |
+|---|---|---|
+| Default | saknas eller 0 | Drift: loopen mot Livv Marketing Ops. Agenterna skriver bara i SharePoint och `.arbetsyta/`. Inga ändringar i agenter, skills, hooks eller CLAUDE.md. |
+| Livv utveckling | 1 | Utveckling: ändringar i projektet, tester, Git och `gh`. Arbetet görs i en gren och granskas innan det slås ihop. |
+
+I Claude Code på webben är det två miljöer: **Default** för drift och **Livv utveckling** med `LIVV_UTVECKLING=1` satt som miljövariabel. Lokalt sätter `./starta.sh` värdet åt dig. Kör aldrig loopen i miljön Livv utveckling, och gör aldrig projektändringar i Default.
 
 ### Starta teamet
 ```bash

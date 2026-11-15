@@ -78,7 +78,8 @@ kontrollera deny  "git fetch --upload-pack i drift"         '{"tool_name":"Bash"
 kontrollera deny  "git ls-remote -u i drift"                '{"tool_name":"Bash","tool_input":{"command":"git ls-remote -u sh origin"}}'
 kontrollera deny  "git fetch med tvingad refspec"           '{"tool_name":"Bash","tool_input":{"command":"git fetch origin +main:main"}}'
 kontrollera deny  "git fetch --force"                       '{"tool_name":"Bash","tool_input":{"command":"git fetch --force origin"}}'
-kontrollera deny  "git pull i drift"                        '{"tool_name":"Bash","tool_input":{"command":"git pull origin fas-1"}}'
+kontrollera deny  "git ls-remote med ext-transport"         '{"tool_name":"Bash","tool_input":{"command":"git ls-remote \"ext::sh -c touch% x\""}}'
+kontrollera deny  "git pull i drift"                       '{"tool_name":"Bash","tool_input":{"command":"git pull origin fas-1"}}'
 kontrollera deny  "gh i drift"                              '{"tool_name":"Bash","tool_input":{"command":"gh pr list"}}'
 kontrollera deny  "gh efter läsande kommando i drift"       '{"tool_name":"Bash","tool_input":{"command":"git status && gh pr list"}}'
 
@@ -89,7 +90,8 @@ kontrollera deny  "Skriva utanför projektet"                '{"tool_name":"Writ
 kontrollera tillat "gh pr list"                              '{"tool_name":"Bash","tool_input":{"command":"gh pr list"}}' 1
 kontrollera tillat "gh api"                                  '{"tool_name":"Bash","tool_input":{"command":"gh api repos/x/y/pulls"}}' 1
 kontrollera deny  "gh repo delete"                          '{"tool_name":"Bash","tool_input":{"command":"gh repo delete x/y --yes"}}' 1
-kontrollera tillat "git fetch"                               '{"tool_name":"Bash","tool_input":{"command":"git fetch origin"}}' 1
+kontrollera deny  "gh api med DELETE"                       '{"tool_name":"Bash","tool_input":{"command":"gh api -X DELETE repos/x/y"}}' 1
+kontrollera tillat "git fetch"                          '{"tool_name":"Bash","tool_input":{"command":"git fetch origin"}}' 1
 kontrollera deny  "curl även i utvecklingsläge"             '{"tool_name":"Bash","tool_input":{"command":"curl https://example.com"}}' 1
 kontrollera tillat "Köra testerna"                           '{"tool_name":"Bash","tool_input":{"command":"python3 -m unittest discover -s tests"}}' 1
 

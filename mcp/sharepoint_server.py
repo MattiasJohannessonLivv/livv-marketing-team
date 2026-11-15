@@ -13,9 +13,12 @@ Hemligheterna läses från miljövariabler, se .env.example.
 
 from __future__ import annotations
 
+import html
 import io
 import os
+import posixpath
 import re
+import zipfile
 from datetime import datetime
 from typing import Any
 from urllib.parse import quote
@@ -190,6 +193,169 @@ def _rubriker(blad) -> list[str]:
     return [c.value for c in blad[1] if c.value is not None]
 
 
+# Arbetsboken sparas aldrig om med openpyxl. openpyxl tappar bland annat rullistor
+# som Excel lagrat som x14-tillägg (listor som pekar på ett annat blad, till exempel
+# det dolda bladet Listor). I stället ändras bara de berörda cellerna direkt i
+# bladets XML, och alla andra delar av filen kopieras byte för byte.
+# openpyxl används bara för att läsa.
+
+_RAD_RE = re.compile(r"<row\b(?P<attr>[^>]*?)(?:/>|>(?P<inre>.*?)</row>)", re.S)
+_CELL_RE = re.compile(r"<c\b(?P<attr>[^>]*?)(?:/>|>(?P<inre>.*?)</c>)", re.S)
+
+
+def _attr(attr: str, namn: str) -> str | None:
+    m = re.search(r'(?:^|\s)' + re.escape(namn) + r'="([^"]*)"', attr)
+    return html.unescape(m[1]) if m else None
+
+
+def _kolumnnummer(ref: str) -> int:
+    n = 0
+    for tecken in re.match(r"[A-Z]+", ref)[0]:
+        n = n * 26 + ord(tecken) - 64
+    return n
+
+
+def _bladets_delar(filer: dict[str, bytes], bladnamn: str) -> str:
+    """Sökvägen i zip-filen till bladet med namnet bladnamn."""
+    bok = filer["xl/workbook.xml"].decode("utf-8")
+    rels = filer["xl/_rels/workbook.xml.rels"].decode("utf-8")
+    for m in re.finditer(r"<(?:\w+:)?sheet\b([^>]*)/?>", bok):
+        if _attr(m[1], "name") != bladnamn:
+            continue
+        rid = re.search(r'\s\w+:id="([^"]*)"', m[1])[1]
+        for rel in re.finditer(r"<(?:\w+:)?Relationship\b([^>]*)/?>", rels):
+            if _attr(rel[1], "Id") == rid:
+                mal = _attr(rel[1], "Target")
+                return mal.lstrip("/") if mal.startswith("/") else posixpath.normpath("xl/" + mal)
+    raise Sparrfel(f"Hittar inte bladet {bladnamn} i arbetsboken. Stoppat.")
+
+
+def _cell_xml(ref: str, varde: Any, stil: str | None) -> str:
+    s = f' s="{stil}"' if stil is not None else ""
+    if varde is None or varde == "":
+        return f'<c r="{ref}"{s}/>'
+    if isinstance(varde, bool):
+        return f'<c r="{ref}"{s} t="b"><v>{int(varde)}</v></c>'
+    if isinstance(varde, (int, float)):
+        return f'<c r="{ref}"{s}><v>{varde}</v></c>'
+    text = html.escape(str(varde), quote=False)
+    return f'<c r="{ref}"{s} t="inlineStr"><is><t xml:space="preserve">{text}</t></is></c>'
+
+
+def _andra_rad(rad_xml: str | None, radnr: int, varden: dict[int, Any], stilar: dict[int, str]) -> str:
+    """Returnerar raden med nya värden i de angivna kolumnerna. Övriga celler lämnas orörda."""
+    from openpyxl.utils import get_column_letter
+
+    if rad_xml is None:
+        attr, inre = f' r="{radnr}"', ""
+    else:
+        m = _RAD_RE.fullmatch(rad_xml)
+        attr, inre = m["attr"], m["inre"] or ""
+    attr = re.sub(r'\sspans="[^"]*"', "", attr)  # bara en ledtråd för Excel, blir fel när celler läggs till
+
+    celler: list[tuple[int, str]] = []
+    for c in _CELL_RE.finditer(inre):
+        ref = _attr(c["attr"], "r")
+        if ref is None:
+            raise Sparrfel("En cell i registret saknar adress. Filen ändras inte. Stoppat.")
+        celler.append((_kolumnnummer(ref), c[0]))
+    if _CELL_RE.sub("", inre).strip():
+        raise Sparrfel("Raden i registret har innehåll som servern inte känner igen. Filen ändras inte. Stoppat.")
+
+    befintliga = dict(celler)
+    for kol, varde in varden.items():
+        gammal = befintliga.get(kol)
+        stil = stilar.get(kol)
+        if gammal is not None:
+            ga = _CELL_RE.fullmatch(gammal)
+            if "<f" in (ga["inre"] or ""):
+                raise Sparrfel(f"Cellen {get_column_letter(kol)}{radnr} innehåller en formel och skrivs inte över. Stoppat.")
+            stil = _attr(ga["attr"], "s")
+        befintliga[kol] = _cell_xml(f"{get_column_letter(kol)}{radnr}", varde, stil)
+    ny_inre = "".join(befintliga[k] for k in sorted(befintliga))
+    return f"<row{attr}>{ny_inre}</row>"
+
+
+def _utoka_ref(ref: str, radnr: int) -> str:
+    m = re.fullmatch(r"([A-Z]+)(\d+)(?::([A-Z]+)(\d+))?", ref)
+    if not m:
+        return ref
+    if m[3] is None:
+        return ref if int(m[2]) >= radnr else f"{m[1]}{m[2]}:{m[1]}{radnr}"
+    return ref if int(m[4]) >= radnr else f"{m[1]}{m[2]}:{m[3]}{radnr}"
+
+
+def skriv_celler(data: bytes, bladnamn: str, radnr: int, varden: dict[int, Any],
+                 forra_radnr: int | None = None) -> bytes:
+    """Skriver värden i en rad i ett blad och behåller allt annat i arbetsboken.
+
+    varden: kolumnnummer (1 = A) till värde. Nya celler får samma format som cellen
+    i samma kolumn på forra_radnr, om den finns. En tabell (ListObject) som slutar
+    på raden ovanför utökas så att den nya raden kommer med.
+    """
+    zin = zipfile.ZipFile(io.BytesIO(data))
+    filer = {i.filename: zin.read(i.filename) for i in zin.infolist()}
+    del_ = _bladets_delar(filer, bladnamn)
+    xml = filer[del_].decode("utf-8")
+
+    m_data = re.search(r"<sheetData\s*/>|<sheetData\b[^>]*>(.*?)</sheetData>", xml, re.S)
+    if not m_data:
+        raise Sparrfel(f"Bladet {bladnamn} saknar celldata. Stoppat.")
+    if m_data[0].endswith("/>"):
+        oppning, inre, stangning = "<sheetData>", "", "</sheetData>"
+    else:
+        oppning = re.match(r"<sheetData\b[^>]*>", m_data[0])[0]
+        inre, stangning = m_data[1], "</sheetData>"
+
+    rader = [(int(_attr(r["attr"], "r") or 0), r) for r in _RAD_RE.finditer(inre)]
+    if any(nr == 0 for nr, _ in rader):
+        raise Sparrfel(f"En rad i bladet {bladnamn} saknar radnummer. Filen ändras inte. Stoppat.")
+
+    stilar: dict[int, str] = {}
+    for nr, r in rader:
+        if nr == forra_radnr:
+            for c in _CELL_RE.finditer(r["inre"] or ""):
+                stil = _attr(c["attr"], "s")
+                if stil is not None:
+                    stilar[_kolumnnummer(_attr(c["attr"], "r"))] = stil
+
+    traff = next((r for nr, r in rader if nr == radnr), None)
+    if traff is not None:
+        ny_rad = _andra_rad(traff[0], radnr, varden, stilar)
+        nytt_inre = inre[: traff.start()] + ny_rad + inre[traff.end():]
+    else:
+        ny_rad = _andra_rad(None, radnr, varden, stilar)
+        fore = [r for nr, r in rader if nr < radnr]
+        pos = fore[-1].end() if fore else 0
+        nytt_inre = inre[:pos] + ny_rad + inre[pos:]
+
+    xml = xml[: m_data.start()] + oppning + nytt_inre + stangning + xml[m_data.end():]
+    xml = re.sub(r'(<dimension\b[^>]*\bref=")([^"]*)(")',
+                 lambda d: d[1] + _utoka_ref(d[2], radnr) + d[3], xml, count=1)
+    filer[del_] = xml.encode("utf-8")
+
+    # Tabeller i bladet som slutar precis ovanför den nya raden växer med en rad.
+    rels_sokvag = posixpath.join(posixpath.dirname(del_), "_rels", posixpath.basename(del_) + ".rels")
+    if forra_radnr is not None and rels_sokvag in filer:
+        for rel in re.finditer(r"<(?:\w+:)?Relationship\b([^>]*)/?>", filer[rels_sokvag].decode("utf-8")):
+            if not (_attr(rel[1], "Type") or "").endswith("/table"):
+                continue
+            mal = _attr(rel[1], "Target")
+            tab = mal.lstrip("/") if mal.startswith("/") else posixpath.normpath(posixpath.join(posixpath.dirname(del_), mal))
+            txml = filer[tab].decode("utf-8")
+            tref = re.search(r'<table\b[^>]*\sref="([^"]*)"', txml)
+            if tref and re.search(r"(\d+)$", tref[1]) and int(re.search(r"(\d+)$", tref[1])[1]) == forra_radnr:
+                txml = re.sub(r'(<(?:table|autoFilter)\b[^>]*\sref=")([^"]*)(")',
+                              lambda d: d[1] + _utoka_ref(d[2], radnr) + d[3], txml)
+                filer[tab] = txml.encode("utf-8")
+
+    ut = io.BytesIO()
+    with zipfile.ZipFile(ut, "w") as zout:
+        for info in zin.infolist():
+            zout.writestr(info, filer[info.filename])
+    return ut.getvalue()
+
+
 def register_rader(data: bytes, objekt_id: str | None = None) -> list[dict[str, Any]]:
     from openpyxl import load_workbook
 
@@ -205,14 +371,21 @@ def register_rader(data: bytes, objekt_id: str | None = None) -> list[dict[str, 
     return rader
 
 
+def _sista_rad(blad, antal_kolumner: int) -> int:
+    sista = 1
+    for r in range(2, blad.max_row + 1):
+        if any(blad.cell(r, c).value is not None for c in range(1, antal_kolumner + 1)):
+            sista = r
+    return sista
+
+
 def register_andra(data: bytes, objekt_id: str, falt: dict[str, Any], ny: bool) -> bytes:
     """Ändrar bara de berörda cellerna och behåller allt annat i arbetsboken."""
     from openpyxl import load_workbook
 
     if not OBJEKT_ID_RE.match(objekt_id or ""):
         raise Sparrfel(f"Ogiltigt objekt-ID: {objekt_id}. Format LIVV-2026-0001 eller UNIQ-2026-0001.")
-    bok = load_workbook(io.BytesIO(data))
-    blad = bok[REGISTER_BLAD]
+    blad = load_workbook(io.BytesIO(data))[REGISTER_BLAD]  # bara läsning
     rubriker = _rubriker(blad)
     okanda = [k for k in falt if k not in rubriker]
     if okanda:
@@ -221,30 +394,22 @@ def register_andra(data: bytes, objekt_id: str, falt: dict[str, Any], ny: bool) 
         raise Sparrfel("objekt_id får inte ändras.")
 
     kol = {namn: i + 1 for i, namn in enumerate(rubriker)}
-    radnr = None
-    sista = 1
-    for r in range(2, blad.max_row + 1):
-        if any(blad.cell(r, c).value is not None for c in range(1, len(rubriker) + 1)):
-            sista = r
-        if blad.cell(r, kol["objekt_id"]).value == objekt_id:
-            radnr = r
+    sista = _sista_rad(blad, len(rubriker))
+    radnr = next((r for r in range(2, sista + 1) if blad.cell(r, kol["objekt_id"]).value == objekt_id), None)
 
+    forra = None
     if ny:
         if radnr is not None:
             raise Sparrfel(f"{objekt_id} finns redan i registret.")
         radnr = sista + 1
+        forra = sista if sista > 1 else None
         falt = {**falt, "objekt_id": objekt_id}
     elif radnr is None:
         raise Sparrfel(f"{objekt_id} finns inte i registret.")
 
     falt = {**falt}
     falt.setdefault("senast_andrad", datetime.now(TIDSZON).strftime("%Y-%m-%d %H:%M"))
-    for namn, varde in falt.items():
-        blad.cell(radnr, kol[namn]).value = varde
-
-    buf = io.BytesIO()
-    bok.save(buf)
-    return buf.getvalue()
+    return skriv_celler(data, REGISTER_BLAD, radnr, {kol[n]: v for n, v in falt.items()}, forra)
 
 
 def logg_ny_bok() -> bytes:
@@ -258,17 +423,26 @@ def logg_ny_bok() -> bytes:
     return buf.getvalue()
 
 
+def logg_kontrollera_kolumner(data: bytes) -> None:
+    from openpyxl import load_workbook
+
+    blad = load_workbook(io.BytesIO(data)).worksheets[0]
+    rubriker = [str(r).strip() if r is not None else "" for r in _rubriker(blad)]
+    if rubriker[: len(LOGG_KOLUMNER)] != LOGG_KOLUMNER:
+        raise Sparrfel(
+            "Loggfilens kolumner stämmer inte med livv-grund. Väntade "
+            f"{', '.join(LOGG_KOLUMNER)}, hittade {', '.join(rubriker)}. Stoppat."
+        )
+
+
 def logg_lagg_till(data: bytes, rad: list[str]) -> bytes:
     from openpyxl import load_workbook
 
-    bok = load_workbook(io.BytesIO(data))
-    blad = bok.worksheets[0]
-    if _rubriker(blad)[: len(LOGG_KOLUMNER)] != LOGG_KOLUMNER:
-        raise Sparrfel("Loggfilens kolumner stämmer inte med livv-grund. Stoppat.")
-    blad.append(rad)
-    buf = io.BytesIO()
-    bok.save(buf)
-    return buf.getvalue()
+    logg_kontrollera_kolumner(data)
+    blad = load_workbook(io.BytesIO(data)).worksheets[0]  # bara läsning
+    sista = _sista_rad(blad, len(LOGG_KOLUMNER))
+    return skriv_celler(data, blad.title, sista + 1, {i + 1: v for i, v in enumerate(rad)},
+                        sista if sista > 1 else None)
 
 
 # ---------------------------------------------------------------------------
