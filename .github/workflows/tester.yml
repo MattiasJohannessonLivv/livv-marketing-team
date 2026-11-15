@@ -1,0 +1,32 @@
+name: Tester
+
+on:
+  push:
+    branches: [fas-1]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  tester:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+          cache: pip
+          cache-dependency-path: mcp/requirements.txt
+
+      - name: Installera beroenden
+        run: pip install -r mcp/requirements.txt
+
+      - name: Spärrtester
+        run: bash tests/test_sparr.sh
+
+      # LIVV_KOPIOR sätts inte här, så testerna mot riktiga Excel-kopior hoppas över.
+      - name: Servertester
+        run: python3 -m unittest discover -s tests -v
