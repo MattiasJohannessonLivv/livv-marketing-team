@@ -1,0 +1,13 @@
+# Hemligheter: ligger bara lokalt, aldrig i Git
+.env
+
+# Lokal arbetsmapp för nedladdade filer
+.arbetsyta/
+
+# Python
+__pycache__/
+*.pyc
+.venv/
+
+# Personliga inställningar i Claude Code
+.claude/settings.local.json
