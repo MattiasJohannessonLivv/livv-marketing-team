@@ -165,6 +165,8 @@ Starta LinkedIns och Googles API-ansökningar redan i fas 1, eftersom godkännan
 
 Beslutat: A3 behålls som egen granskare, teamet består av nio roller.
 
+Beslutat: spärren tillåter `git ls-remote` och `git fetch` i drift och `gh` i utvecklingsläge. Radering via `gh` är alltid spärrad.
+
 - [ ] Stämmer föreslagen numrering A0 till A8 med hur A1, A2 och A4 till A7 redan är definierade i livv-grund?
 - [ ] Var körs teamet: på en dator som alltid är igång, en server eller i molnet?
 - [ ] Vilken mapp blir insiktsmapp för trendrapporter, och vem verifierar innehållet innan det når 00_Underlag?

@@ -72,10 +72,25 @@ kontrollera tillat "Läsande skal"                            '{"tool_name":"Bas
 kontrollera deny  "Skrivande skal i drift"                  '{"tool_name":"Bash","tool_input":{"command":"python3 skript.py"}}'
 kontrollera deny  "Omdirigering ut ur arbetsytan"           '{"tool_name":"Bash","tool_input":{"command":"echo x > CLAUDE.md"}}'
 
+kontrollera tillat "git ls-remote i drift"                   '{"tool_name":"Bash","tool_input":{"command":"git ls-remote origin"}}'
+kontrollera tillat "git fetch i drift"                       '{"tool_name":"Bash","tool_input":{"command":"git fetch origin fas-1"}}'
+kontrollera deny  "git fetch --upload-pack i drift"         '{"tool_name":"Bash","tool_input":{"command":"git fetch --upload-pack=sh origin"}}'
+kontrollera deny  "git ls-remote -u i drift"                '{"tool_name":"Bash","tool_input":{"command":"git ls-remote -u sh origin"}}'
+kontrollera deny  "git fetch med tvingad refspec"           '{"tool_name":"Bash","tool_input":{"command":"git fetch origin +main:main"}}'
+kontrollera deny  "git fetch --force"                       '{"tool_name":"Bash","tool_input":{"command":"git fetch --force origin"}}'
+kontrollera deny  "git pull i drift"                        '{"tool_name":"Bash","tool_input":{"command":"git pull origin fas-1"}}'
+kontrollera deny  "gh i drift"                              '{"tool_name":"Bash","tool_input":{"command":"gh pr list"}}'
+kontrollera deny  "gh efter läsande kommando i drift"       '{"tool_name":"Bash","tool_input":{"command":"git status && gh pr list"}}'
+
 echo "Utvecklingsläge"
 kontrollera tillat "Ändra CLAUDE.md"                         "{\"tool_name\":\"Edit\",\"tool_input\":{\"file_path\":\"$PROJEKT/CLAUDE.md\"}}" 1
 kontrollera deny  "Ändra .env"                              "{\"tool_name\":\"Write\",\"tool_input\":{\"file_path\":\"$PROJEKT/.env\"}}" 1
 kontrollera deny  "Skriva utanför projektet"                '{"tool_name":"Write","tool_input":{"file_path":"/tmp/x.md"}}' 1
+kontrollera tillat "gh pr list"                              '{"tool_name":"Bash","tool_input":{"command":"gh pr list"}}' 1
+kontrollera tillat "gh api"                                  '{"tool_name":"Bash","tool_input":{"command":"gh api repos/x/y/pulls"}}' 1
+kontrollera deny  "gh repo delete"                          '{"tool_name":"Bash","tool_input":{"command":"gh repo delete x/y --yes"}}' 1
+kontrollera tillat "git fetch"                               '{"tool_name":"Bash","tool_input":{"command":"git fetch origin"}}' 1
+kontrollera deny  "curl även i utvecklingsläge"             '{"tool_name":"Bash","tool_input":{"command":"curl https://example.com"}}' 1
 kontrollera tillat "Köra testerna"                           '{"tool_name":"Bash","tool_input":{"command":"python3 -m unittest discover -s tests"}}' 1
 
 echo

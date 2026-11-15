@@ -122,7 +122,9 @@ if verktyg == "Bash":
         (r"(^|[\s;&|(`$])(sudo\s+)?(rm|rmdir|unlink|shred|srm|trash|trash-put)(\s|$)", "Radering är spärrad."),
         (r"\bfind\b.*\s-(delete|exec|execdir|ok)\b", "find med -delete eller -exec är spärrat."),
         (r"\bgit\s+(clean|rm|reset\s+--hard|filter-branch|push\b.*(\s--force|\s-f\b|\s\+))", "Git-kommandot kan radera historik eller filer."),
-        (r"(^|[\s;&|(`$])(curl|wget|ssh|scp|sftp|ftp|rsync|nc|ncat|netcat|telnet|http|https|gh)(\s|$)", "Nätverksanrop från skalet är spärrade. Kopplingar går via MCP."),
+        (r"(^|[\s;&|(`$])(curl|wget|ssh|scp|sftp|ftp|rsync|nc|ncat|netcat|telnet|http|https)(\s|$)", "Nätverksanrop från skalet är spärrade. Kopplingar går via MCP."),
+        (r"\bgit\s+(fetch|ls-remote)\b.*(--upload-pack|\s-u\b|\s--force\b|\s-f\b|\s\+)", "git fetch och git ls-remote får inte köra egna program eller skriva över referenser."),
+        (r"(^|[\s;&|(`$])gh(\s|$).*\bdelete\b", "Radering via gh är spärrad."),
         (r"\b(truncate|dd|mkfs)\b", "Kommandot kan skriva över eller radera data."),
         (r"\.env\b(?!\.example)", "Hemligheter i .env rörs aldrig."),
     ]
@@ -130,9 +132,15 @@ if verktyg == "Bash":
         if re.search(monster, kommando):
             stoppa(skal + f" Kommando: {kommando}")
 
+    # gh når GitHub och får bara användas i utvecklingsläge (beslut i fas 1).
+    if not utveckling and re.search(r"(^|[\s;&|(`$])gh(\s|$)", kommando):
+        stoppa("gh får bara användas i utvecklingsläge. Starta med LIVV_UTVECKLING=1. "
+               f"Kommando: {kommando}")
+
     if not utveckling:
         LASANDE = {"ls", "cat", "head", "tail", "wc", "grep", "rg", "pwd", "date", "sort", "uniq", "cut", "diff", "file", "stat", "tree", "echo"}
-        GIT_LASANDE = {"status", "log", "diff", "show", "branch"}
+        # ls-remote och fetch läser från fjärrförrådet och tillåts i drift (beslut i fas 1).
+        GIT_LASANDE = {"status", "log", "diff", "show", "branch", "ls-remote", "fetch"}
         for omdirigering in re.findall(r">>?\s*([^\s;&|]+)", kommando):
             if omdirigering in ("/dev/null", "&1", "&2"):
                 continue

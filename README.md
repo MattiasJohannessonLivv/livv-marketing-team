@@ -65,8 +65,9 @@ Reglerna står i livv-grund, men de hålls också i kod, i tre lager:
 **2. Spärren** (`.claude/hooks/sparr-publicering.sh`) körs före varje verktygsanrop, oavsett vad agenten fått för instruktion:
 - Alla MCP-verktyg utanför SharePoint-servern stoppas. Det gäller LinkedIn, Meta, Google, X, e-post, Slack, HubSpot och Canva, även kopplingar från ditt claude.ai-konto. Därmed går det inte att publicera, schemalägga eller ändra budget, bud eller kampanj.
 - Flytt till Godkänd, Schemalagd eller Publicerad, och ändring av godkand_av, godkand_datum, publicerad_datum, plattforms_id eller url, kräver att du bekräftar i rutan. När ingen människa sitter vid datorn blir det stopp.
-- Radering (`rm`, `find -delete`, `git clean` och liknande) och nätverksanrop från skalet (`curl`, `wget` och liknande) stoppas alltid.
-- I drift får agenterna bara skriva lokalt i `.arbetsyta/`, och skalet får bara köra läsande kommandon. `.env` kan aldrig läsas eller ändras.
+- Radering (`rm`, `find -delete`, `git clean`, `gh ... delete` och liknande) och nätverksanrop från skalet (`curl`, `wget` och liknande) stoppas alltid.
+- I drift får agenterna bara skriva lokalt i `.arbetsyta/`, och skalet får bara köra läsande kommandon. `git ls-remote` och `git fetch` räknas som läsande, men utan `--upload-pack` och utan tvingade referenser. `.env` kan aldrig läsas eller ändras.
+- `gh` får bara användas i utvecklingsläge.
 - A3 och A4 har egna rollspärrar utöver sina verktygslistor.
 
 **3. Verktygslistor per agent** i `.claude/agents/`. A3 och A4 har varken skal eller lokala skrivverktyg.
