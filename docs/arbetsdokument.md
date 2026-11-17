@@ -165,7 +165,7 @@ Teamet byggs i fyra faser. Varje fas har en grind som ska vara uppfylld innan n�
    - Grind: tre objekt har gått hela vägen från Brief till Publicerad utan fel i register eller logg.
    - Beslut 17 november 2026: A2 byggs redan i fas 1 och analyserar exporter som Mattias lägger i 11_Dataimport. Kanaler i dag: LinkedIn för Livv.se, Livv.fi och Unique Cosmetics, X för Livv Group, samt GA4, GTM och Search Console för Livv.se, Livv.fi och Unique. Meta är inte registrerat.
 2. **Fas 2: Data och Google.** Läskopplingar till GA4, Search Console, Google Ads och GTM, nattlig import till Matregister, subagent för A5. Exporterna till A2 ersätts av automatisk import.
-   - Grind: A2 levererar en veckoanalys som Mattias bedömer som användbar.
+   - Grind: A2 levererar en veckoanalys som Mattias bedömer som användbar. Uppfylld 17 november 2026: analysen 20261117_livv_analys_v43-46_v01.md av Livv.se på LinkedIn bedömdes som mycket bra och användbar. Fyra lärdomar ledde direkt till inlägg för v.48 till 51 och ett test av CTA i stället för fråga.
 3. **Fas 3: Sociala kanaler och Grok.** Meta, LinkedIn och X med läsrätt, xAI-kopplingen, subagenter för A1, A6, A7 och A8.
    - Grind: LinkedIns API-ansökan godkänd, eller beslut om att köra vidare på exporter.
 4. **Fas 4: Sluten loop på schema.** Schemalagda körningar för trendscan, import och veckoplan, där A2:s lärdomar styr A0:s nästa briefer, plus månadsunderlag till CEO-uppföljningen.
