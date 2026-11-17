@@ -145,6 +145,58 @@ class TestHamta(unittest.TestCase):
             self.assertFalse(hasattr(lg, namn), namn)
 
 
+def obj(id_: str, status: str, a3: str = "", eskalera: bool = False, **extra) -> dict:
+    o = {"id": id_, "titel": "T " + id_, "status": status, "a3": a3, "eskalera": eskalera, "mapp": "", "filnamn": ""}
+    o.update(extra)
+    return o
+
+
+class TestVantarOchNotiser(unittest.TestCase):
+    def test_vantande(self):
+        lista = tavla.vantande([
+            obj("A", "Brief"),
+            obj("B", "Granskning", "Godkänd"),
+            obj("C", "Utkast", "Eskalera", eskalera=True),
+            obj("D", "Godkänd", "Godkänd"),
+            obj("E", "Avvisad", eskalera=True),
+            obj("F", "Utkast", "Revidera"),
+        ])
+        self.assertEqual([(o["id"], o["etikett"]) for o in lista], [("B", "Godkänn"), ("C", "Beslut"), ("D", "Publicera")])
+
+    def test_notis_vid_start_och_bara_for_nya(self):
+        skickat = []
+        p = tavla.Pingare(lambda titel, text: skickat.append(text))
+        p.kontrollera({"objekt": [obj("B", "Granskning", "Godkänd")]})
+        self.assertEqual(skickat, ["1 sak väntar på ditt beslut."])
+        p.kontrollera({"objekt": [obj("B", "Granskning", "Godkänd")]})
+        self.assertEqual(len(skickat), 1)
+        p.kontrollera({"objekt": [obj("B", "Godkänd"), obj("C", "Granskning", "Godkänd")]})
+        self.assertEqual(skickat[1:], ["B T B", "C T C"])
+
+    def test_ingen_notis_vid_start_om_inget_vantar(self):
+        skickat = []
+        p = tavla.Pingare(lambda titel, text: skickat.append(text))
+        p.kontrollera({"objekt": [obj("A", "Brief")]})
+        self.assertEqual(skickat, [])
+
+    def test_notisskriptet_citerar_text(self):
+        skript = tavla.notis_skript("Livv", 'Säg "hej"\nnu')
+        self.assertEqual(skript, 'display notification "Säg \\"hej\\" nu" with title "Livv" sound name "Glass"')
+
+    def test_lank_till_vantande_fil(self):
+        g = FalskGraph({sp.REGISTER_FIL: testregister()})
+        g.webblank = lambda sokvag: "https://exempel/" + sokvag
+        objekt = [obj("B", "Granskning", "Godkänd", mapp="03_Granskning/Livv", filnamn="b.md"), obj("A", "Brief", mapp="01_Briefer/Livv", filnamn="a.md")]
+        orig = tavla.objekt_fran_register
+        tavla.objekt_fran_register = lambda rader: objekt
+        try:
+            d = tavla.hamta(g, datetime(2026, 11, 17))
+        finally:
+            tavla.objekt_fran_register = orig
+        self.assertEqual(d["objekt"][0]["lank"], "https://exempel/03_Granskning/Livv/b.md")
+        self.assertNotIn("lank", d["objekt"][1])
+
+
 class TestWebbserver(unittest.TestCase):
     @classmethod
     def setUpClass(cls):

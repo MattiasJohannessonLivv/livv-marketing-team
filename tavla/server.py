@@ -4,6 +4,9 @@ Servern läser bara. Den hämtar Innehallsregister och månadens loggfiler i
 09_Loggar via samma app-registrering som MCP-servern och gör inga skrivande
 anrop. Sidan kan inte flytta objekt, ändra registret eller publicera.
 
+Medan tavlan körs kontrollerar den registret var femte minut och skickar en
+notis på Macen när något nytt väntar på Mattias. Stäng av med TAVLA_NOTISER=0.
+
 Starta med ./tavla.sh och öppna http://127.0.0.1:8787.
 Exempeldata utan SharePoint: http://127.0.0.1:8787/?exempel
 """
@@ -14,6 +17,8 @@ import io
 import json
 import os
 import re
+import shutil
+import subprocess
 import sys
 import threading
 import time
@@ -47,6 +52,9 @@ class LasGraph:
 
     def finns(self, sokvag: str) -> bool:
         return self._g.finns(sokvag)
+
+    def webblank(self, sokvag: str) -> str:
+        return self._g.objekt(sokvag).get("webUrl", "")
 
 
 # ---------------------------------------------------------------------------
@@ -123,8 +131,30 @@ def objekt_fran_register(rader: Iterable[dict[str, Any]]) -> list[dict[str, Any]
             "eskalera": _text(r.get("eskalera")).lower() in {"ja", "yes", "true", "1"},
             "briefdatum": _tidpunkt(r.get("briefdatum")),
             "godkand_datum": _tidpunkt(r.get("godkand_datum")),
+            "mapp": _text(r.get("mapp")),
+            "filnamn": _text(r.get("filnamn")),
         })
     return objekt
+
+
+def vantande(objekt: Iterable[dict[str, Any]]) -> list[dict[str, Any]]:
+    """Objekt som väntar på Mattias. Samma regler som listan Väntar på dig på sidan."""
+    lista = []
+    for o in objekt:
+        if o["status"] in {"Avvisad", "Arkiverad", "Publicerad"}:
+            continue
+        if o["eskalera"]:
+            etikett = "Beslut"
+        elif o["status"] == "Granskning" and o["a3"] == "Godkänd":
+            etikett = "Godkänn"
+        elif o["status"] == "Godkänd":
+            etikett = "Publicera"
+        elif o["status"] == "Schemalagd":
+            etikett = "Bekräfta"
+        else:
+            continue
+        lista.append({**o, "etikett": etikett})
+    return lista
 
 
 def logg_fran_bok(data: bytes) -> list[list[str]]:
@@ -163,6 +193,14 @@ def hamta(graph: Any, nu: datetime | None = None) -> dict[str, Any]:
         except sp.Sparrfel as fel:
             varningar.append(f"{sokvag}: {fel}")
     logg.sort(key=lambda rad: (rad[0], rad[1]))
+    # Direktlänk till filen för det som väntar på Mattias, så att han kommer rätt i SharePoint
+    for o in vantande(objekt):
+        if o["mapp"] and o["filnamn"]:
+            try:
+                lank = graph.webblank(f"{o['mapp']}/{o['filnamn']}")
+            except Exception:  # länken är en bekvämlighet, tavlan fungerar utan den
+                lank = ""
+            next(x for x in objekt if x["id"] == o["id"])["lank"] = lank
     return {
         "kalla": "sharepoint",
         "hamtad": nu.strftime("%Y-%m-%dT%H:%M"),
@@ -225,12 +263,61 @@ def bygg_hanterare(cache: Cache):
     return Hanterare
 
 
+# ---------------------------------------------------------------------------
+# Notiser på Macen när något nytt väntar på Mattias
+# ---------------------------------------------------------------------------
+
+def notis_skript(titel: str, text: str) -> str:
+    """AppleScript för en notis. json.dumps ger en citerad sträng som AppleScript förstår."""
+    def citera(t: str) -> str:
+        return json.dumps(" ".join(t.split()), ensure_ascii=False)
+    return f'display notification {citera(text)} with title {citera(titel)} sound name "Glass"'
+
+
+def macnotis(titel: str, text: str) -> None:
+    if shutil.which("osascript"):
+        subprocess.run(["osascript", "-e", notis_skript(titel, text)], check=False, timeout=10)
+
+
+class Pingare:
+    """Skickar en notis för varje nytt objekt som väntar på Mattias, och en sammanfattning vid start."""
+
+    def __init__(self, skicka=macnotis) -> None:
+        self._skicka = skicka
+        self._sett: set[tuple[str, str]] | None = None
+
+    def kontrollera(self, data: dict[str, Any]) -> None:
+        lista = vantande(data.get("objekt", []))
+        nycklar = {(o["id"], o["etikett"]) for o in lista}
+        if self._sett is None:
+            if lista:
+                antal = len(lista)
+                self._skicka("Livv Marketing Ops", f"{antal} {'sak väntar' if antal == 1 else 'saker väntar'} på ditt beslut.")
+        else:
+            for o in lista:
+                if (o["id"], o["etikett"]) not in self._sett:
+                    self._skicka(f"Livv: {o['etikett']}", f"{o['id']} {o['titel']}")
+        self._sett = nycklar
+
+
+def bevaka(cache: Cache, pingare: Pingare) -> None:
+    while True:
+        try:
+            pingare.kontrollera(cache.data())
+        except Exception:  # felet visas på sidan, bevakningen fortsätter
+            pass
+        time.sleep(CACHE_SEKUNDER + 5)
+
+
 def main() -> None:
     port = int(os.environ.get("TAVLA_PORT", "8787"))
     graph = LasGraph()
     cache = Cache(lambda: hamta(graph))
     server = ThreadingHTTPServer((VARD, port), bygg_hanterare(cache))
     print(f"Teamtavlan körs på http://{VARD}:{port}  (avsluta med Ctrl+C)")
+    if os.environ.get("TAVLA_NOTISER", "1") != "0":
+        threading.Thread(target=bevaka, args=(cache, Pingare()), daemon=True).start()
+        print("Notiser är på: du får en notis när något nytt väntar på dig.")
     try:
         server.serve_forever()
     except KeyboardInterrupt:

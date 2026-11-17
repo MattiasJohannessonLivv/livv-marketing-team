@@ -129,6 +129,8 @@ Du pratar med A0. Exempel: "Skapa en brief för ett LinkedIn-inlägg för Livv o
 ```
 Öppnar http://127.0.0.1:8787 i webbläsaren. Tavlan visar teamet runt A0, flödet av objekt, vad som väntar på dig och vad agenterna har gjort. Den läser Innehallsregister och loggfilerna för den här och förra månaden i 09_Loggar, med samma app-registrering som SharePoint-servern, och hämtar nytt var femte minut.
 
+Medan tavlan körs får du en notis på Macen när något nytt väntar på ditt beslut, och listan Väntar på dig har en länk direkt till filen i SharePoint. Notiserna stängs av med `TAVLA_NOTISER=0 ./tavla.sh`.
+
 Tavlan läser bara. Servern (`tavla/server.py`) har inga skrivande anrop, svarar bara på GET och lyssnar bara på den egna datorn. Avsluta med Ctrl+C. Exempeldata utan SharePoint: http://127.0.0.1:8787/?exempel
 
 ### Ändra teamet
