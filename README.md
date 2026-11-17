@@ -138,7 +138,8 @@ Tavlan läser bara. Servern (`tavla/server.py`) har inga skrivande anrop, svarar
 Bara i utvecklingsläge får agenter, skills, hooks och CLAUDE.md ändras. Gör ändringarna i en gren och granska dem innan de slås ihop.
 
 ## Vad som väntar på Mattias
-- App-registreringen i Entra ID och värdena i `.env`.
+Klart 17 november 2026: app-registreringen i Entra ID och hemligheterna på Mattias dator. Kopplingen mot SharePoint är testad därifrån.
+
 - Godkännande av [docs/excel-andringslista.md](docs/excel-andringslista.md).
 - Starta API-ansökningarna hos Google Ads och LinkedIn redan nu. Godkännandet kan ta flera veckor och behövs i fas 2 och 3.
 - De öppna frågorna sist i arbetsdokumentet, bland annat ersättare för godkännanden när du är borta.
