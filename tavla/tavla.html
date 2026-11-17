@@ -489,7 +489,7 @@ function sedan(d) {
   var dag = Math.round(h / 24);
   return dag === 1 ? "i går" : dag + " dagar sedan";
 }
-function datumKort(s) { return new Date(s + "T12:00:00").toLocaleDateString("sv-SE", { day: "numeric", month: "short" }); }
+function datumKort(s) { return new Date(s + "T12:00:00").toLocaleDateString("sv-SE", { day: "numeric", month: "short" }).replace(/\.$/, ""); }
 function syns(o) { return filter === "Alla" || o.bolag === filter; }
 function bolagFor(id) { var o = OBJEKT.find(function (x) { return x.id === id; }); return o ? o.bolag : null; }
 function radSyns(r) { return filter === "Alla" || !r[3] || bolagFor(r[3]) === filter; }
