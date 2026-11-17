@@ -1,0 +1,41 @@
+{
+  "kalla": "exempel",
+  "hamtad": "2026-11-17T14:40",
+  "nu": "2026-11-17T14:40:00",
+  "objekt": [
+    {"id": "LIVV-2026-0002", "bolag": "Livv", "kanal": "LinkedIn", "titel": "Vinterns textilier för lugnare nätter", "status": "Granskning", "a3": "Godkänd", "varv": 1, "plan": "2026-11-24", "sedan": "2026-11-11T10:15", "orsak": "", "eskalera": false, "briefdatum": "2026-11-10T08:05", "godkand_datum": ""},
+    {"id": "UNIQ-2026-0001", "bolag": "Unique", "kanal": "LinkedIn", "titel": "Spa-ritualer i hotellrummet", "status": "Utkast", "a3": "Eskalera", "varv": 0, "plan": "2026-11-26", "sedan": "2026-11-12T14:05", "orsak": "Utkastet nämner en kund utan godkänt kundcase i 00_Underlag", "eskalera": true, "briefdatum": "2026-11-12T13:40", "godkand_datum": ""},
+    {"id": "LIVV-2026-0003", "bolag": "LivvGroup", "kanal": "LinkedIn", "titel": "Tre förändringar i hotellbranschen inför 2027", "status": "Godkänd", "a3": "Godkänd", "varv": 0, "plan": "2026-11-19", "sedan": "2026-11-14T11:20", "orsak": "", "eskalera": false, "briefdatum": "2026-11-13T09:00", "godkand_datum": "2026-11-14T11:20"},
+    {"id": "LIVV-2026-0004", "bolag": "LivvGroup", "kanal": "X", "titel": "Livv Group finns nu på X", "status": "Utkast", "a3": "", "varv": 0, "plan": "2026-11-25", "sedan": "2026-11-16T09:10", "orsak": "", "eskalera": false, "briefdatum": "2026-11-16T08:58", "godkand_datum": ""},
+    {"id": "UNIQ-2026-0002", "bolag": "Unique", "kanal": "LinkedIn", "titel": "Vinterkampanj för spa-sortimentet", "status": "Brief", "a3": "", "varv": 0, "plan": "2026-12-02", "sedan": "2026-11-16T09:30", "orsak": "", "eskalera": false, "briefdatum": "2026-11-16T09:30", "godkand_datum": ""},
+    {"id": "LIVV-2026-0001", "bolag": "Livv", "kanal": "LinkedIn", "titel": "FAQ: kan Livv leverera ett helt koncept?", "status": "Avvisad", "a3": "Godkänd", "varv": 1, "plan": "", "sedan": "2026-11-17T14:37", "orsak": "", "eskalera": false, "briefdatum": "2026-11-05T09:12", "godkand_datum": "2026-11-05T14:01"}
+  ],
+  "logg": [
+    ["2026-11-05", "09:12", "A0", "LIVV-2026-0001", "Skapade brief", "01_Briefer/Livv"],
+    ["2026-11-05", "09:20", "A4", "LIVV-2026-0001", "Sparade utkast v01", ""],
+    ["2026-11-05", "09:31", "A3", "LIVV-2026-0001", "Granskade: Revidera", "Poäng 3"],
+    ["2026-11-05", "09:40", "A4", "LIVV-2026-0001", "Sparade utkast v02", ""],
+    ["2026-11-05", "09:52", "A3", "LIVV-2026-0001", "Granskade: Godkänd", "Poäng 4"],
+    ["2026-11-05", "14:01", "A0", "LIVV-2026-0001", "Satte status Godkänd", "Mattias godkände"],
+    ["2026-11-10", "08:05", "A0", "LIVV-2026-0002", "Skapade brief", "01_Briefer/Livv"],
+    ["2026-11-10", "08:14", "A4", "LIVV-2026-0002", "Sparade utkast v01", ""],
+    ["2026-11-10", "08:30", "A3", "LIVV-2026-0002", "Granskade: Revidera", "Tre ändringar"],
+    ["2026-11-11", "10:02", "A4", "LIVV-2026-0002", "Sparade utkast v02", ""],
+    ["2026-11-11", "10:15", "A3", "LIVV-2026-0002", "Granskade: Godkänd", "Poäng 5"],
+    ["2026-11-12", "13:40", "A0", "UNIQ-2026-0001", "Skapade brief", "01_Briefer/Unique"],
+    ["2026-11-12", "13:52", "A4", "UNIQ-2026-0001", "Sparade utkast v01", ""],
+    ["2026-11-12", "14:05", "A3", "UNIQ-2026-0001", "Granskade: Eskalera", "Kundnamn saknar kundcase"],
+    ["2026-11-13", "09:00", "A0", "LIVV-2026-0003", "Skapade brief", "01_Briefer/LivvGroup"],
+    ["2026-11-13", "09:11", "A4", "LIVV-2026-0003", "Sparade utkast v01", ""],
+    ["2026-11-13", "09:25", "A3", "LIVV-2026-0003", "Granskade: Godkänd", "Poäng 5"],
+    ["2026-11-14", "11:20", "A0", "LIVV-2026-0003", "Satte status Godkänd", "Mattias godkände"],
+    ["2026-11-16", "08:45", "A0", "", "Sparade veckoplan", "08_Rapporter"],
+    ["2026-11-16", "08:58", "A0", "LIVV-2026-0004", "Skapade brief", "01_Briefer/LivvGroup"],
+    ["2026-11-16", "09:10", "A4", "LIVV-2026-0004", "Sparade utkast v01", ""],
+    ["2026-11-16", "09:30", "A0", "UNIQ-2026-0002", "Skapade brief", "01_Briefer/Unique"],
+    ["2026-11-17", "14:34", "A0", "", "Listade rotmappen", ""],
+    ["2026-11-17", "14:36", "A0", "", "Läste registret", "Vad väntar på mig?"],
+    ["2026-11-17", "14:37", "A0", "LIVV-2026-0001", "Satte status Avvisad", "Testobjekt från uppbyggnaden"]
+  ],
+  "varningar": []
+}
