@@ -36,6 +36,7 @@ def fraga(skal):
 SHAREPOINT = {
     "lista_mapp", "las_fil", "skapa_brief", "spara_utkast", "spara_rapport",
     "flytta_objekt", "register_las", "register_ny_rad", "register_uppdatera", "logga",
+    "spara_bildbrief",
 }
 FARLIGA_ORD = re.compile(
     r"publish|post|schedul|send|share|tweet|reply|comment|boost|budget|bid|"
@@ -56,15 +57,15 @@ if verktyg.startswith("mcp__"):
 
     # Rollspärrar, utöver verktygslistorna i .claude/agents/
     if agent == "a3-granskare":
-        if namn in {"skapa_brief", "register_ny_rad", "spara_utkast", "spara_rapport"}:
+        if namn in {"skapa_brief", "register_ny_rad", "spara_utkast", "spara_rapport", "spara_bildbrief"}:
             stoppa("A3 skapar aldrig briefer, utkast, rapporter eller nya objekt.")
         if namn == "flytta_objekt" and inp.get("till_status") not in {"Granskning", "Avvisad"}:
             stoppa("A3 får bara flytta till Granskning eller Avvisad.")
     if agent == "a2-researcher":
-        if namn in {"skapa_brief", "register_ny_rad", "register_uppdatera", "spara_utkast", "flytta_objekt"}:
+        if namn in {"skapa_brief", "register_ny_rad", "register_uppdatera", "spara_utkast", "flytta_objekt", "spara_bildbrief"}:
             stoppa("A2 läser och analyserar. Briefer, utkast, flyttar och ändringar i registret sköts av andra roller.")
     if agent == "a4-contentcreator":
-        if namn in {"skapa_brief", "register_ny_rad", "flytta_objekt", "spara_rapport"}:
+        if namn in {"skapa_brief", "register_ny_rad", "flytta_objekt", "spara_rapport", "spara_bildbrief"}:
             stoppa("A4 skriver bara utkast. Briefer, nya objekt och flyttar sköts av andra roller.")
 
     # Mänsklig grind: Mattias måste bekräfta

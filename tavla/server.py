@@ -155,6 +155,8 @@ def vantande(objekt: Iterable[dict[str, Any]]) -> list[dict[str, Any]]:
             etikett = "Beslut"
         elif o["status"] == "Granskning" and o["a3"] == "Godkänd":
             etikett = "Godkänn"
+        elif o["status"] == "Godkänd" and o.get("bilder") and not o.get("bild_vald"):
+            etikett = "Välj bild"
         elif o["status"] == "Godkänd":
             etikett = "Publicera"
         elif o["status"] == "Schemalagd":
@@ -201,6 +203,17 @@ def hamta(graph: Any, nu: datetime | None = None) -> dict[str, Any]:
         except sp.Sparrfel as fel:
             varningar.append(f"{sokvag}: {fel}")
     logg.sort(key=lambda rad: (rad[0], rad[1]))
+    # Bildförslag från Brand Studio och Mattias val, för objekt med godkänd text
+    for o in objekt:
+        if o["status"] not in sp.TEXT_GODKAND:
+            continue
+        try:
+            namn = graph.lista(f"{sp.BILDMAPP}/{o['id']}")
+        except Exception:  # mappen finns inte än
+            namn = []
+        o["bilder"] = sorted(n for n in namn if n.lower().endswith(sp.BILDTYPER))
+        valda = [r[5] for r in logg if r[3] == o["id"] and r[4] == "Valde bild i teamtavlan"]
+        o["bild_vald"] = valda[-1] if valda and valda[-1] in o["bilder"] else ""
     # Direktlänk till filen för det som väntar på Mattias, så att han kommer rätt i SharePoint
     for o in vantande(objekt):
         if o["mapp"] and o["filnamn"]:
@@ -283,6 +296,16 @@ def bygg_hanterare(cache: Cache, beslut: Any = None, nyckel: str | None = None):
                 except Exception as fel:  # visas på sidan, utan hemligheter
                     self._fel(fel)
                 return
+            if sokvag == "/bild" and beslut is not None:
+                q = parse_qs(fraga)
+                objekt_id, namn = q.get("id", [""])[0], q.get("namn", [""])[0]
+                typer = {".png": "image/png", ".jpg": "image/jpeg", ".jpeg": "image/jpeg", ".webp": "image/webp"}
+                try:
+                    data = beslut.bild(objekt_id, namn)
+                    self._svara(200, typer[Path(namn).suffix.lower()], data)
+                except Exception as fel:
+                    self._fel(fel)
+                return
             if sokvag == "/objekt" and beslut is not None:
                 objekt_id = parse_qs(fraga).get("id", [""])[0]
                 try:
@@ -301,7 +324,7 @@ def bygg_hanterare(cache: Cache, beslut: Any = None, nyckel: str | None = None):
 
         def do_POST(self) -> None:  # noqa: N802
             sokvag = self.path.split("?", 1)[0]
-            if sokvag not in {"/godkann", "/tillbaka"} or beslut is None:
+            if sokvag not in {"/godkann", "/tillbaka", "/valjbild"} or beslut is None:
                 self._svara(404, "text/plain; charset=utf-8", "Finns inte".encode("utf-8"))
                 return
             port = self.server.server_address[1]
@@ -318,6 +341,8 @@ def bygg_hanterare(cache: Cache, beslut: Any = None, nyckel: str | None = None):
                 objekt_id = str(data.get("id", ""))
                 if sokvag == "/godkann":
                     text = beslut.godkann(objekt_id)
+                elif sokvag == "/valjbild":
+                    text = beslut.valj_bild(objekt_id, str(data.get("namn", "")))
                 else:
                     text = beslut.tillbaka(objekt_id, str(data.get("kommentar", "")))
                 cache.rensa()

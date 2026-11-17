@@ -53,7 +53,7 @@ class MinnesGraph:
         return self.filer[sokvag]
 
     def finns(self, sokvag):
-        return sokvag in self.filer
+        return sokvag in self.filer or any(p.startswith(sokvag + "/") for p in self.filer)
 
     def skriv(self, sokvag, data, ersatt):
         if sokvag in self.filer and not ersatt:
@@ -156,6 +156,73 @@ class TestBeslut(unittest.TestCase):
         rad = sp.register_rader(g.filer[sp.REGISTER_FIL], "LIVV-2026-0002")[0]
         self.assertEqual((rad["status"], rad["eskalera"], rad["a3_utfall"]), ("Utkast", "Nej", "Revidera"))
         self.assertEqual(g.flyttar, [])
+
+
+PNG = b"\x89PNG\r\n\x1a\nfake"
+
+
+class TestBilder(unittest.TestCase):
+    def godkand(self, **extra) -> MinnesGraph:
+        g = grund(status="Godkänd", mapp="04_Godkant/Livv", **extra)
+        g.filer["12_Pictures/.mapp"] = b""
+        return g
+
+    def test_bildbrief_bara_efter_godkand_text(self):
+        g = grund()  # status Granskning
+        g.filer["12_Pictures/.mapp"] = b""
+        with self.assertRaises(sp.Sparrfel):
+            sp.Livv(g).spara_bildbrief("LIVV-2026-0002", "# Image brief")
+        g = self.godkand()
+        forsta = sp.Livv(g).spara_bildbrief("LIVV-2026-0002", "# Image brief")
+        andra = sp.Livv(g).spara_bildbrief("LIVV-2026-0002", "# Image brief v2")
+        self.assertEqual(forsta, "12_Pictures/LIVV-2026-0002/LIVV-2026-0002_image-brief_v01.md")
+        self.assertEqual(andra, "12_Pictures/LIVV-2026-0002/LIVV-2026-0002_image-brief_v02.md")
+        self.assertEqual(g.filer[forsta], b"# Image brief")
+
+    def test_bildbrief_kraver_mappen(self):
+        g = grund(status="Godkänd")
+        with self.assertRaises(sp.Sparrfel) as fel:
+            sp.Livv(g).spara_bildbrief("LIVV-2026-0002", "# Image brief")
+        self.assertIn("12_Pictures", str(fel.exception))
+
+    def test_bildforslag_och_val(self):
+        g = self.godkand()
+        g.filer["12_Pictures/LIVV-2026-0002/LIVV-2026-0002_image-brief_v01.md"] = b"x"
+        g.filer["12_Pictures/LIVV-2026-0002/forslag-b.jpg"] = PNG
+        g.filer["12_Pictures/LIVV-2026-0002/forslag-a.png"] = PNG
+        beslut = b.Beslut(LasVy(g), g, NU)
+        self.assertEqual(beslut.bilder("LIVV-2026-0002"), ["forslag-a.png", "forslag-b.jpg"])
+        self.assertEqual(beslut.bild("LIVV-2026-0002", "forslag-a.png"), PNG)
+        for fel_namn in ("../../Innehallsregister.xlsx", "LIVV-2026-0002_image-brief_v01.md", "saknas.png"):
+            with self.assertRaises(sp.Sparrfel):
+                beslut.bild("LIVV-2026-0002", fel_namn)
+        self.assertIn("vald", beslut.valj_bild("LIVV-2026-0002", "forslag-b.jpg"))
+        from openpyxl import load_workbook
+        logg = next(p for p in g.filer if p.startswith("09_Loggar/"))
+        rader = [list(r) for r in load_workbook(io.BytesIO(g.filer[logg])).active.iter_rows(values_only=True)]
+        self.assertTrue(any(r[4] == "Valde bild i teamtavlan" and r[6] == "forslag-b.jpg" for r in rader))
+
+    def test_bild_valjs_inte_fore_godkand_text(self):
+        g = grund()
+        g.filer["12_Pictures/LIVV-2026-0002/a.png"] = PNG
+        with self.assertRaises(sp.Sparrfel):
+            b.Beslut(LasVy(g), g, NU).valj_bild("LIVV-2026-0002", "a.png")
+
+    def test_tavlan_visar_valj_bild_och_sedan_publicera(self):
+        g = self.godkand()
+        g.filer["12_Pictures/LIVV-2026-0002/a.png"] = PNG
+        g.objekt = lambda s: {"webUrl": ""}
+        las = tavla.LasGraph(g)
+        g_lista = MinnesGraph.lista
+        g.lista = lambda s: [{"name": n} for n in g_lista(g, s)]
+        d = tavla.hamta(las, datetime(2026, 11, 18))
+        o = d["objekt"][0]
+        self.assertEqual((o["bilder"], o["bild_vald"]), (["a.png"], ""))
+        self.assertEqual(tavla.vantande(d["objekt"])[0]["etikett"], "Välj bild")
+        b.Beslut(las, g, NU).valj_bild("LIVV-2026-0002", "a.png")
+        d = tavla.hamta(las, datetime(2026, 11, 18))
+        self.assertEqual(d["objekt"][0]["bild_vald"], "a.png")
+        self.assertEqual(tavla.vantande(d["objekt"])[0]["etikett"], "Publicera")
 
 
 class TestRiktigLasvag(unittest.TestCase):

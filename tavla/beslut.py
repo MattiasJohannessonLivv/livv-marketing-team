@@ -92,6 +92,7 @@ class Beslut:
             "orsak": _text(r.get("eskalera_skal")),
             "utkast": utkast,
             "brief": hitta_brief(self.las, r),
+            "bilder": self.bilder(objekt_id),
         }
 
     def godkann(self, objekt_id: str) -> str:
@@ -118,6 +119,33 @@ class Beslut:
         # 4. Logga
         livv.logga("Mattias", objekt_id, "Godkände i teamtavlan", f"{mapp}/{filnamn}")
         return f"{objekt_id} är godkänd och ligger i {mapp}."
+
+    # ---------------- Bilder från Brand Studio ----------------
+
+    def bilder(self, objekt_id: str) -> list[str]:
+        """Bildförslag i 12_Pictures/<objekt-ID>, i namnordning."""
+        if not sp.OBJEKT_ID_RE.match(objekt_id or ""):
+            return []
+        try:
+            namn = self.las.lista(f"{sp.BILDMAPP}/{objekt_id}")
+        except Exception:
+            return []
+        return sorted(n for n in namn if n.lower().endswith(sp.BILDTYPER) and "/" not in n)
+
+    def bild(self, objekt_id: str, namn: str) -> bytes:
+        if namn not in self.bilder(objekt_id):
+            raise sp.Sparrfel("Bilden finns inte bland förslagen.")
+        return self.las.las(f"{sp.BILDMAPP}/{objekt_id}/{namn}")
+
+    def valj_bild(self, objekt_id: str, namn: str) -> str:
+        livv = self._livv()
+        r = self._rad(objekt_id, livv.g)
+        if _text(r.get("status")) not in sp.TEXT_GODKAND:
+            raise sp.Sparrfel("Bild väljs först när texten är godkänd.")
+        if namn not in self.bilder(objekt_id):
+            raise sp.Sparrfel("Bilden finns inte bland förslagen.")
+        livv.logga("Mattias", objekt_id, "Valde bild i teamtavlan", f"{sp.BILDMAPP}/{objekt_id}/{namn}", namn)
+        return f"Bilden {namn} är vald för {objekt_id}."
 
     def tillbaka(self, objekt_id: str, kommentar: str) -> str:
         kommentar = " ".join(_text(kommentar).split())[:MAX_KOMMENTAR]

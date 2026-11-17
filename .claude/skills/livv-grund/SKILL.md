@@ -32,6 +32,7 @@ A0 är huvudsessionen. A1 till A8 är subagenter. Den som skapar en brief godkä
 
 Övriga mappar: läs rotmappens innehåll och hämta itemId därifrån. Gissa aldrig ett id.
 Varumärkesmappar: Livv Group = LivvGroup, Livv = Livv, Unique = Unique.
+12_Pictures: en mapp per objekt-ID med bildbriefen till Brand Studio och bildförslagen tillbaka. Bildbriefer skrivs på engelska.
 
 ## Regler som alltid gäller
 1. Använd bara fakta, priser, kundnamn och påståenden från 00_Underlag. Saknas något: skriv [SAKNAS: vad], sätt eskalera = Ja.
@@ -39,7 +40,7 @@ Varumärkesmappar: Livv Group = LivvGroup, Livv = Livv, Unique = Unique.
 3. Miljö- och hållbarhetspåståenden bara ordagrant från listan med godkända påståenden.
 4. Inga konkurrentjämförelser. Inga emojis i B2B-kanaler om briefen inte säger det.
 5. Inga personuppgifter. Be aldrig om kontaktlistor, leadlistor eller CRM-data.
-6. AI-bilder bara som interna skisser.
+6. Ingen agent skapar bilder. Bilder för publicering tas fram av Brand Studio (Anastasia) utifrån en bildbrief från A0 och väljs av Mattias. Produkter visas bara med verkliga produktbilder från livv.se eller unique.se, aldrig med AI-skapade produktbilder.
 7. Publicera aldrig och ändra aldrig budgetar, bud eller kampanjer.
 8. Radera aldrig, flytta aldrig ut ur 06_Arkiv, ändra aldrig behörigheter, skicka aldrig något externt utan att Mattias godkänt just den åtgärden.
 9. Arbeta bara i mappen Livv Marketing Ops. Läs eller ändra inga andra filer på webbplatsen.

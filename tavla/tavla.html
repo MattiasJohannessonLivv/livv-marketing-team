@@ -353,6 +353,14 @@ details.b-sek summary { cursor: pointer; }
 .b-tillbaka label { font-size: 0.82rem; display: block; margin: 8px 0 4px; }
 .b-tillbaka textarea { width: 100%; font: inherit; font-size: 0.92rem; padding: 10px 12px; border-radius: 10px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); resize: vertical; margin-bottom: 8px; }
 .b-svar { margin: 0; font-weight: 600; font-size: 0.9rem; min-height: 1.2em; }
+.b-bilder { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px; }
+.b-bild { margin: 0; border: 2px solid var(--line); border-radius: 12px; overflow: hidden; background: var(--surface-2); display: grid; }
+.b-bild.vald { border-color: var(--ok); }
+.b-bild img { width: 100%; aspect-ratio: 4 / 5; object-fit: cover; display: block; background: var(--surface-2); }
+.b-bild figcaption { display: grid; gap: 8px; padding: 10px; font-size: 0.74rem; }
+.b-bild figcaption .mono { overflow-wrap: anywhere; color: var(--muted); }
+.b-bild-knappar { display: flex; gap: 6px; flex-wrap: wrap; align-items: center; }
+.b-knapp.liten { padding: 6px 11px; font-size: 0.78rem; border-radius: 8px; text-decoration: none; }
 .b-svar.ok { color: var(--ok); }
 .b-svar.fel { color: var(--stop); }
 @media (max-width: 620px) { .witem .wbtn { grid-column: 1 / -1; justify-self: start; } }
@@ -562,8 +570,10 @@ function vantar() {
     if (o.status === "Granskning" && o.a3 === "Godkänd") {
       lista.push({ o: o, typ: "ok", etikett: "Godkänn", text: "A3 har godkänt " + (o.varv ? "efter " + o.varv + (o.varv === 1 ? " revidering" : " revideringar") : "på första försöket") + ". Läs och skriv godkänt om du håller med." });
     }
-    if (o.status === "Godkänd") {
-      lista.push({ o: o, typ: "wait", etikett: "Publicera", text: (o.plan ? "Planerad " + datumKort(o.plan) + ". " : "Inget publiceringsdatum satt. ") + "Publicera från företagssidan och ge A0 datum, plattforms_id och url." });
+    if (o.status === "Godkänd" && o.bilder && o.bilder.length && !o.bild_vald) {
+      lista.push({ o: o, typ: "ok", etikett: "Välj bild", text: "Brand Studio har lagt " + o.bilder.length + (o.bilder.length === 1 ? " bildförslag" : " bildförslag") + ". Välj den bild som ska följa med inlägget." });
+    } else if (o.status === "Godkänd") {
+      lista.push({ o: o, typ: "wait", etikett: "Publicera", text: (o.plan ? "Planerad " + datumKort(o.plan) + ". " : "Inget publiceringsdatum satt. ") + (o.bild_vald ? "Bild vald. " : "") + "Publicera från företagssidan och ge A0 datum, plattforms_id och url." });
     }
     if (o.status === "Schemalagd") {
       lista.push({ o: o, typ: "wait", etikett: "Bekräfta", text: "Schemalagd" + (o.plan ? " till " + datumKort(o.plan) : "") + ". Ge A0 datum, plattforms_id och url när inlägget är ute." });
@@ -635,7 +645,28 @@ function renderWaiting() {
 }
 
 // ---------- Mattias beslut i tavlan ----------
-var KNAPPTEXT = { "Godkänn": "Läs och godkänn", "Beslut": "Läs och besluta", "Publicera": "Läs texten" };
+var KNAPPTEXT = { "Godkänn": "Läs och godkänn", "Beslut": "Läs och besluta", "Publicera": "Text och bild", "Välj bild": "Välj bild" };
+
+function bildUrl(id, namn) { return "bild?id=" + encodeURIComponent(id) + "&namn=" + encodeURIComponent(namn); }
+function valdBild(id) {
+  var o = OBJEKT.find(function (x) { return x.id === id; });
+  return o && o.bild_vald ? o.bild_vald : "";
+}
+function bilderHtml(d, etikett) {
+  if (etikett !== "Välj bild" && etikett !== "Publicera") return "";
+  var vald = valdBild(d.id);
+  if (!d.bilder || !d.bilder.length) {
+    return '<section class="b-sek"><h3>Bild</h3><p class="muted">Inga bildförslag än. A0 skickar en bildbrief till Brand Studio när texten är godkänd, och förslagen hamnar i 12_Pictures/' + esc(d.id) + ".</p></section>";
+  }
+  return '<section class="b-sek"><div class="b-sek-head"><h3>Bildförslag från Brand Studio</h3><span class="muted">' + (vald ? "Vald: " + esc(vald) : "Välj en bild") + "</span></div>" +
+    '<div class="b-bilder">' + d.bilder.map(function (n) {
+      var ar = n === vald;
+      return '<figure class="b-bild' + (ar ? " vald" : "") + '"><img src="' + bildUrl(d.id, n) + '" alt="Bildförslag ' + esc(n) + '" loading="lazy">' +
+        '<figcaption><span class="mono">' + esc(n) + "</span>" +
+        '<span class="b-bild-knappar">' + (ar ? '<span class="pill ok">Vald</span>' : '<button type="button" class="b-knapp liten b-valj" data-namn="' + esc(n) + '">Välj den här</button>') +
+        '<a class="b-knapp liten" href="' + bildUrl(d.id, n) + '" download="' + esc(n) + '">Ladda ned</a></span></figcaption></figure>';
+    }).join("") + "</div></section>";
+}
 var NYCKEL = "__TAVLA_NYCKEL__";
 var beslutOppet = null;
 
@@ -665,6 +696,7 @@ function visaBeslut(d, etikett) {
   html += '<section class="b-sek"><div class="b-sek-head"><h3>Utkastet</h3>' + (d.utkast && d.utkast.namn ? '<span class="mono muted">' + esc(d.utkast.namn) + "</span>" : "") + "</div>" +
     (d.utkast && d.utkast.fel ? '<div class="b-varning">' + esc(d.utkast.fel) + "</div>" : textBlock(d.utkast && d.utkast.text)) + "</section>";
   if (d.brief) html += '<details class="b-sek"><summary>Briefen <span class="mono muted">' + esc(d.brief.namn) + "</span></summary>" + textBlock(d.brief.text || d.brief.fel) + "</details>";
+  html += bilderHtml(d, etikett);
 
   html += '<div class="b-atgard" id="b-atgard">';
   if (etikett === "Godkänn") {
@@ -675,8 +707,8 @@ function visaBeslut(d, etikett) {
       '<label for="b-kommentar" class="muted">Vad ska ändras? A0 ger kommentaren till A4, och A3 granskar igen.</label>' +
       '<textarea id="b-kommentar" rows="4"></textarea><button type="button" class="b-knapp" id="b-skicka">Skicka tillbaka</button></details>';
   }
-  if (etikett === "Publicera") {
-    html += '<button type="button" class="b-knapp" id="b-kopiera">Kopiera texten</button><p class="muted">Publicera från rätt företagssida och ge sedan A0 datum, plattforms_id och url.</p>';
+  if (etikett === "Publicera" || etikett === "Välj bild") {
+    html += '<button type="button" class="b-knapp" id="b-kopiera">Kopiera texten</button><p class="muted">Publicera från rätt företagssida med den valda bilden, och ge sedan A0 datum, plattforms_id och url.</p>';
   }
   html += '<p class="b-svar" id="b-svar" role="status"></p></div>';
   inn.innerHTML = html;
@@ -696,6 +728,9 @@ function visaBeslut(d, etikett) {
     var k = document.getElementById("b-kommentar").value.trim();
     if (!k) { visaSvar("Skriv vad som ska ändras.", true); return; }
     skickaBeslut("tillbaka", { id: d.id, kommentar: k });
+  });
+  document.querySelectorAll(".b-valj").forEach(function (v) {
+    v.addEventListener("click", function () { skickaBeslut("valjbild", { id: d.id, namn: v.getAttribute("data-namn") }); });
   });
   var c = document.getElementById("b-kopiera");
   if (c) c.addEventListener("click", function () {
