@@ -1,6 +1,6 @@
 # Ändringslista för Innehallsregister.xlsx
 
-Status: **godkänd av Mattias 17 november 2026, inte genomförd än.** Mattias gör ändringarna i Excel. Fram till dess gäller översättningen i avsnittet "Numrering i Excel-bladen" i livv-grund.
+Status: **genomförd 17 november 2026.** Godkänd av Mattias och genomförd med `verktyg/excel_andringar.py`. Alla 21 ändringar är gjorda och kontrollerade, rullistorna för ansvarig_agent och kanal är utökade, och ändringen är loggad i 09_Loggar. Översättningen i livv-grund är borttagen.
 
 Bakgrund: bladen använder den äldre numreringen, där A1 och A2 skrev utkast och A7 arkiverade. Rolltabellen A0 till A8 i arbetsdokumentet gäller nu.
 
