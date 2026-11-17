@@ -129,12 +129,12 @@ A2 analyserar varje vecka det som ligger i 11_Dataimport i SharePoint. Exportera
 
 | Mapp i 11_Dataimport | Var exporten görs | Vad som exporteras |
 |---|---|---|
-| `LinkedIn/Livv.se`, `LinkedIn/Livv.fi`, `LinkedIn/Unique` | Företagssidans adminvy, Analytics, Export | Inlägg (Content) och följare (Followers) |
-| `GA4/Livv.se`, `GA4/Livv.fi`, `GA4/Unique` | GA4, Rapporter, dela-ikonen, Ladda ned fil | Trafikförvärv och Sidor och skärmar |
-| `GSC/Livv.se`, `GSC/Livv.fi`, `GSC/Unique` | Search Console, Resultat, Exportera | Sökfrågor och sidor |
-| `X/LivvGroup` | X, Analytics | Inläggsstatistik |
+| `LinkedIn Livv.se`, `LinkedIn Livv.fi`, `LinkedIn Unique` | Företagssidans adminvy, Analytics, Export | Inlägg (Content) och följare (Followers) |
+| `GA4 Livv.se`, `GA4 Livv.fi`, `GA4 Unique` | GA4, Rapporter, dela-ikonen, Ladda ned fil | Trafikförvärv och Sidor och skärmar |
+| `GSC Livv.se`, `GSC Livv.fi`, `GSC Unique` | Search Console, Resultat, Exportera | Sökfrågor och sidor |
+| `X Livv Group` | X, Analytics | Inläggsstatistik |
 
-Spara som CSV eller XLSX. LinkedIn exporterar som XLS: öppna filen i Excel och spara som XLSX. Döp filen med datum och vecka, till exempel `20261124_linkedin_livvse_v47.xlsx`. Mapparna skapas för hand första gången. Saknas en export analyserar A2 resten och skriver vad som saknades.
+Spara som CSV eller XLSX. LinkedIn exporterar som XLS: öppna filen i Excel och spara som XLSX. Döp filen med datum och vecka, till exempel `20261124_linkedin_livvse_v47.xlsx`. Mapparna ligger direkt i 11_Dataimport och skapas för hand första gången. Saknas en export analyserar A2 resten och skriver vad som saknades.
 
 ### Teamtavlan
 ```bash

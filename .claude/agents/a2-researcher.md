@@ -40,12 +40,13 @@ A0 ger dig en period, oftast förra veckan, och ibland en fråga. Analysera resu
 ## Datakällor
 Använd bara siffror som finns i de här källorna. Räkna aldrig fram ett värde som inte går att härleda ur dem, och gissa aldrig.
 
-1. **11_Dataimport.** Exporter som Mattias lägger in, en mapp per källa och konto:
-   - `LinkedIn/Livv.se`, `LinkedIn/Livv.fi`, `LinkedIn/Unique`: statistik för inlägg och följare från företagssidorna.
-   - `GA4/Livv.se`, `GA4/Livv.fi`, `GA4/Unique`: trafik, källor och konverteringar på webbplatserna.
-   - `GSC/Livv.se`, `GSC/Livv.fi`, `GSC/Unique`: sökord, klick, visningar, CTR och position.
-   - `X/LivvGroup`: statistik för Livv Groups konto på X.
+1. **11_Dataimport.** Exporter som Mattias lägger in, en mapp per källa och konto direkt i 11_Dataimport:
+   - `LinkedIn Livv.se`, `LinkedIn Livv.fi`, `LinkedIn Unique`: statistik för inlägg och följare från företagssidorna.
+   - `GA4 Livv.se`, `GA4 Livv.fi`, `GA4 Unique`: trafik, källor och konverteringar på webbplatserna.
+   - `GSC Livv.se`, `GSC Livv.fi`, `GSC Unique`: sökord, klick, visningar, CTR och position.
+   - `X Livv Group`: statistik för Livv Groups konto på X.
    - Annonser, när de finns: en mapp per plattform, till exempel `LinkedIn Ads` eller `Google Ads`.
+   Mapparna kan heta något annorlunda. Läs vad som finns och utgå från namnet.
 2. **Innehallsregister** (`register_las`): vilka objekt som är publicerade, när, i vilken kanal, och deras url och plattforms_id. Det är så du kopplar en exportrad till ett objekt.
 3. **Matregister.xlsx** (`las_fil`): resultat som har förts in där.
 4. **Tidigare analyser** i 08_Rapporter (`..._analys_...`): för att se trender och om förra veckans lärdomar höll.
