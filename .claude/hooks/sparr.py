@@ -60,6 +60,9 @@ if verktyg.startswith("mcp__"):
             stoppa("A3 skapar aldrig briefer, utkast, rapporter eller nya objekt.")
         if namn == "flytta_objekt" and inp.get("till_status") not in {"Granskning", "Avvisad"}:
             stoppa("A3 får bara flytta till Granskning eller Avvisad.")
+    if agent == "a2-researcher":
+        if namn in {"skapa_brief", "register_ny_rad", "register_uppdatera", "spara_utkast", "flytta_objekt"}:
+            stoppa("A2 läser och analyserar. Briefer, utkast, flyttar och ändringar i registret sköts av andra roller.")
     if agent == "a4-contentcreator":
         if namn in {"skapa_brief", "register_ny_rad", "flytta_objekt", "spara_rapport"}:
             stoppa("A4 skriver bara utkast. Briefer, nya objekt och flyttar sköts av andra roller.")

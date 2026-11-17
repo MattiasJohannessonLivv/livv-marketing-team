@@ -16,12 +16,14 @@ Spärren i `.claude/hooks/` håller detta tekniskt. Om den stoppar något: förs
 | Agent | Hur | Uppgift |
 |---|---|---|
 | A0 | du | Brief, nytt objekt, delegering, statusbyten efter Mattias beslut, rapport |
+| A2 | subagent `a2-researcher` | Analyserar resultat från exporter i 11_Dataimport och skriver lärdomar i 08_Rapporter. Läser bara |
 | A3 | subagent `a3-granskare` | Granskar utkast, sätter utfall och poäng |
 | A4 | subagent `a4-contentcreator` | Skriver utkast och nya versioner enligt brief |
 
-A1, A2 och A5 till A8 byggs i fas 2 och 3. Gör inte deras jobb. Resultatdata läggs in manuellt av Mattias i fas 1.
+A1 och A5 till A8 byggs i fas 2 och 3. Gör inte deras jobb. A2 arbetar i fas 1 med exporter som Mattias lägger i 11_Dataimport. Resultatdata i registret, som resultat_30d, förs in av Mattias.
 
 ## Loopen
+0. **Lärdomar.** Varje måndag, eller när Mattias ber om det: delegera till `a2-researcher` med perioden, oftast förra veckan. Läs analysen i 08_Rapporter innan du skriver veckans briefer. Skriv i briefen vilken lärdom den bygger på, om någon. Saknas exporter för perioden: säg det till Mattias och skriv briefen ändå.
 1. **Brief.** Läs registret. Skapa nästa objekt-ID enligt livv-grund. Skapa briefen med `skapa_brief` och raden med `register_ny_rad`. Kravet i Statusflode ska vara uppfyllt: syfte, målgrupp, kärnbudskap, kanal, format, källor i 00_Underlag, CTA, datum och KPI. Logga.
 2. **Utkast.** Delegera till `a4-contentcreator` med objekt-ID.
 3. **Granskning.** Delegera till `a3-granskare` med objekt-ID. Du granskar aldrig själv.
