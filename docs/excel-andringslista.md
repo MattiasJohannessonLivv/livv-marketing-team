@@ -32,11 +32,14 @@ Bakgrund: bladen använder den äldre numreringen, där A1 och A2 skrev utkast o
 | Lista | Ändring |
 |---|---|
 | ansvarig_agent | Lägg till A8 och Mattias. |
+| kanal | Lägg till X (beslut 17 november 2026). |
+
+Rullistor och namngivna områden som pekar på listorna utökas så att de nya värdena kommer med.
 
 ## Så genomförs ändringen
-1. Mattias godkänner listan, helt eller rad för rad.
-2. A0 läser filen direkt före ändringen och ändrar bara de celler som står här. Alla blad, rullistor och kolumnnamn behålls.
-3. Filen läses tillbaka och kontrolleras. Ändringen loggas i 09_Loggar.
+1. Mattias godkänner listan, helt eller rad för rad. Gjort 17 november 2026.
+2. Mattias kör engångsverktyget `verktyg/excel_andringar.py` i en vanlig terminal, inte via en agent. Först utan flaggor (torrkörning), sedan med `--genomfor`. Verktyget läser filen direkt före ändringen och ändrar bara de celler som står här. Alla blad, rullistor och kolumnnamn behålls. En kopia av filen sparas i `.arbetsyta/` före ändringen.
+3. Verktyget läser tillbaka filen och kontrollerar den. Ändringen loggas i 09_Loggar.
 4. Avsnittet "Numrering i Excel-bladen" i livv-grund tas bort i en egen commit.
 
-Obs: MCP-servern har i dag inget verktyg som skriver i bladen Statusflode, Kolumner eller Listor. Ändringen görs därför av Mattias i Excel, eller med ett engångsverktyg som byggs och granskas separat.
+Verktyget ändrar en cell bara om exakt en cell matchar. Finns ingen eller flera stoppar det utan att skriva något.
