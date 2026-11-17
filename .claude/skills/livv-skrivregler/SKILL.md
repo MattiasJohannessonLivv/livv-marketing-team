@@ -1,6 +1,6 @@
 ---
 name: livv-skrivregler
-description: "Livv Groups skriv- och publiceringsregler: inga tankstreck som satsbindare, och allt som publiceras på LinkedIn går ut från företagssidan, aldrig från en privat profil. Används vid varje utkast, inlägg, mejl, dokument och publicering."
+description: "Livv Groups skriv- och publiceringsregler: inga tankstreck som satsbindare, och allt som publiceras på LinkedIn och X går ut från företagets egen sida eller eget konto, aldrig från en privat profil. Används vid varje utkast, inlägg, mejl, dokument och publicering."
 ---
 
 # Livv Group: skriv- och publiceringsregler
@@ -67,6 +67,14 @@ Använd "Start a post" från sidans adminvy (Page posts), inte skrivrutan i det 
 
 Att det står "By Mattias Johannesson" i sidans adminlista är bara en administratörslogg över vem som tryckte publicera. Det är inte avsändaren och syns inte för följarna. Avsändaren är namnet som står överst i själva inlägget.
 
+## X
+
+Allt som publiceras på X går ut från Livv Groups företagskonto, aldrig från ett privat konto. Det gäller även innehåll om Livv och Unique, så länge bolagen inte har egna konton på X.
+
+I X-appen kan flera konton vara inloggade samtidigt, och det är där misstagen sker. Innan publicering: kontrollera att profilbilden i skrivrutan är Livv Groups logotyp. Står ett privat konto där, byt konto innan något publiceras.
+
+Ett utkast för X ska passa formatet: högst 280 tecken om briefen inte säger något annat, och inga emojis i B2B-sammanhang om briefen inte säger det.
+
 ## Undantag
 
 Om Mattias uttryckligen ber om ett inlägg från sin egen profil, till exempel en personlig reflektion eller en delning av företagssidans inlägg, gäller det i stället. Fråga aldrig efter det undantaget, men följ det när det sägs.
@@ -80,7 +88,7 @@ Publicera aldrig, och schemalägg aldrig, utan att Mattias uttryckligen godkänt
 # Checklista före publicering
 
 1. Sök igenom texten efter — och –. Varje träff utanför tillåtetlistan skrivs om.
-2. Kontrollera att avsändaren i skrivrutan är företagssidan.
+2. Kontrollera att avsändaren i skrivrutan är företagssidan på LinkedIn eller Livv Groups företagskonto på X.
 3. Kontrollera att texten är uttryckligen godkänd.
 4. Kontrollera om det redan finns ett färdigt utkast för inlägget i SharePoint‑mappen innan ett nytt skrivs.
 5. Efter publicering, uppdatera Status i innehållsplanen.
