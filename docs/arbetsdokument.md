@@ -163,7 +163,8 @@ Teamet byggs i fyra faser. Varje fas har en grind som ska vara uppfylld innan n�
 
 1. **Fas 1: Kärnloopen.** Projektmapp i Git, CLAUDE.md, livv-grund och livv-skrivregler som skills, subagenter för A0, A3 och A4, Microsoft 365-kopplingen och hooks. Resultatdata läggs in manuellt.
    - Grind: tre objekt har gått hela vägen från Brief till Publicerad utan fel i register eller logg.
-2. **Fas 2: Data och Google.** Läskopplingar till GA4, Search Console, Google Ads och GTM, nattlig import till Matregister, subagenter för A2 och A5.
+   - Beslut 17 november 2026: A2 byggs redan i fas 1 och analyserar exporter som Mattias lägger i 11_Dataimport. Kanaler i dag: LinkedIn för Livv.se, Livv.fi och Unique Cosmetics, X för Livv Group, samt GA4, GTM och Search Console för Livv.se, Livv.fi och Unique. Meta är inte registrerat.
+2. **Fas 2: Data och Google.** Läskopplingar till GA4, Search Console, Google Ads och GTM, nattlig import till Matregister, subagent för A5. Exporterna till A2 ersätts av automatisk import.
    - Grind: A2 levererar en veckoanalys som Mattias bedömer som användbar.
 3. **Fas 3: Sociala kanaler och Grok.** Meta, LinkedIn och X med läsrätt, xAI-kopplingen, subagenter för A1, A6, A7 och A8.
    - Grind: LinkedIns API-ansökan godkänd, eller beslut om att köra vidare på exporter.

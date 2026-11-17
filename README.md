@@ -11,11 +11,12 @@ Hela specifikationen finns i [docs/arbetsdokument.md](docs/arbetsdokument.md).
 ## Läge just nu: fas 1, kärnloopen
 | Klart | Kommer senare |
 |---|---|
-| A0 Marketing Director (huvudsessionen) | A2 Researcher, A5 Google (fas 2) |
-| A3 Granskare, A4 Contentcreator | A1 Trendspotter, A6 Meta, A7 LinkedIn, A8 X (fas 3) |
-| SharePoint-koppling, spärrar, skills | Schemalagda körningar (fas 4) |
+| A0 Marketing Director (huvudsessionen) | A5 Google (fas 2) |
+| A2 Researcher, med exporter i 11_Dataimport | A1 Trendspotter, A6 Meta, A7 LinkedIn, A8 X (fas 3) |
+| A3 Granskare, A4 Contentcreator | Automatisk import till Matregister (fas 2) |
+| SharePoint-koppling, spärrar, skills, teamtavlan | Schemalagda körningar (fas 4) |
 
-Resultatdata läggs in manuellt i fas 1. Grinden till fas 2: tre objekt har gått hela vägen från Brief till Publicerad utan fel i register eller logg.
+Resultatdata läggs in manuellt i fas 1. A2 analyserar exporter som läggs i 11_Dataimport, se nedan. Grinden till fas 2: tre objekt har gått hela vägen från Brief till Publicerad utan fel i register eller logg.
 
 ## Struktur
 ```
@@ -122,6 +123,18 @@ I Claude Code på webben är det två miljöer: **Default** för drift och **Liv
 ./starta.sh
 ```
 Du pratar med A0. Exempel: "Skapa en brief för ett LinkedIn-inlägg för Livv om vinterkollektionen", eller "Vad väntar på mig?". Första gången frågar Claude Code om du litar på projektmappen och SharePoint-servern: svara ja.
+
+### Exporter till A2
+A2 analyserar varje vecka det som ligger i 11_Dataimport i SharePoint. Exportera för förra veckan, helst på måndag morgon, och lägg filerna i rätt mapp:
+
+| Mapp i 11_Dataimport | Var exporten görs | Vad som exporteras |
+|---|---|---|
+| `LinkedIn/Livv.se`, `LinkedIn/Livv.fi`, `LinkedIn/Unique` | Företagssidans adminvy, Analytics, Export | Inlägg (Content) och följare (Followers) |
+| `GA4/Livv.se`, `GA4/Livv.fi`, `GA4/Unique` | GA4, Rapporter, dela-ikonen, Ladda ned fil | Trafikförvärv och Sidor och skärmar |
+| `GSC/Livv.se`, `GSC/Livv.fi`, `GSC/Unique` | Search Console, Resultat, Exportera | Sökfrågor och sidor |
+| `X/LivvGroup` | X, Analytics | Inläggsstatistik |
+
+Spara som CSV eller XLSX. LinkedIn exporterar som XLS: öppna filen i Excel och spara som XLSX. Döp filen med datum och vecka, till exempel `20261124_linkedin_livvse_v47.xlsx`. Mapparna skapas för hand första gången. Saknas en export analyserar A2 resten och skriver vad som saknades.
 
 ### Teamtavlan
 ```bash

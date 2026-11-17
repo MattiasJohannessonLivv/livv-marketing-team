@@ -452,7 +452,7 @@ var BOLAG = {
 var AGENTER = [
   { id: "A0", namn: "Marketing Director", roll: "Prioriterar, skriver briefer, rapporterar", motor: "Claude", fas: 1 },
   { id: "A1", namn: "Trendspotter", roll: "Bevakar trender inom hotell och spa", motor: "Grok", fas: 3 },
-  { id: "A2", namn: "Researcher", roll: "Analyserar resultat och lärdomar", motor: "Claude", fas: 2 },
+  { id: "A2", namn: "Researcher", roll: "Analyserar resultat och lärdomar", motor: "Claude", fas: 1 },
   { id: "A3", namn: "Granskare", roll: "Varumärkesgrind, poäng och faktakontroll", motor: "Claude", fas: 1 },
   { id: "A4", namn: "Contentcreator", roll: "Skriver utkast enligt brief", motor: "Claude", fas: 1 },
   { id: "A5", namn: "Googlespecialist", roll: "SEO, SEM och spårning", motor: "Claude", fas: 2 },
@@ -707,9 +707,9 @@ var ROLL = {
     aldrig: ["En trend blir aldrig fakta förrän en människa verifierat den och lagt den i 00_Underlag"],
     verktyg: "xAI API med webb- och X-sökning, Meta Ad Library", steg: [1] },
   A2: { kort: "Research", ikon: "i-chart", typ: "claude",
-    gor: ["Analyserar resultat per objekt och kanal", "Skriver lärdomar som styr nästa veckas briefer", "Arkiverar objekt när resultat_30d är ifyllt"],
-    aldrig: ["Ändrar aldrig kolumnerna i Matregister"],
-    verktyg: "Matregister, Data Core, GA4 och Search Console med läsrätt", steg: [1, 8] },
+    gor: ["Analyserar resultat per bolag, kanal och objekt varje vecka", "Skriver tre till fem lärdomar som A0 använder i nästa veckas briefer", "Följer upp om förra veckans lärdomar höll", "Föreslår resultat_30d, som du för in i registret"],
+    aldrig: ["Ändrar aldrig registret, briefer, utkast, kampanjer eller budgetar", "Använder aldrig siffror som inte finns i exporterna"],
+    verktyg: "Exporter i 11_Dataimport från LinkedIn, GA4, Search Console och X, Matregister och Innehallsregister. Läser bara och sparar analyser i 08_Rapporter", steg: [1, 8] },
   A3: { kort: "Granskare", ikon: "i-shield", typ: "claude",
     gor: ["Ger poäng och utfall: Godkänd, Revidera, Eskalera eller Avvisad", "Kontrollerar skrivregler och fakta mot 00_Underlag", "Skickar tillbaka till A4 högst två varv, sedan eskalerar"],
     aldrig: ["Skapar aldrig briefer eller utkast", "Flyttar bara till Granskning eller Avvisad"],
@@ -756,14 +756,14 @@ function info(id) {
 }
 
 var STEG = [
-  { n: 1, namn: "Insikter", mapp: "Insiktsmapp", vem: ["A1", "A2"], live: false },
+  { n: 1, namn: "Insikter", mapp: "08_Rapporter", vem: ["A1", "A2"], live: true },
   { n: 2, namn: "Brief", mapp: "01_Briefer", vem: ["A0"], live: true },
   { n: 3, namn: "Utkast", mapp: "02_Utkast", vem: ["A4"], live: true },
   { n: 4, namn: "Kanalanpassning", mapp: "02_Utkast", vem: ["A5", "A6", "A7", "A8"], live: false },
   { n: 5, namn: "Granskning", mapp: "03_Granskning", vem: ["A3"], live: true },
   { n: 6, namn: "Godkännande", mapp: "04_Godkant", vem: ["M"], live: true, gate: true },
   { n: 7, namn: "Publicering", mapp: "05_Publicerat", vem: ["M"], live: true, gate: true },
-  { n: 8, namn: "Mätning", mapp: "Matregister", vem: ["S"], live: false }
+  { n: 8, namn: "Mätning", mapp: "11_Dataimport", vem: ["A2", "S"], live: true }
 ];
 
 var vald = "A0";
@@ -795,7 +795,7 @@ var JOBB = {
   A4: "skriver allt material", A5: "syns på Google", A6: "når rätt målgrupp på Meta",
   A7: "bygger företagssidorna på LinkedIn", A8: "för samtalen på X", M: "godkänner och publicerar", S: "hämtar resultaten"
 };
-var VERKTYG = { A0: "10 verktyg", A3: "6 verktyg", A4: "6 verktyg", M: "Grind" };
+var VERKTYG = { A0: "10 verktyg", A2: "5 verktyg", A3: "6 verktyg", A4: "6 verktyg", M: "Grind" };
 
 var mid = 0;
 function mascot(id) {

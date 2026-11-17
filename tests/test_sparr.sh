@@ -53,6 +53,14 @@ kontrollera deny  "A3 kan inte flytta till Godkänd"         "$(mcp sharepoint__
 kontrollera deny  "A4 kan inte skapa brief"                 "$(mcp sharepoint__skapa_brief '{}' a4-contentcreator)"
 kontrollera deny  "A4 kan inte flytta"                      "$(mcp sharepoint__flytta_objekt '{"till_status":"Granskning"}' a4-contentcreator)"
 kontrollera tillat "A4 sparar utkast"                        "$(mcp sharepoint__spara_utkast '{}' a4-contentcreator)"
+kontrollera tillat "A2 läser en export"                      "$(mcp sharepoint__las_fil '{"sokvag":"11_Dataimport/LinkedIn/Livv.se/x.csv"}' a2-researcher)"
+kontrollera tillat "A2 sparar en analys"                     "$(mcp sharepoint__spara_rapport '{"filnamn":"20261124_alla_analys_v47_v01.md"}' a2-researcher)"
+kontrollera tillat "A2 loggar"                               "$(mcp sharepoint__logga '{"agent":"A2"}' a2-researcher)"
+kontrollera deny  "A2 kan inte ändra registret"             "$(mcp sharepoint__register_uppdatera '{"objekt_id":"LIVV-2026-0002","falt":{"resultat_30d":"x"}}' a2-researcher)"
+kontrollera deny  "A2 kan inte skapa brief"                 "$(mcp sharepoint__skapa_brief '{}' a2-researcher)"
+kontrollera deny  "A2 kan inte spara utkast"                "$(mcp sharepoint__spara_utkast '{}' a2-researcher)"
+kontrollera deny  "A2 kan inte flytta"                      "$(mcp sharepoint__flytta_objekt '{"till_status":"Arkiverad"}' a2-researcher)"
+kontrollera deny  "A2 kan inte skapa nytt objekt"           "$(mcp sharepoint__register_ny_rad '{}' a2-researcher)"
 
 echo "Radering och nätverk"
 kontrollera deny  "rm"                                       '{"tool_name":"Bash","tool_input":{"command":"rm -rf .arbetsyta"}}' 1
