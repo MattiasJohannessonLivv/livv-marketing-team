@@ -164,32 +164,32 @@ PNG = b"\x89PNG\r\n\x1a\nfake"
 class TestBilder(unittest.TestCase):
     def godkand(self, **extra) -> MinnesGraph:
         g = grund(status="Godkänd", mapp="04_Godkant/Livv", **extra)
-        g.filer["12_Bilder/.mapp"] = b""
+        g.filer["12_Pictures/.mapp"] = b""
         return g
 
     def test_bildbrief_bara_efter_godkand_text(self):
         g = grund()  # status Granskning
-        g.filer["12_Bilder/.mapp"] = b""
+        g.filer["12_Pictures/.mapp"] = b""
         with self.assertRaises(sp.Sparrfel):
             sp.Livv(g).spara_bildbrief("LIVV-2026-0002", "# Image brief")
         g = self.godkand()
         forsta = sp.Livv(g).spara_bildbrief("LIVV-2026-0002", "# Image brief")
         andra = sp.Livv(g).spara_bildbrief("LIVV-2026-0002", "# Image brief v2")
-        self.assertEqual(forsta, "12_Bilder/LIVV-2026-0002/LIVV-2026-0002_image-brief_v01.md")
-        self.assertEqual(andra, "12_Bilder/LIVV-2026-0002/LIVV-2026-0002_image-brief_v02.md")
+        self.assertEqual(forsta, "12_Pictures/LIVV-2026-0002/LIVV-2026-0002_image-brief_v01.md")
+        self.assertEqual(andra, "12_Pictures/LIVV-2026-0002/LIVV-2026-0002_image-brief_v02.md")
         self.assertEqual(g.filer[forsta], b"# Image brief")
 
     def test_bildbrief_kraver_mappen(self):
         g = grund(status="Godkänd")
         with self.assertRaises(sp.Sparrfel) as fel:
             sp.Livv(g).spara_bildbrief("LIVV-2026-0002", "# Image brief")
-        self.assertIn("12_Bilder", str(fel.exception))
+        self.assertIn("12_Pictures", str(fel.exception))
 
     def test_bildforslag_och_val(self):
         g = self.godkand()
-        g.filer["12_Bilder/LIVV-2026-0002/LIVV-2026-0002_image-brief_v01.md"] = b"x"
-        g.filer["12_Bilder/LIVV-2026-0002/forslag-b.jpg"] = PNG
-        g.filer["12_Bilder/LIVV-2026-0002/forslag-a.png"] = PNG
+        g.filer["12_Pictures/LIVV-2026-0002/LIVV-2026-0002_image-brief_v01.md"] = b"x"
+        g.filer["12_Pictures/LIVV-2026-0002/forslag-b.jpg"] = PNG
+        g.filer["12_Pictures/LIVV-2026-0002/forslag-a.png"] = PNG
         beslut = b.Beslut(LasVy(g), g, NU)
         self.assertEqual(beslut.bilder("LIVV-2026-0002"), ["forslag-a.png", "forslag-b.jpg"])
         self.assertEqual(beslut.bild("LIVV-2026-0002", "forslag-a.png"), PNG)
@@ -204,13 +204,13 @@ class TestBilder(unittest.TestCase):
 
     def test_bild_valjs_inte_fore_godkand_text(self):
         g = grund()
-        g.filer["12_Bilder/LIVV-2026-0002/a.png"] = PNG
+        g.filer["12_Pictures/LIVV-2026-0002/a.png"] = PNG
         with self.assertRaises(sp.Sparrfel):
             b.Beslut(LasVy(g), g, NU).valj_bild("LIVV-2026-0002", "a.png")
 
     def test_tavlan_visar_valj_bild_och_sedan_publicera(self):
         g = self.godkand()
-        g.filer["12_Bilder/LIVV-2026-0002/a.png"] = PNG
+        g.filer["12_Pictures/LIVV-2026-0002/a.png"] = PNG
         g.objekt = lambda s: {"webUrl": ""}
         las = tavla.LasGraph(g)
         g_lista = MinnesGraph.lista

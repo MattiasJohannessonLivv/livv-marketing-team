@@ -123,7 +123,7 @@ class Beslut:
     # ---------------- Bilder från Brand Studio ----------------
 
     def bilder(self, objekt_id: str) -> list[str]:
-        """Bildförslag i 12_Bilder/<objekt-ID>, i namnordning."""
+        """Bildförslag i 12_Pictures/<objekt-ID>, i namnordning."""
         if not sp.OBJEKT_ID_RE.match(objekt_id or ""):
             return []
         try:

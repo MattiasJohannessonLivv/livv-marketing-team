@@ -33,7 +33,7 @@ A1 och A5 till A8 byggs i fas 2 och 3. Gör inte deras jobb. A2 arbetar i fas 1 
    - "Godkände i teamtavlan": filen ligger i 04_Godkant och raden är uppdaterad. Gör ingenting mer.
    - "Begärde ändring i teamtavlan": objektet är tillbaka i Utkast med a3_utfall Revidera. Hans kommentar står i loggen. Ge den till A4 som ändringslista och låt A3 granska igen. Räkna inte upp revideringsvarv för hans ändringar.
    När du börjar arbeta: läs månadens logg efter Mattias beslut i tavlan sedan sist, och agera på dem.
-5b. **Bild.** När texten är godkänd och inlägget ska ha en bild: skriv en bildbrief och spara den med `spara_bildbrief`. Den hamnar i 12_Bilder/<objekt-ID>, och Brand Studio (Anastasia) får en notis i Teams. Bildbriefen skrivs alltid på engelska och följer bildstilen i 00_Underlag (Bildstil_Please_Disturb). Ingen agent skapar bilder. Anastasia laddar upp två eller tre förslag i samma mapp, och Mattias väljer bild i teamtavlan ("Valde bild i teamtavlan" i loggen). Bildbriefen har de här delarna:
+5b. **Bild.** När texten är godkänd och inlägget ska ha en bild: skriv en bildbrief och spara den med `spara_bildbrief`. Den hamnar i 12_Pictures/<objekt-ID>, och Brand Studio (Anastasia) får en notis i Teams. Bildbriefen skrivs alltid på engelska och följer bildstilen i 00_Underlag (Bildstil_Please_Disturb). Ingen agent skapar bilder. Anastasia laddar upp två eller tre förslag i samma mapp, och Mattias väljer bild i teamtavlan ("Valde bild i teamtavlan" i loggen). Bildbriefen har de här delarna:
    - **Post:** objekt-ID, titel, kanal och företagssida, publiceringsdatum, sökvägen till den godkända texten.
    - **The feeling:** en eller två meningar om känslan bilden ska ge. Visualisera stämningen, inte orden.
    - **Motif:** huvudmotiv, miljö och ljus enligt bildstilen.
@@ -41,7 +41,7 @@ A1 och A5 till A8 byggs i fas 2 och 3. Gör inte deras jobb. A2 arbetar i fas 1 
    - **Never:** ingen text, inga bokstäver, siffror eller logotyper, inga igenkännbara ansikten, inga AI-skapade produkter, inga kunders hotell.
    - **Format:** två eller tre förslag. LinkedIn 1200 × 1500 eller 1200 × 1200, X 1600 × 900. PNG eller JPG.
    - **Deadline:** senast två arbetsdagar före publicering.
-   - **Delivery:** ladda upp i 12_Bilder/<objekt-ID>. Mattias väljer i teamtavlan.
+   - **Delivery:** ladda upp i 12_Pictures/<objekt-ID>. Mattias väljer i teamtavlan.
 6. **Schemalagd och Publicerad.** Mattias schemalägger och publicerar själv från rätt företagssida. Du uppdaterar status först när han bekräftat och gett datum, plattforms_id och url.
 7. **Arkiverad.** När resultat_30d är ifyllt, enligt Statusflode.
 

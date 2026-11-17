@@ -656,7 +656,7 @@ function bilderHtml(d, etikett) {
   if (etikett !== "Välj bild" && etikett !== "Publicera") return "";
   var vald = valdBild(d.id);
   if (!d.bilder || !d.bilder.length) {
-    return '<section class="b-sek"><h3>Bild</h3><p class="muted">Inga bildförslag än. A0 skickar en bildbrief till Brand Studio när texten är godkänd, och förslagen hamnar i 12_Bilder/' + esc(d.id) + ".</p></section>";
+    return '<section class="b-sek"><h3>Bild</h3><p class="muted">Inga bildförslag än. A0 skickar en bildbrief till Brand Studio när texten är godkänd, och förslagen hamnar i 12_Pictures/' + esc(d.id) + ".</p></section>";
   }
   return '<section class="b-sek"><div class="b-sek-head"><h3>Bildförslag från Brand Studio</h3><span class="muted">' + (vald ? "Vald: " + esc(vald) : "Välj en bild") + "</span></div>" +
     '<div class="b-bilder">' + d.bilder.map(function (n) {

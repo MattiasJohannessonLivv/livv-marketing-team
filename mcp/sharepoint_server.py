@@ -41,7 +41,7 @@ LOGG_KOLUMNER = ["Datum", "Tid", "Agent", "Objekt-ID", "Åtgärd", "Fil eller ma
 TILLATNA_TOPPNIVAER = {
     "00_Underlag", "01_Briefer", "02_Utkast", "03_Granskning", "04_Godkant",
     "05_Publicerat", "06_Arkiv", "07_Avvisat", "08_Rapporter", "09_Loggar",
-    "10_Prompter", "11_Dataimport", "12_Bilder", "Innehallsregister.xlsx", "Matregister.xlsx",
+    "10_Prompter", "11_Dataimport", "12_Pictures", "Innehallsregister.xlsx", "Matregister.xlsx",
 }
 
 VARUMARKESMAPPAR = {"Livv Group": "LivvGroup", "Livv": "Livv", "Unique": "Unique"}
@@ -81,7 +81,7 @@ OBJEKT_ID_RE = re.compile(r"^(LIVV|UNIQ)-\d{4}-\d{4}$")
 RAPPORTNAMN_RE = re.compile(r"^[A-Za-z0-9_-]+\.(md|docx)$")
 
 # Bildbriefer till Brand Studio och bildförslagen tillbaka, en mapp per objekt
-BILDMAPP = "12_Bilder"
+BILDMAPP = "12_Pictures"
 BILDTYPER = (".png", ".jpg", ".jpeg", ".webp")
 TEXT_GODKAND = {"Godkänd", "Schemalagd"}
 
@@ -605,7 +605,7 @@ class Livv:
         return self._spara_dokument("08_Rapporter", filnamn, innehall)
 
     def spara_bildbrief(self, objekt_id: str, innehall: str) -> str:
-        """Bildbrief till Brand Studio i 12_Bilder/<objekt-ID>. Först när Mattias godkänt texten."""
+        """Bildbrief till Brand Studio i 12_Pictures/<objekt-ID>. Först när Mattias godkänt texten."""
         if not OBJEKT_ID_RE.match(objekt_id or ""):
             raise Sparrfel("Ogiltigt objekt-ID.")
         rader = self.register_las(objekt_id)
@@ -616,7 +616,7 @@ class Livv:
         if not (innehall or "").strip():
             raise Sparrfel("Bildbriefen är tom.")
         if not self.g.finns(BILDMAPP):
-            raise Sparrfel("Mappen 12_Bilder saknas i Livv Marketing Ops. Mattias skapar den.")
+            raise Sparrfel("Mappen 12_Pictures saknas i Livv Marketing Ops. Mattias skapar den.")
         mapp = f"{BILDMAPP}/{objekt_id}"
         self.g.skapa_mapp_om_saknas(mapp)
         for nr in range(1, 100):
@@ -711,7 +711,7 @@ def bygg_server(livv_fabrik=None):
     def spara_rapport(filnamn: str, innehall: str) -> str:
         return livv().spara_rapport(filnamn, innehall)
 
-    @server.tool(description="Spara en bildbrief på engelska till Brand Studio i 12_Bilder/<objekt-ID>. Bara när texten är godkänd. Skriver aldrig över. Bara A0.")
+    @server.tool(description="Spara en bildbrief på engelska till Brand Studio i 12_Pictures/<objekt-ID>. Bara när texten är godkänd. Skriver aldrig över. Bara A0.")
     def spara_bildbrief(objekt_id: str, innehall: str) -> str:
         return livv().spara_bildbrief(objekt_id, innehall)
 
