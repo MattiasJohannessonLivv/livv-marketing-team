@@ -1,6 +1,6 @@
 # Image style: Please Disturb
 
-Status: draft 17 November 2026, based on the Please Disturb concept presentation. Mattias approves this text before it goes into 00_Underlag. From then on it applies to every mood and inspiration image for Livv Group, Livv and Unique.
+Status: approved by Mattias 17 November 2026. The master copy is 00_Underlag/Bildstil_Please_Disturb.md in SharePoint. It applies to every mood and inspiration image for Livv Group, Livv and Unique.
 
 ## The feeling
 Personal service with a twinkle in the eye. The concept turns the hotel's "Do not disturb" around: we want to be disturbed, and we are there for the hotel and its guests. Images should feel attentive, playful and considered, never stiff or generic.
