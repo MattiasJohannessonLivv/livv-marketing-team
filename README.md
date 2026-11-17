@@ -24,6 +24,11 @@ livv-marketing-team/
   .mcp.json                     SharePoint-servern, hemligheter som platshållare
   .env.example                  mall för hemligheterna (.env ignoreras av Git)
   starta.sh                     startar teamet, i drift eller i utvecklingsläge
+  tavla.sh                      startar teamtavlan lokalt
+  tavla/
+    server.py                   läser register och logg, serverar tavlan på 127.0.0.1
+    tavla.html                  teamtavlan
+    exempeldata.json            exempel för att visa tavlan utan SharePoint
   .claude/
     settings.json               modell, behörigheter och registrering av spärren
     agents/
@@ -45,6 +50,7 @@ livv-marketing-team/
     test_sparr.sh               tester för spärren
     test_sokvagar.py            tester för servern, utan nätverk
     test_excel.py               rullistor och loggkolumner efter skrivning via servern
+    test_tavla.py               teamtavlan: omvandling, bara läsning, bara GET
 ```
 
 ## Så hålls reglerna tekniskt
@@ -117,6 +123,14 @@ I Claude Code på webben är det två miljöer: **Default** för drift och **Liv
 ```
 Du pratar med A0. Exempel: "Skapa en brief för ett LinkedIn-inlägg för Livv om vinterkollektionen", eller "Vad väntar på mig?". Första gången frågar Claude Code om du litar på projektmappen och SharePoint-servern: svara ja.
 
+### Teamtavlan
+```bash
+./tavla.sh
+```
+Öppnar http://127.0.0.1:8787 i webbläsaren. Tavlan visar teamet runt A0, flödet av objekt, vad som väntar på dig och vad agenterna har gjort. Den läser Innehallsregister och loggfilerna för den här och förra månaden i 09_Loggar, med samma app-registrering som SharePoint-servern, och hämtar nytt var femte minut.
+
+Tavlan läser bara. Servern (`tavla/server.py`) har inga skrivande anrop, svarar bara på GET och lyssnar bara på den egna datorn. Avsluta med Ctrl+C. Exempeldata utan SharePoint: http://127.0.0.1:8787/?exempel
+
 ### Ändra teamet
 ```bash
 ./starta.sh --utveckling
@@ -124,7 +138,8 @@ Du pratar med A0. Exempel: "Skapa en brief för ett LinkedIn-inlägg för Livv o
 Bara i utvecklingsläge får agenter, skills, hooks och CLAUDE.md ändras. Gör ändringarna i en gren och granska dem innan de slås ihop.
 
 ## Vad som väntar på Mattias
-- App-registreringen i Entra ID och värdena i `.env`.
+Klart 17 november 2026: app-registreringen i Entra ID och hemligheterna på Mattias dator. Kopplingen mot SharePoint är testad därifrån.
+
 - Godkännande av [docs/excel-andringslista.md](docs/excel-andringslista.md).
 - Starta API-ansökningarna hos Google Ads och LinkedIn redan nu. Godkännandet kan ta flera veckor och behövs i fas 2 och 3.
 - De öppna frågorna sist i arbetsdokumentet, bland annat ersättare för godkännanden när du är borta.

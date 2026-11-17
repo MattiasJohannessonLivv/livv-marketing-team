@@ -86,7 +86,18 @@ Arkitektur i Claude Code · huvudsession, subagenter, kopplingar
 
 **Grok.** Claude Code har ingen inbyggd Grok-koppling. En liten MCP-server mot xAI API ger A1 och A8 ett verktyg för trendsök. Agenten styrs av Claude, men sökningen görs av Grok.
 
-**Var det körs.** Interaktivt arbete sker på Mattias dator. Schemalagda körningar (trendscan, import, veckoplan) behöver en maskin som alltid är igång, till exempel en liten server som kör Claude Code i headless-läge via cron. Schemalagda uppgifter i skrivbordsappen fungerar bara när datorn är vaken och appen öppen.
+**Var det körs.** Interaktivt arbete sker på Mattias dator, där teamet startas med `./starta.sh` och teamtavlan med `./tavla.sh`. Schemalagda körningar (trendscan, import, veckoplan) behöver en maskin som alltid är igång. Schemalagda uppgifter i skrivbordsappen fungerar bara när datorn är vaken och appen öppen.
+
+Beslut 17 november 2026: de schemalagda körningarna läggs på en liten Linux-server hos IT, som kör Claude Code i headless-läge via cron. Servern behövs först när schemalagda körningar byggs. Underlag till IT:
+
+| Del | Krav |
+|---|---|
+| Operativsystem | Linux, gärna Ubuntu 24.04 LTS |
+| Kapacitet | 2 vCPU, 4 GB RAM (8 GB för parallella körningar), 40 GB disk. Modellen körs hos Anthropic, så servern gör inget tungt arbete. |
+| Programvara | Python 3.11 eller senare, Git och Claude Code |
+| Nätverk | Utgående HTTPS mot api.anthropic.com, login.microsoftonline.com och graph.microsoft.com. Senare Google, Meta, LinkedIn, X och xAI. Inga inkommande portar utöver IT:s adminåtkomst. |
+| Drift | En egen tjänsteanvändare kör jobben. Hemligheterna ligger i en fil som bara den användaren kan läsa, eller i Key Vault. Backup behövs inte för innehållet, som ligger i SharePoint och Git. |
+| Säkerhet | Klienthemligheten för appen går ut 16 november 2028. På servern bör den på sikt bytas mot ett certifikat. |
 
 Föreslagen projektstruktur:
 
@@ -168,7 +179,7 @@ Beslutat: A3 behålls som egen granskare, teamet består av nio roller.
 Beslutat: spärren tillåter `git ls-remote` och `git fetch` i drift och `gh` i utvecklingsläge. Radering via `gh` är alltid spärrad.
 
 - [ ] Stämmer föreslagen numrering A0 till A8 med hur A1, A2 och A4 till A7 redan är definierade i livv-grund?
-- [ ] Var körs teamet: på en dator som alltid är igång, en server eller i molnet?
+- [x] Var körs teamet: på en dator som alltid är igång, en server eller i molnet? Beslut 17 november 2026: på Mattias dator, och schemalagda körningar på en liten Linux-server hos IT. Se Var det körs.
 - [ ] Vilken mapp blir insiktsmapp för trendrapporter, och vem verifierar innehållet innan det når 00_Underlag?
 - [ ] Vem ansöker om API-åtkomst hos Google Ads, Meta och LinkedIn, och när?
 - [ ] Vilken API-nivå hos X behövs, eller räcker Groks inbyggda X-sökning?
