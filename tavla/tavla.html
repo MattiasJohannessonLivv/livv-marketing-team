@@ -314,6 +314,15 @@ footer { color: var(--muted); font-size: 0.8rem; border-top: 1px solid var(--lin
 .sample.ok { background: var(--ok-soft); color: var(--ok); }
 .sample.err { background: var(--stop-soft); color: var(--stop); }
 .wlink { color: var(--accent); font-weight: 700; white-space: nowrap; }
+.tip { position: fixed; z-index: 50; width: min(360px, calc(100vw - 16px)); background: var(--surface); color: var(--ink); border: 1px solid var(--line); border-radius: 12px; padding: 14px; box-shadow: 0 18px 40px -18px var(--shadow); display: grid; gap: 10px; pointer-events: none; }
+.tip-head { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 10px; align-items: center; }
+.tip-head b { font-family: var(--font-display); font-size: 0.95rem; }
+.tip-sub { font-size: 0.74rem; color: var(--muted); }
+.prof { display: grid; grid-template-columns: max-content minmax(0, 1fr); gap: 7px 12px; margin: 0; font-size: 0.82rem; line-height: 1.4; }
+.prof dt { font-size: 0.68rem; text-transform: uppercase; letter-spacing: 0.07em; font-weight: 700; color: var(--muted); padding-top: 2px; }
+.prof dt.nej { color: var(--stop); }
+.prof dd { margin: 0; }
+.detail .prof { font-size: 0.88rem; }
 .felrad { max-width: 1240px; margin: 0 auto 18px; background: var(--stop-soft); color: var(--stop); border-radius: 10px; padding: 10px 14px; font-size: 0.86rem; font-weight: 600; }
 </style>
 </head>
@@ -344,6 +353,7 @@ footer { color: var(--muted); font-size: 0.8rem; border-top: 1px solid var(--lin
   </div>
 </nav>
 <div class="felrad" id="fel" role="alert" hidden></div>
+<div class="tip" id="tip" role="tooltip" hidden></div>
 
 <div class="wrap" id="view-teamet">
   <header class="tagrow">
@@ -755,6 +765,118 @@ function info(id) {
   return o;
 }
 
+// Profilen som visas när man hovrar över en agent, och i detaljpanelen.
+var PROFIL = {
+  A0: [
+    ["Läser", "Innehållsplanen och underlaget i 00_Underlag, registret och A2:s analyser"],
+    ["Gör", "Prioriterar, sätter veckoplanen och delegerar till A4, A3 och A2"],
+    ["Skriver", "Briefer i 01_Briefer, nya rader i registret och rapporter i 08_Rapporter"],
+    ["Feedback", "Rapporterar till dig och för vidare A3:s ändringslista till A4"],
+    ["Kan aldrig", "Granska sitt eget material, godkänna i ditt ställe eller publicera"]
+  ],
+  A1: [
+    ["Läser", "Nätet och X via Grok, och Meta Ad Library"],
+    ["Gör", "Bevakar trender inom hotell, spa och hospitality varje morgon"],
+    ["Skriver", "Trendrapporter som idéunderlag"],
+    ["Feedback", "Trender till A0 som underlag för briefer"],
+    ["Kan aldrig", "Göra en trend till fakta innan en människa verifierat den och lagt den i 00_Underlag"]
+  ],
+  A2: [
+    ["Läser", "Exporter i 11_Dataimport från LinkedIn (Livv.se, Livv.fi, Unique), GA4, Search Console och X, samt Matregister, Innehallsregister och tidigare analyser"],
+    ["Analyserar", "Resultat per bolag, kanal och objekt. Letar mönster i format, ämne, veckodag och tid, och jämför med tidigare veckor"],
+    ["Skriver", "En veckoanalys i 08_Rapporter med tre till fem lärdomar. Varje lärdom har belägg, rekommendation och säkerhet. Analysen följer också upp förra veckans lärdomar och föreslår värden för resultat_30d"],
+    ["Feedback", "A0 beställer analysen varje måndag och skriver i varje brief vilken lärdom den bygger på"],
+    ["Kan aldrig", "Ändra registret, skriva briefer eller utkast, flytta filer eller röra kampanjer och budgetar. Spärren stoppar det"]
+  ],
+  A3: [
+    ["Läser", "Briefen, utkastet, källorna i 00_Underlag och listan med godkända påståenden"],
+    ["Gör", "Ger varumärkespoäng 1 till 5 och kontrollerar fakta, skrivregler och brief"],
+    ["Skriver", "Utfallet i registret: Godkänd, Revidera, Eskalera eller Avvisad"],
+    ["Feedback", "En numrerad ändringslista till A4 vid Revidera, och beslutsunderlag till dig vid Eskalera"],
+    ["Kan aldrig", "Skriva briefer eller utkast, eller flytta till Godkänd. Det gör bara du"]
+  ],
+  A4: [
+    ["Läser", "Briefen och underlaget i 00_Underlag"],
+    ["Gör", "Skriver allt material, organiskt och betalt, enligt briefen"],
+    ["Skriver", "Utkast i 02_Utkast. Varje ny version får ett nytt nummer: v01, v02"],
+    ["Feedback", "Tar emot A3:s ändringslista och skriver en ny version"],
+    ["Kan aldrig", "Flytta filer eller hitta på fakta. Saknas något skriver A4 [SAKNAS] och eskalerar"]
+  ],
+  A5: [
+    ["Läser", "GA4, Search Console, Google Ads och Tag Manager med läsrätt"],
+    ["Gör", "SEO, sökord, annonstexter och spårningsplan"],
+    ["Skriver", "Förslag på sökord, annonstexter och ändringar i spårningen"],
+    ["Feedback", "Sökinsikter till A0 och A4"],
+    ["Kan aldrig", "Ändra budget, bud, kampanjer eller taggar"]
+  ],
+  A6: [
+    ["Läser", "Meta med läsrätt, när Meta är registrerat"],
+    ["Gör", "Kampanjstruktur, målgrupper och kreativa varianter"],
+    ["Skriver", "Kampanjförslag och optimeringsförslag"],
+    ["Feedback", "Vad som fungerar på Meta till A0 och A4"],
+    ["Kan aldrig", "Ändra budget, bud eller kampanjer"]
+  ],
+  A7: [
+    ["Läser", "Företagssidorna för Livv.se, Livv.fi och Unique med läsrätt"],
+    ["Gör", "Organisk plan och B2B-vinklar för företagssidorna"],
+    ["Skriver", "Kanalanpassade versioner och förslag på annonsupplägg"],
+    ["Feedback", "Vad som fungerar på LinkedIn till A0 och A4"],
+    ["Kan aldrig", "Publicera, och aldrig från en privat profil"]
+  ],
+  A8: [
+    ["Läser", "X via Grok, och Livv Groups konto med läsrätt"],
+    ["Gör", "Format och ton för X, och bevakar samtal i branschen"],
+    ["Skriver", "Kanalanpassade versioner och förslag på svar"],
+    ["Feedback", "Samtal och trender på X till A0"],
+    ["Kan aldrig", "Posta eller svara själv"]
+  ],
+  M: [
+    ["Läser", "Utkast som A3 har godkänt, via länken under Väntar på dig"],
+    ["Gör", "Godkänner varje objekt och publicerar själv från rätt företagssida"],
+    ["Skriver", "Ditt godkännande till A0, och resultat_30d i registret"],
+    ["Feedback", "Ändringar till A0 när något inte ska godkännas"],
+    ["Regel", "Inget når 04_Godkant eller publiceras utan ditt uttryckliga godkännande för just det objektet"]
+  ]
+};
+
+function profilHtml(id) {
+  if (id === "Mattias") id = "M";
+  var rader = PROFIL[id];
+  if (!rader) return "";
+  return '<dl class="prof">' + rader.map(function (r) {
+    var nej = r[0] === "Kan aldrig" || r[0] === "Regel";
+    return '<dt class="' + (nej ? "nej" : "") + '">' + r[0] + "</dt><dd>" + esc(r[1]) + "</dd>";
+  }).join("") + "</dl>";
+}
+
+var kanHovra = !window.matchMedia || window.matchMedia("(hover: hover)").matches;
+function visaTip(btn) {
+  var id = btn.id.replace("acard-", "");
+  var a = info(id);
+  var tip = document.getElementById("tip");
+  tip.innerHTML = '<div class="tip-head">' + miniHtml(id, "sm") + "<div><b>" + a.namn + "</b>" +
+    '<div class="tip-sub">' + (/^A\d$/.test(id) ? id + " · " : "") + a.motor + (a.fas > 1 ? " · byggs i fas " + a.fas : "") + "</div></div></div>" + profilHtml(id);
+  tip.hidden = false;
+  var r = btn.getBoundingClientRect(), w = tip.offsetWidth, h = tip.offsetHeight;
+  var top = r.bottom + 10 + h < window.innerHeight ? r.bottom + 10 : Math.max(8, r.top - h - 10);
+  var left = Math.min(Math.max(8, r.left + r.width / 2 - w / 2), window.innerWidth - w - 8);
+  tip.style.top = top + "px";
+  tip.style.left = left + "px";
+}
+function gomTip() { document.getElementById("tip").hidden = true; }
+function bindTips(rot) {
+  rot.querySelectorAll(".acard, .hub-core").forEach(function (btn) {
+    if (kanHovra) {
+      btn.addEventListener("mouseenter", function () { visaTip(btn); });
+      btn.addEventListener("mouseleave", gomTip);
+    }
+    btn.addEventListener("focus", function () { if (btn.matches(":focus-visible")) visaTip(btn); });
+    btn.addEventListener("blur", gomTip);
+  });
+}
+window.addEventListener("scroll", gomTip, { passive: true });
+document.addEventListener("keydown", function (e) { if (e.key === "Escape") gomTip(); });
+
 var STEG = [
   { n: 1, namn: "Insikter", mapp: "08_Rapporter", vem: ["A1", "A2"], live: true },
   { n: 2, namn: "Brief", mapp: "01_Briefer", vem: ["A0"], live: true },
@@ -894,6 +1016,7 @@ function renderHub() {
     '<span class="dl" style="opacity:0.6">' + OBJEKT.filter(function (o) { return o.godkand_datum; }).length + " objekt godkända av dig</span></div>";
 
   hub.innerHTML = lines + html + core + cmd + done;
+  bindTips(hub);
   hub.querySelectorAll(".acard, .hub-core").forEach(function (btn) {
     btn.addEventListener("click", function () {
       valj(btn.id.replace("acard-", ""));
@@ -931,8 +1054,9 @@ function renderDetail() {
   document.getElementById("detail").innerHTML =
     '<div class="d-head">' + miniHtml(vald, "lg") + '<div><div class="eyebrow">' + (/^A\d$/.test(vald) ? vald + " · " : "") + a.motor + "</div><h3>" + a.namn + '</h3><div class="role">1 jobb: ' + JOBB[vald] + "</div></div></div>" +
     '<div class="d-chips"><span class="pill ' + st.cls + '">' + st.t + '</span><span class="pill idle">Steg ' + stegNamn + "</span></div>" +
+    (PROFIL[vald] ? profilHtml(vald) :
     '<div class="d-sec"><h4>Gör</h4><ul>' + a.gor.map(function (x) { return "<li>" + esc(x) + "</li>"; }).join("") + "</ul></div>" +
-    '<div class="d-sec never"><h4>Gör aldrig</h4><ul>' + a.aldrig.map(function (x) { return "<li><span>" + esc(x) + "</span></li>"; }).join("") + "</ul></div>" +
+    '<div class="d-sec never"><h4>Gör aldrig</h4><ul>' + a.aldrig.map(function (x) { return "<li><span>" + esc(x) + "</span></li>"; }).join("") + "</ul></div>") +
     '<div class="d-sec"><h4>Verktyg och data</h4><p>' + esc(a.verktyg) + "</p></div>";
 }
 
