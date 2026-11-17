@@ -313,6 +313,7 @@ footer { color: var(--muted); font-size: 0.8rem; border-top: 1px solid var(--lin
 }
 .sample.ok { background: var(--ok-soft); color: var(--ok); }
 .sample.err { background: var(--stop-soft); color: var(--stop); }
+.wlink { color: var(--accent); font-weight: 700; white-space: nowrap; }
 .felrad { max-width: 1240px; margin: 0 auto 18px; background: var(--stop-soft); color: var(--stop); border-radius: 10px; padding: 10px 14px; font-size: 0.86rem; font-weight: 600; }
 </style>
 </head>
@@ -580,7 +581,7 @@ function renderWaiting() {
   lista.forEach(function (x) {
     w.appendChild(el("div", "witem",
       dot(x.o.bolag) +
-      '<div class="t"><b>' + esc(x.o.titel) + '</b> <span class="mono muted" style="font-size:0.74rem">' + x.o.id + " · " + x.o.kanal + "</span><div>" + esc(x.text) + "</div></div>" +
+      '<div class="t"><b>' + esc(x.o.titel) + '</b> <span class="mono muted" style="font-size:0.74rem">' + x.o.id + " · " + x.o.kanal + "</span><div>" + esc(x.text) + (x.o.lank ? ' <a class="wlink" href="' + esc(x.o.lank) + '" target="_blank" rel="noopener">Öppna i SharePoint</a>' : "") + "</div></div>" +
       '<span class="pill ' + x.typ + '">' + x.etikett + "</span>"));
   });
 }
