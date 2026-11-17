@@ -1,8 +1,9 @@
 """Teamtavlan: en lokal webbsida som visar Livvs AI-team med data från SharePoint.
 
-Servern läser bara. Den hämtar Innehallsregister och månadens loggfiler i
-09_Loggar via samma app-registrering som MCP-servern och gör inga skrivande
-anrop. Sidan kan inte flytta objekt, ändra registret eller publicera.
+Servern hämtar Innehallsregister och loggfilerna i 09_Loggar via samma
+app-registrering som MCP-servern. Den skriver bara när Mattias själv godkänner
+ett objekt eller skickar tillbaka det i tavlan (se beslut.py). Sidan kan aldrig
+publicera, schemalägga eller ändra något annat.
 
 Medan tavlan körs kontrollerar den registret var femte minut och skickar en
 notis på Macen när något nytt väntar på Mattias. Stäng av med TAVLA_NOTISER=0.
@@ -17,6 +18,7 @@ import io
 import json
 import os
 import re
+import secrets
 import shutil
 import subprocess
 import sys
@@ -26,11 +28,14 @@ from datetime import date, datetime, time as klockslag
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from typing import Any, Iterable
+from urllib.parse import parse_qs
 
 MAPP = Path(__file__).resolve().parent
 sys.path.insert(0, str(MAPP.parent / "mcp"))
+sys.path.insert(0, str(MAPP))
 
 import sharepoint_server as sp  # noqa: E402
+from beslut import Beslut  # noqa: E402
 
 VARD = "127.0.0.1"  # bara den egna datorn, aldrig nätverket
 CACHE_SEKUNDER = 300
@@ -55,6 +60,9 @@ class LasGraph:
 
     def webblank(self, sokvag: str) -> str:
         return self._g.objekt(sokvag).get("webUrl", "")
+
+    def lista(self, sokvag: str) -> list[str]:
+        return [p["name"] for p in self._g.lista(sokvag)]
 
 
 # ---------------------------------------------------------------------------
@@ -229,33 +237,93 @@ class Cache:
                 self._tid = time.monotonic()
             return self._data
 
+    def rensa(self) -> None:
+        with self._las:
+            self._data = None
 
-def bygg_hanterare(cache: Cache):
+
+NYCKEL_PLATS = "__TAVLA_NYCKEL__"
+
+
+def bygg_hanterare(cache: Cache, beslut: Any = None, nyckel: str | None = None):
+    """Webbservern. Läser för alla sidor. Skriver bara via Mattias beslut i tavlan (POST),
+    och bara med nyckeln som finns i sidan som servern själv levererade."""
+    nyckel = nyckel or secrets.token_urlsafe(32)
+
     class Hanterare(BaseHTTPRequestHandler):
         def _svara(self, kod: int, typ: str, kropp: bytes) -> None:
             self.send_response(kod)
             self.send_header("Content-Type", typ)
             self.send_header("Cache-Control", "no-store")
+            self.send_header("X-Frame-Options", "DENY")
             self.send_header("Content-Length", str(len(kropp)))
             self.end_headers()
             self.wfile.write(kropp)
 
+        def _json(self, kod: int, data: dict[str, Any]) -> None:
+            self._svara(kod, "application/json; charset=utf-8", json.dumps(data, ensure_ascii=False).encode("utf-8"))
+
+        def _ratt_vard(self) -> bool:
+            """Skydd mot DNS rebinding: bara anrop till den egna datorn under rätt namn."""
+            port = self.server.server_address[1]
+            return self.headers.get("Host", "") in {f"127.0.0.1:{port}", f"localhost:{port}"}
+
+        def _fel(self, fel: Exception) -> None:
+            meddelande = str(fel) if isinstance(fel, sp.Sparrfel) else type(fel).__name__
+            self._json(502, {"fel": meddelande})
+
         def do_GET(self) -> None:  # noqa: N802
-            sokvag = self.path.split("?", 1)[0]
+            if not self._ratt_vard():
+                self._svara(403, "text/plain; charset=utf-8", "Fel värd".encode("utf-8"))
+                return
+            sokvag, _, fraga = self.path.partition("?")
             if sokvag == "/data.json":
                 try:
-                    kropp = json.dumps(cache.data(), ensure_ascii=False).encode("utf-8")
-                    self._svara(200, "application/json; charset=utf-8", kropp)
+                    self._json(200, cache.data())
                 except Exception as fel:  # visas på sidan, utan hemligheter
-                    meddelande = str(fel) if isinstance(fel, sp.Sparrfel) else type(fel).__name__
-                    kropp = json.dumps({"fel": meddelande}, ensure_ascii=False).encode("utf-8")
-                    self._svara(502, "application/json; charset=utf-8", kropp)
+                    self._fel(fel)
+                return
+            if sokvag == "/objekt" and beslut is not None:
+                objekt_id = parse_qs(fraga).get("id", [""])[0]
+                try:
+                    self._json(200, beslut.detalj(objekt_id))
+                except Exception as fel:
+                    self._fel(fel)
                 return
             if sokvag in STATISKA:
                 fil, typ = STATISKA[sokvag]
-                self._svara(200, typ, (MAPP / fil).read_bytes())
+                kropp = (MAPP / fil).read_bytes()
+                if fil == "tavla.html":
+                    kropp = kropp.replace(NYCKEL_PLATS.encode(), nyckel.encode())
+                self._svara(200, typ, kropp)
                 return
             self._svara(404, "text/plain; charset=utf-8", "Finns inte".encode("utf-8"))
+
+        def do_POST(self) -> None:  # noqa: N802
+            sokvag = self.path.split("?", 1)[0]
+            if sokvag not in {"/godkann", "/tillbaka"} or beslut is None:
+                self._svara(404, "text/plain; charset=utf-8", "Finns inte".encode("utf-8"))
+                return
+            port = self.server.server_address[1]
+            ursprung = self.headers.get("Origin")
+            if (not self._ratt_vard()
+                    or (ursprung and ursprung not in {f"http://127.0.0.1:{port}", f"http://localhost:{port}"})
+                    or not self.headers.get("Content-Type", "").startswith("application/json")
+                    or not secrets.compare_digest(self.headers.get("X-Tavla-Nyckel", ""), nyckel)):
+                self._json(403, {"fel": "Beslut kan bara göras från teamtavlan på den här datorn."})
+                return
+            try:
+                langd = min(int(self.headers.get("Content-Length", "0")), 10_000)
+                data = json.loads(self.rfile.read(langd) or b"{}")
+                objekt_id = str(data.get("id", ""))
+                if sokvag == "/godkann":
+                    text = beslut.godkann(objekt_id)
+                else:
+                    text = beslut.tillbaka(objekt_id, str(data.get("kommentar", "")))
+                cache.rensa()
+                self._json(200, {"ok": True, "text": text})
+            except Exception as fel:
+                self._fel(fel)
 
         def log_message(self, format: str, *args: Any) -> None:  # noqa: A002
             pass  # ingen loggning av anrop i terminalen
@@ -313,7 +381,7 @@ def main() -> None:
     port = int(os.environ.get("TAVLA_PORT", "8787"))
     graph = LasGraph()
     cache = Cache(lambda: hamta(graph))
-    server = ThreadingHTTPServer((VARD, port), bygg_hanterare(cache))
+    server = ThreadingHTTPServer((VARD, port), bygg_hanterare(cache, Beslut(graph)))
     print(f"Teamtavlan körs på http://{VARD}:{port}  (avsluta med Ctrl+C)")
     if os.environ.get("TAVLA_NOTISER", "1") != "0":
         threading.Thread(target=bevaka, args=(cache, Pingare()), daemon=True).start()

@@ -220,11 +220,11 @@ class TestWebbserver(unittest.TestCase):
         exempel = json.loads(self.hamta("/exempeldata.json").read())
         self.assertEqual(exempel["kalla"], "exempel")
 
-    def test_bara_get(self):
-        for metod in ("POST", "PUT", "DELETE"):
+    def test_inga_andra_skrivande_anrop(self):
+        for metod, vantat in (("POST", 404), ("PUT", 501), ("DELETE", 501)):
             with self.assertRaises(urllib.error.HTTPError) as fel:
                 self.hamta("/data.json", metod)
-            self.assertEqual(fel.exception.code, 501)
+            self.assertEqual(fel.exception.code, vantat)
 
     def test_okand_sokvag(self):
         for sokvag in ("/.env", "/../.env", "/server.py"):

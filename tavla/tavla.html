@@ -323,6 +323,39 @@ footer { color: var(--muted); font-size: 0.8rem; border-top: 1px solid var(--lin
 .prof dt.nej { color: var(--stop); }
 .prof dd { margin: 0; }
 .detail .prof { font-size: 0.88rem; }
+.wbtn { font: 700 0.76rem var(--font-body); padding: 7px 13px; border-radius: 999px; border: 1.5px solid currentColor; background: var(--surface); cursor: pointer; white-space: nowrap; }
+.wbtn.ok { color: var(--ok); }
+.wbtn.wait { color: var(--wait); }
+.wbtn.stop { color: var(--stop); }
+.wbtn:hover { background: var(--surface-2); }
+.b-bakgrund { position: fixed; inset: 0; z-index: 60; background: rgba(10, 16, 14, 0.55); display: grid; place-items: start center; overflow-y: auto; padding: max(24px, env(safe-area-inset-top, 0px)) 12px 24px; }
+.b-ruta { width: min(820px, 100%); background: var(--surface); color: var(--ink); border-radius: 16px; border: 1px solid var(--line); padding: 22px; box-shadow: 0 30px 60px -30px rgba(0, 0, 0, 0.6); }
+#beslut-innehall { display: grid; gap: 16px; }
+.b-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 14px; }
+.b-head h2 { font-size: 1.25rem; }
+.b-meta { font-size: 0.84rem; margin-top: 4px; }
+.b-stang { border: 1px solid var(--line); background: var(--surface-2); border-radius: 50%; width: 34px; height: 34px; font-size: 1.2rem; cursor: pointer; flex: none; }
+.b-sek { display: grid; gap: 8px; }
+.b-sek-head { display: flex; justify-content: space-between; align-items: baseline; gap: 10px; flex-wrap: wrap; }
+.b-sek h3, .b-sek summary { font-family: var(--font-display); font-size: 0.95rem; font-weight: 600; }
+details.b-sek summary { cursor: pointer; }
+.b-sek .mono { font-size: 0.72rem; }
+.b-text { background: var(--surface-2); border: 1px solid var(--line); border-radius: 10px; padding: 16px 18px; font-size: 0.95rem; line-height: 1.6; max-height: 50vh; overflow-y: auto; overflow-wrap: anywhere; }
+.b-varning { background: var(--stop-soft); color: var(--stop); border-radius: 10px; padding: 10px 14px; font-size: 0.88rem; }
+.b-atgard { display: grid; gap: 12px; border-top: 1px solid var(--line); padding-top: 16px; }
+.b-knapp { font: 700 0.92rem var(--font-body); padding: 11px 18px; border-radius: 10px; border: 1.5px solid var(--line); background: var(--surface-2); color: var(--ink); cursor: pointer; justify-self: start; }
+.b-knapp.ok { background: var(--ok); color: var(--surface); border-color: var(--ok); }
+.b-knapp.ok.bekrafta { background: var(--ink); border-color: var(--ink); color: var(--bg); }
+.b-knapp:disabled { opacity: 0.55; cursor: progress; }
+.b-tillbaka { display: grid; gap: 8px; }
+.b-tillbaka summary { cursor: pointer; font-weight: 600; font-size: 0.9rem; }
+.b-tillbaka[open] { display: grid; gap: 8px; }
+.b-tillbaka label { font-size: 0.82rem; display: block; margin: 8px 0 4px; }
+.b-tillbaka textarea { width: 100%; font: inherit; font-size: 0.92rem; padding: 10px 12px; border-radius: 10px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); resize: vertical; margin-bottom: 8px; }
+.b-svar { margin: 0; font-weight: 600; font-size: 0.9rem; min-height: 1.2em; }
+.b-svar.ok { color: var(--ok); }
+.b-svar.fel { color: var(--stop); }
+@media (max-width: 620px) { .witem .wbtn { grid-column: 1 / -1; justify-self: start; } }
 .felrad { max-width: 1240px; margin: 0 auto 18px; background: var(--stop-soft); color: var(--stop); border-radius: 10px; padding: 10px 14px; font-size: 0.86rem; font-weight: 600; }
 </style>
 </head>
@@ -354,6 +387,7 @@ footer { color: var(--muted); font-size: 0.8rem; border-top: 1px solid var(--lin
 </nav>
 <div class="felrad" id="fel" role="alert" hidden></div>
 <div class="tip" id="tip" role="tooltip" hidden></div>
+<div class="b-bakgrund" id="beslut" hidden><div class="b-ruta" role="dialog" aria-modal="true" aria-labelledby="b-titel"><div id="beslut-innehall"></div></div></div>
 
 <div class="wrap" id="view-teamet">
   <header class="tagrow">
@@ -444,7 +478,7 @@ footer { color: var(--muted); font-size: 0.8rem; border-top: 1px solid var(--lin
   </section>
 
   <footer>
-    Tavlan läser bara. Den hämtar Innehallsregister och loggen från SharePoint var femte minut och kan inte flytta objekt, ändra registret eller publicera.
+    Tavlan hämtar Innehallsregister och loggen från SharePoint var femte minut. Den skriver bara när du själv godkänner ett objekt eller skickar tillbaka det, och den kan aldrig publicera.
   </footer>
 </div>
 
@@ -592,9 +626,114 @@ function renderWaiting() {
     w.appendChild(el("div", "witem",
       dot(x.o.bolag) +
       '<div class="t"><b>' + esc(x.o.titel) + '</b> <span class="mono muted" style="font-size:0.74rem">' + x.o.id + " · " + x.o.kanal + "</span><div>" + esc(x.text) + (x.o.lank ? ' <a class="wlink" href="' + esc(x.o.lank) + '" target="_blank" rel="noopener">Öppna i SharePoint</a>' : "") + "</div></div>" +
-      '<span class="pill ' + x.typ + '">' + x.etikett + "</span>"));
+      (EXEMPEL || x.etikett === "Bekräfta" ? '<span class="pill ' + x.typ + '">' + x.etikett + "</span>"
+        : '<button type="button" class="wbtn ' + x.typ + '" data-id="' + esc(x.o.id) + '" data-etikett="' + x.etikett + '">' + KNAPPTEXT[x.etikett] + "</button>")));
+  });
+  w.querySelectorAll(".wbtn").forEach(function (btn) {
+    btn.addEventListener("click", function () { oppnaBeslut(btn.getAttribute("data-id"), btn.getAttribute("data-etikett")); });
   });
 }
+
+// ---------- Mattias beslut i tavlan ----------
+var KNAPPTEXT = { "Godkänn": "Läs och godkänn", "Beslut": "Läs och besluta", "Publicera": "Läs texten" };
+var NYCKEL = "__TAVLA_NYCKEL__";
+var beslutOppet = null;
+
+function textBlock(t) {
+  return '<div class="b-text">' + esc(t || "").replace(/\n/g, "<br>") + "</div>";
+}
+
+function oppnaBeslut(id, etikett) {
+  beslutOppet = { id: id, etikett: etikett };
+  var bg = document.getElementById("beslut");
+  var inn = document.getElementById("beslut-innehall");
+  inn.innerHTML = '<div class="b-head"><h2 id="b-titel">' + esc(id) + '</h2><button type="button" class="b-stang" id="b-stang" aria-label="Stäng">×</button></div><p class="muted">Hämtar utkastet från SharePoint.</p>';
+  bg.hidden = false;
+  document.body.style.overflow = "hidden";
+  document.getElementById("b-stang").addEventListener("click", stangBeslut);
+  fetch("objekt?id=" + encodeURIComponent(id), { cache: "no-store" })
+    .then(function (r) { return r.json().then(function (j) { if (!r.ok) throw new Error(j.fel || "svar " + r.status); return j; }); })
+    .then(function (d) { if (beslutOppet && beslutOppet.id === id) visaBeslut(d, etikett); })
+    .catch(function (e) { inn.querySelector("p").textContent = "Kunde inte hämta objektet: " + e.message; });
+}
+
+function visaBeslut(d, etikett) {
+  var inn = document.getElementById("beslut-innehall");
+  var meta = [d.kanal, d.a3 ? "A3: " + d.a3 + (d.sakerhet ? ", säkerhet " + d.sakerhet : "") : "", d.granskad ? "granskad " + d.granskad : ""].filter(Boolean).join(" · ");
+  var html = '<div class="b-head"><div><div class="eyebrow">' + esc(d.id) + "</div><h2 id=\"b-titel\">" + esc(d.titel) + '</h2><div class="muted b-meta">' + esc(meta) + '</div></div><button type="button" class="b-stang" id="b-stang" aria-label="Stäng">×</button></div>';
+  if (d.eskalera && d.orsak) html += '<div class="b-varning"><b>Eskalerat av A3:</b> ' + esc(d.orsak) + "</div>";
+  html += '<section class="b-sek"><div class="b-sek-head"><h3>Utkastet</h3>' + (d.utkast && d.utkast.namn ? '<span class="mono muted">' + esc(d.utkast.namn) + "</span>" : "") + "</div>" +
+    (d.utkast && d.utkast.fel ? '<div class="b-varning">' + esc(d.utkast.fel) + "</div>" : textBlock(d.utkast && d.utkast.text)) + "</section>";
+  if (d.brief) html += '<details class="b-sek"><summary>Briefen <span class="mono muted">' + esc(d.brief.namn) + "</span></summary>" + textBlock(d.brief.text || d.brief.fel) + "</details>";
+
+  html += '<div class="b-atgard" id="b-atgard">';
+  if (etikett === "Godkänn") {
+    html += '<button type="button" class="b-knapp ok" id="b-godkann">Godkänn ' + esc(d.id) + "</button>";
+  }
+  if (etikett === "Godkänn" || etikett === "Beslut") {
+    html += '<details class="b-tillbaka" id="b-tillbaka-ruta"' + (etikett === "Beslut" ? " open" : "") + '><summary>Skicka tillbaka med kommentar</summary>' +
+      '<label for="b-kommentar" class="muted">Vad ska ändras? A0 ger kommentaren till A4, och A3 granskar igen.</label>' +
+      '<textarea id="b-kommentar" rows="4"></textarea><button type="button" class="b-knapp" id="b-skicka">Skicka tillbaka</button></details>';
+  }
+  if (etikett === "Publicera") {
+    html += '<button type="button" class="b-knapp" id="b-kopiera">Kopiera texten</button><p class="muted">Publicera från rätt företagssida och ge sedan A0 datum, plattforms_id och url.</p>';
+  }
+  html += '<p class="b-svar" id="b-svar" role="status"></p></div>';
+  inn.innerHTML = html;
+  document.getElementById("b-stang").addEventListener("click", stangBeslut);
+
+  var g = document.getElementById("b-godkann");
+  if (g) g.addEventListener("click", function () {
+    if (!g.classList.contains("bekrafta")) {
+      g.classList.add("bekrafta");
+      g.textContent = "Bekräfta: godkänn " + d.id + " för publicering";
+      return;
+    }
+    skickaBeslut("godkann", { id: d.id });
+  });
+  var s = document.getElementById("b-skicka");
+  if (s) s.addEventListener("click", function () {
+    var k = document.getElementById("b-kommentar").value.trim();
+    if (!k) { visaSvar("Skriv vad som ska ändras.", true); return; }
+    skickaBeslut("tillbaka", { id: d.id, kommentar: k });
+  });
+  var c = document.getElementById("b-kopiera");
+  if (c) c.addEventListener("click", function () {
+    var text = (d.utkast && d.utkast.text) || "";
+    var klart = function () { c.textContent = "Kopierad"; };
+    if (navigator.clipboard) navigator.clipboard.writeText(text).then(klart, function () { visaSvar("Kopieringen gick inte. Markera texten och kopiera själv.", true); });
+  });
+}
+
+function visaSvar(text, fel) {
+  var s = document.getElementById("b-svar");
+  if (!s) return;
+  s.textContent = text;
+  s.className = "b-svar" + (fel ? " fel" : " ok");
+}
+
+function skickaBeslut(vad, data) {
+  document.querySelectorAll("#b-atgard button").forEach(function (b) { b.disabled = true; });
+  visaSvar("Sparar i SharePoint.");
+  fetch(vad, { method: "POST", headers: { "Content-Type": "application/json", "X-Tavla-Nyckel": NYCKEL }, body: JSON.stringify(data) })
+    .then(function (r) { return r.json().then(function (j) { if (!r.ok) throw new Error(j.fel || "svar " + r.status); return j; }); })
+    .then(function (j) {
+      visaSvar(j.text);
+      ladda();
+      setTimeout(stangBeslut, 2200);
+    })
+    .catch(function (e) {
+      visaSvar("Inget sparades: " + e.message, true);
+      document.querySelectorAll("#b-atgard button").forEach(function (b) { b.disabled = false; });
+    });
+}
+
+function stangBeslut() {
+  beslutOppet = null;
+  document.getElementById("beslut").hidden = true;
+  document.body.style.overflow = "";
+}
+document.addEventListener("keydown", function (e) { if (e.key === "Escape" && beslutOppet) stangBeslut(); });
 
 function dagar14() {
   var d = [];
