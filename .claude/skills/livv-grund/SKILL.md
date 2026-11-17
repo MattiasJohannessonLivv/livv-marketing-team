@@ -22,12 +22,6 @@ Läs också livv-skrivregler. Den gäller all text.
 
 A0 är huvudsessionen. A1 till A8 är subagenter. Den som skapar en brief godkänner aldrig materialet: det gör A3 och sedan Mattias.
 
-## Numrering i Excel-bladen
-Bladen Statusflode, Kolumner och Listor i Innehallsregister använder fortfarande den äldre numreringen. Tills de är uppdaterade gäller:
-- Där bladen säger A1 eller A1/A2 om att skriva utkast eller fylla filnamn, version, kallor, eskalera och sakerhet: det är A4.
-- Där bladen säger A7 om arkivering och resultat_30d: det är A2.
-- Schemalagd och Publicerad sätts av A0, och bara efter att Mattias bekräftat att han själv schemalagt eller publicerat och gett datum, plattforms_id och url. Ingen agent schemalägger eller publicerar, inte heller via Claude in Chrome.
-
 ## Platser
 - Webbplats: livv-group-data-it-ai, bibliotek Dokument
 - driveId: b!rXxF7V33YU-pcztAgMnzctUqcRF4PUtHlrOvU9obVBisHk1qgi4dRYi2wNZl121H
