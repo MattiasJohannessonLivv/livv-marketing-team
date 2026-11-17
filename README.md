@@ -138,6 +138,19 @@ A2 analyserar varje vecka det som ligger i 11_Dataimport i SharePoint. Exportera
 
 Spara som CSV eller XLSX. LinkedIn exporterar som XLS: öppna filen i Excel och spara som XLSX. Döp filen med datum och vecka, till exempel `20261124_linkedin_livvse_v47.xlsx`. Mapparna ligger direkt i 11_Dataimport och skapas för hand första gången. Saknas en export analyserar A2 resten och skriver vad som saknades.
 
+### Bilder från Brand Studio
+När Mattias har godkänt texten skriver A0 en bildbrief på engelska i `12_Bilder/<objekt-ID>`. Brand Studio (Anastasia Johannesson) får en notis i Teams, skapar två eller tre förslag i Atelier och laddar upp dem i samma mapp. Mattias väljer bild i teamtavlan och laddar ned den därifrån. Ingen agent skapar bilder.
+
+Engångsinställning:
+1. Skapa mappen `12_Bilder` direkt i Livv Marketing Ops. Agenterna får inte skapa huvudmappar.
+2. Lägg `Bildstil_Please_Disturb.md` (finns i `docs/underlag/`) i 00_Underlag när Mattias har godkänt den.
+3. Skapa ett flöde i Power Automate som pingar Anastasia i Teams:
+   - Utlösare: SharePoint, *When a file is created (properties only)*, webbplatsen livv-group-data-it-ai, biblioteket Dokument.
+   - Villkor: *Folder path* innehåller `Livv Marketing Ops/12_Bilder/` och *File name with extension* innehåller `image-brief`.
+   - Åtgärd: Microsoft Teams, *Post message in a chat or channel*, som Flow bot i chatt med Anastasia Johannesson. Meddelande:
+
+     > New image brief from the Livv marketing team: *File name*. Please create two or three options in Atelier and upload them to the same folder. The brief has the deadline. Open it here: *Link to item*
+
 ### Teamtavlan
 ```bash
 ./tavla.sh

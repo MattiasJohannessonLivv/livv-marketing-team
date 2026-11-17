@@ -1,52 +1,52 @@
-# Bildstil: Please Disturb
+# Image style: Please Disturb
 
-Status: utkast 17 november 2026, gjort utifrån konceptpresentationen Please Disturb. Mattias godkänner texten innan den läggs i 00_Underlag. Därefter gäller den för alla miljö- och inspirationsbilder som teamet tar fram.
+Status: draft 17 November 2026, based on the Please Disturb concept presentation. Mattias approves this text before it goes into 00_Underlag. From then on it applies to every mood and inspiration image for Livv Group, Livv and Unique.
 
-## Känslan
-Personlig service med glimten i ögat. Konceptet vänder på hotellets "Stör ej": vi vill bli störda, vi finns där för hotellet och gästen. Bilderna ska kännas omtänksamma, lekfulla och genomtänkta, aldrig stela eller generiska.
+## The feeling
+Personal service with a twinkle in the eye. The concept turns the hotel's "Do not disturb" around: we want to be disturbed, and we are there for the hotel and its guests. Images should feel attentive, playful and considered, never stiff or generic.
 
-Varje bild ska visualisera känslan i inlägget, inte illustrera texten ord för ord.
+Every image visualises the feeling of the post. It never illustrates the text word for word.
 
-## Motiv
-- Hotellets detaljer: dörrskyltar, serviceklockor, nycklar och nyckelbrickor, dörrar med mässingshandtag, korridorer, bäddade sängar, vikta handdukar, en bricka från room service.
-- Personal i uniform utan ansikte: en hand i handske, en ärm med knappar, en beskuren figur i rörelse, en rygg.
-- En överraskning i skala eller sammanhang, till exempel en överdimensionerad dörrskylt som bärs genom korridoren.
-- Få föremål och ett tydligt huvudmotiv. Gott om luft runt motivet.
+## Motifs
+- Hotel details: door hangers, service bells, keys and key tags, doors with brass handles, corridors, made beds, folded towels, a room service tray.
+- Staff in uniform without faces: a gloved hand, a sleeve with buttons, a cropped figure in motion, a back.
+- A surprise in scale or context, such as an oversized door hanger carried down a corridor.
+- Few objects and one clear subject. Plenty of space around it.
 
-## Färger
-| Färg | Ungefärlig ton | Används till |
+## Colours
+| Colour | Approximate tone | Used for |
 |---|---|---|
-| Mint och salvia | #B3D6CC | Uniformer, väggpaneler, dörrar |
-| Dämpad rosa | #EBC8C8 | Dörrskyltar, accenter |
-| Mahogny | Mörkt rödbrunt trä | Dörrar, boaserier |
-| Mässing och guld | Varm metall | Handtag, knappar, klockor |
-| Svart | | Bakgrunder, kontrast |
-| Marinblått | | Kantband på uniformer |
+| Mint and sage | #B3D6CC | Uniforms, wall panels, doors |
+| Soft pink | #EBC8C8 | Door hangers, accents |
+| Mahogany | Dark red-brown wood | Doors, wainscoting |
+| Brass and gold | Warm metal | Handles, buttons, bells |
+| Black | | Backgrounds, contrast |
+| Navy | | Piping on uniforms |
 
-Tonerna är uppskattade från presentationens bilder. Exakta färgkoder i den grafiska profilen på livv.se och unique.se gäller före den här tabellen.
+The tones are estimated from the presentation images. Exact colour codes in the visual identity on livv.se and unique.se take precedence over this table.
 
-## Ljus och foto
-- Redaktionellt och filmiskt stilleben, som en bild i ett designmagasin.
-- Mjukt riktat ljus från sidan, djupa skuggor, lätt kornighet.
-- Dämpade men varma färger. Grunt skärpedjup.
-- Bakgrund: svart eller enfärgad, eller klassisk hotellinteriör med boaserier och paneler.
+## Light and photography
+- Editorial, cinematic still life, like an image in a design magazine.
+- Soft directional side light, deep shadows, light grain.
+- Muted but warm colours. Shallow depth of field.
+- Background: black or a single colour, or a classic hotel interior with panelling.
 
-## Aldrig
-- Text, bokstäver, siffror eller logotyper i bilden. Dörrskyltar och skyltar är tomma.
-- Igenkännbara ansikten eller verkliga personer.
-- Livvs eller Uniques produkter. Produkter visas bara med riktiga bilder från livv.se eller unique.se.
-- Kunders hotell, kända byggnader eller platser som går att känna igen.
-- Klichéer: palmer, pooler, leende personer vid en reception, generiska bilder som ser ut att komma från en bildbyrå.
-- Överdrivet glansig AI-look, plastig hud, förvridna händer.
+## Never
+- Text, letters, numbers or logos in the image. Door hangers and signs are blank.
+- Recognisable faces or real people.
+- Livv or Unique products created by AI. Products are shown only with real product photos from livv.se or unique.se.
+- Customer hotels, famous buildings or recognisable places.
+- Clichés: palm trees, pools, smiling people at a reception desk, generic stock-photo looks.
+- An overly glossy AI look, plastic skin, distorted hands.
 
-## Format
-| Kanal | Storlek |
+## Formats
+| Channel | Size |
 |---|---|
-| LinkedIn, kvadrat | 1200 × 1200 |
-| LinkedIn, stående | 1200 × 1500 |
+| LinkedIn, square | 1200 × 1200 |
+| LinkedIn, portrait | 1200 × 1500 |
 | X | 1600 × 900 |
 
-## Exempel på bildbeskrivningar
-- Konceptmötet, nuläge och önskat läge: en blank serviceklocka i silver på en mintgrön handskklädd handflata, svart bakgrund, mjukt sidoljus, filmiskt stilleben.
-- Planering för hela året: en lång hotellkorridor med mahognydörrar och mintgröna väggpaneler, tomma dörrskyltar i dämpad rosa på varje handtag, tidigt morgonljus.
-- En partner, flera kompetenser: tre nyckelbrickor i mässing på en mintgrön sammetsyta, varje bricka med en tom etikett, ovanifrån, mjukt ljus.
+## Example image descriptions
+- The concept meeting, where you are and where you want to be: a polished silver service bell resting on a mint-green gloved palm, black background, soft side light, cinematic still life.
+- Planning for the whole year: a long hotel corridor with mahogany doors and mint-green wall panels, a blank soft-pink door hanger on every handle, early morning light.
+- One partner, many skills: three brass key tags on mint-green velvet, each with a blank label, seen from above, soft light.

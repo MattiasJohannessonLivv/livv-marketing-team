@@ -61,6 +61,10 @@ kontrollera deny  "A2 kan inte skapa brief"                 "$(mcp sharepoint__s
 kontrollera deny  "A2 kan inte spara utkast"                "$(mcp sharepoint__spara_utkast '{}' a2-researcher)"
 kontrollera deny  "A2 kan inte flytta"                      "$(mcp sharepoint__flytta_objekt '{"till_status":"Arkiverad"}' a2-researcher)"
 kontrollera deny  "A2 kan inte skapa nytt objekt"           "$(mcp sharepoint__register_ny_rad '{}' a2-researcher)"
+kontrollera tillat "A0 sparar en bildbrief"                  "$(mcp sharepoint__spara_bildbrief '{"objekt_id":"LIVV-2026-0005"}')"
+kontrollera deny  "A2 kan inte spara bildbrief"             "$(mcp sharepoint__spara_bildbrief '{}' a2-researcher)"
+kontrollera deny  "A3 kan inte spara bildbrief"             "$(mcp sharepoint__spara_bildbrief '{}' a3-granskare)"
+kontrollera deny  "A4 kan inte spara bildbrief"             "$(mcp sharepoint__spara_bildbrief '{}' a4-contentcreator)"
 
 echo "Radering och nätverk"
 kontrollera deny  "rm"                                       '{"tool_name":"Bash","tool_input":{"command":"rm -rf .arbetsyta"}}' 1
