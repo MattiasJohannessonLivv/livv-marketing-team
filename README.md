@@ -28,6 +28,7 @@ livv-marketing-team/
   tavla.sh                      startar teamtavlan lokalt
   tavla/
     server.py                   läser register och logg, serverar tavlan på 127.0.0.1
+    beslut.py                   Mattias beslut i tavlan: godkänn och skicka tillbaka
     tavla.html                  teamtavlan
     exempeldata.json            exempel för att visa tavlan utan SharePoint
   .claude/
@@ -51,7 +52,8 @@ livv-marketing-team/
     test_sparr.sh               tester för spärren
     test_sokvagar.py            tester för servern, utan nätverk
     test_excel.py               rullistor och loggkolumner efter skrivning via servern
-    test_tavla.py               teamtavlan: omvandling, bara läsning, bara GET
+    test_tavla.py               teamtavlan: omvandling, notiser och webbservern
+    test_beslut.py              beslut i tavlan: godkänn, skicka tillbaka och skyddet mot andra sidor
 ```
 
 ## Så hålls reglerna tekniskt
@@ -144,7 +146,12 @@ Spara som CSV eller XLSX. LinkedIn exporterar som XLS: öppna filen i Excel och 
 
 Medan tavlan körs får du en notis på Macen när något nytt väntar på ditt beslut, och listan Väntar på dig har en länk direkt till filen i SharePoint. Notiserna stängs av med `TAVLA_NOTISER=0 ./tavla.sh`.
 
-Tavlan läser bara. Servern (`tavla/server.py`) har inga skrivande anrop, svarar bara på GET och lyssnar bara på den egna datorn. Avsluta med Ctrl+C. Exempeldata utan SharePoint: http://127.0.0.1:8787/?exempel
+**Besluta i tavlan.** Under Väntar på dig öppnar du ett objekt med **Läs och godkänn**. Utkastet och briefen visas i tavlan. Du kan:
+- **Godkänna.** Knappen kräver en bekräftelse. Tavlan kontrollerar att A3 har godkänt och att objektet står i Granskning, flyttar filen till 04_Godkant, fyller i godkand_av och godkand_datum och loggar att Mattias godkände.
+- **Skicka tillbaka med kommentar.** Objektet går tillbaka till Utkast med a3_utfall Revidera, och kommentaren loggas. A0 ger den till A4 nästa gång teamet arbetar.
+- **Kopiera texten** när ett godkänt objekt ska publiceras.
+
+Det är det enda tavlan skriver (`tavla/beslut.py`). Den kan aldrig publicera, schemalägga eller ändra något annat. Besluten tas bara emot från tavlan på den egna datorn: servern lyssnar på 127.0.0.1, kontrollerar värd och ursprung och kräver en nyckel som bara finns i sidan den själv levererar. Andra webbsidor i webbläsaren kan alltså inte fatta beslut åt dig. Avsluta med Ctrl+C. Exempeldata utan SharePoint: http://127.0.0.1:8787/?exempel
 
 ### Ändra teamet
 ```bash

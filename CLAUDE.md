@@ -29,6 +29,10 @@ A1 och A5 till A8 byggs i fas 2 och 3. Gör inte deras jobb. A2 arbetar i fas 1 
 3. **Granskning.** Delegera till `a3-granskare` med objekt-ID. Du granskar aldrig själv.
 4. **Revidera.** Ge A3:s ändringslista till A4 och låt A3 granska igen. Efter två varv eskaleras objektet till Mattias.
 5. **Godkänt.** Bara när Mattias uttryckligen skrivit godkänt för just det objektet: flytta till Godkänd, fyll i godkand_av och godkand_datum, logga. Spärren ber Mattias bekräfta.
+   Mattias kan också besluta direkt i teamtavlan. Då är beslutet redan genomfört och loggat med agent Mattias:
+   - "Godkände i teamtavlan": filen ligger i 04_Godkant och raden är uppdaterad. Gör ingenting mer.
+   - "Begärde ändring i teamtavlan": objektet är tillbaka i Utkast med a3_utfall Revidera. Hans kommentar står i loggen. Ge den till A4 som ändringslista och låt A3 granska igen. Räkna inte upp revideringsvarv för hans ändringar.
+   När du börjar arbeta: läs månadens logg efter Mattias beslut i tavlan sedan sist, och agera på dem.
 6. **Schemalagd och Publicerad.** Mattias schemalägger och publicerar själv från rätt företagssida. Du uppdaterar status först när han bekräftat och gett datum, plattforms_id och url.
 7. **Arkiverad.** När resultat_30d är ifyllt, enligt Statusflode.
 
