@@ -490,6 +490,16 @@ function sedan(d) {
   var dag = Math.round(h / 24);
   return dag === 1 ? "i går" : dag + " dagar sedan";
 }
+// senast_andrad har ibland bara datum. Då räknas hela dagar i stället för timmar.
+function iStatus(s) {
+  if (!s) return "Senast ändrad okänt";
+  if (/T00:00$/.test(s)) {
+    var dag = new Date(s.slice(0, 10) + "T12:00:00"), idag = new Date(iso(NOW) + "T12:00:00");
+    var n = Math.round((idag - dag) / 86400000);
+    return n <= 0 ? "Ändrad i dag" : n === 1 ? "Ändrad i går" : "I status sedan " + n + " dagar";
+  }
+  return "I status sedan " + sedan(new Date(s + ":00")).replace(" sedan", "");
+}
 function datumKort(s) { return new Date(s + "T12:00:00").toLocaleDateString("sv-SE", { day: "numeric", month: "short" }).replace(/\.$/, ""); }
 function syns(o) { return filter === "Alla" || o.bolag === filter; }
 function bolagFor(id) { var o = OBJEKT.find(function (x) { return x.id === id; }); return o ? o.bolag : null; }
@@ -642,7 +652,7 @@ function renderBoard() {
         '<div class="id">' + dot(o.bolag) + o.id + "</div>" +
         '<div class="ti">' + esc(o.titel) + "</div>" +
         '<div class="meta"><span>' + o.kanal + "</span>" + (o.varv ? "<span>· " + o.varv + " rev.</span>" : "") + (o.plan ? "<span>· ut " + datumKort(o.plan) + "</span>" : "") + badge + "</div>" +
-        '<div class="meta"><span>I status sedan ' + sedan(new Date(o.sedan + ":00")).replace(" sedan", "") + "</span></div>"));
+        '<div class="meta"><span>' + iStatus(o.sedan) + "</span></div>"));
     });
     b.appendChild(col);
   });
