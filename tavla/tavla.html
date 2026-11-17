@@ -479,9 +479,10 @@ if (["Alla", "LivvGroup", "Livv", "Unique"].indexOf(filter) < 0) filter = "Alla"
 
 function el(tag, cls, html) { var n = document.createElement(tag); if (cls) n.className = cls; if (html != null) n.innerHTML = html; return n; }
 function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); }
-function tid(row) { return new Date(row[0] + "T" + row[1] + ":00"); }
+function tid(row) { return new Date(row[0] + "T" + (row[1] || "00:00") + ":00"); }
 function iso(d) { return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0"); }
 function sedan(d) {
+  if (!d || isNaN(d.getTime())) return "tid saknas";
   var min = Math.round((NOW - d) / 60000);
   if (min < 60) return min + " min sedan";
   var h = Math.round(min / 60);
@@ -544,7 +545,11 @@ function renderKpis() {
   tider.sort(function (a, b) { return a - b; });
   var n = tider.length;
   var median = n ? (n % 2 ? tider[(n - 1) / 2] : (tider[n / 2 - 1] + tider[n / 2]) / 2) : null;
-  var medianText = median == null ? "Inga än" : median > 48 ? Math.round(median / 24) + " dagar" : Math.round(median) + " h";
+  // Registret har ofta bara datum. Då visas medianen i dagar.
+  var baraDatum = mina.some(function (o) { return /T00:00$/.test(o.briefdatum) && /T00:00$/.test(o.godkand_datum); });
+  var medianText = median == null ? "Inga än"
+    : baraDatum ? (median < 24 ? "Samma dag" : Math.round(median / 24) + " dagar")
+    : median > 48 ? Math.round(median / 24) + " dagar" : Math.round(median) + " h";
   var k = document.getElementById("kpis");
   k.innerHTML = "";
   [

@@ -13,6 +13,7 @@ from __future__ import annotations
 import io
 import json
 import os
+import re
 import sys
 import threading
 import time
@@ -56,12 +57,17 @@ def _text(v: Any) -> str:
     return "" if v is None else str(v).strip()
 
 
+_DATUM_RE = re.compile(r"(\d{4})-(\d{1,2})-(\d{1,2})")
+_KLOCKA_RE = re.compile(r"(\d{1,2})[:.](\d{2})")
+
+
 def _datum(v: Any) -> str:
     if isinstance(v, datetime):
         return v.strftime("%Y-%m-%d")
     if isinstance(v, date):
         return v.isoformat()
-    return _text(v)[:10]
+    m = _DATUM_RE.search(_text(v))
+    return f"{m[1]}-{int(m[2]):02d}-{int(m[3]):02d}" if m else ""
 
 
 def _tidpunkt(v: Any) -> str:
@@ -70,21 +76,24 @@ def _tidpunkt(v: Any) -> str:
         return v.strftime("%Y-%m-%dT%H:%M")
     if isinstance(v, date):
         return v.isoformat() + "T00:00"
-    s = _text(v).replace(" ", "T")
-    if len(s) >= 16:
-        return s[:16]
-    if len(s) >= 10:
-        return s[:10] + "T00:00"
-    return ""
+    datum = _datum(v)
+    if not datum:
+        return ""
+    resten = _DATUM_RE.sub("", _text(v), count=1)
+    return f"{datum}T{_klocka(resten) or '00:00'}"
 
 
 def _klocka(v: Any) -> str:
+    """HH:MM. Klarar 09:52, 9:52, 9.52, 09:52:00 och Excels del av dygn."""
     if isinstance(v, (datetime, klockslag)):
         return v.strftime("%H:%M")
-    if isinstance(v, float) and 0 <= v < 1:  # Excel lagrar klockslag som del av dygn
+    if isinstance(v, float) and 0 <= v < 1:
         minuter = round(v * 1440)
         return f"{minuter // 60:02d}:{minuter % 60:02d}"
-    return _text(v)[:5]
+    m = _KLOCKA_RE.search(_text(v))
+    if not m or int(m[1]) > 23 or int(m[2]) > 59:
+        return ""
+    return f"{int(m[1]):02d}:{m[2]}"
 
 
 def _heltal(v: Any) -> int:

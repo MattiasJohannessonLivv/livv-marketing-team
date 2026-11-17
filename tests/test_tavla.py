@@ -93,6 +93,18 @@ class TestOmvandling(unittest.TestCase):
         self.assertEqual(rader[1], ["2026-11-16", "09:00", "Mattias", "", "Godkände", ""])
         self.assertEqual(len(rader), 2)
 
+    def test_svenska_och_ofullstandiga_tider(self):
+        self.assertEqual(tavla._klocka("9.52"), "09:52")
+        self.assertEqual(tavla._klocka("09:52:10"), "09:52")
+        self.assertEqual(tavla._klocka("kl. 14.05"), "14:05")
+        self.assertEqual(tavla._klocka(""), "")
+        self.assertEqual(tavla._klocka("99:99"), "")
+        self.assertEqual(tavla._datum("2026-11-5"), "2026-11-05")
+        self.assertEqual(tavla._datum("2026-11-05 00:00:00"), "2026-11-05")
+        self.assertEqual(tavla._tidpunkt("2026-11-5 9.52"), "2026-11-05T09:52")
+        self.assertEqual(tavla._tidpunkt("2026-11-05"), "2026-11-05T00:00")
+        self.assertEqual(tavla._tidpunkt("okänt"), "")
+
     def test_fel_kolumner_i_loggen_stoppas(self):
         from openpyxl import Workbook
 
