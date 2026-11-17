@@ -1,6 +1,6 @@
 # Ändringslista för Innehallsregister.xlsx
 
-Status: **förslag, inte genomfört.** Körs först när Mattias godkänt listan, efter torrtestet. Fram till dess gäller översättningen i avsnittet "Numrering i Excel-bladen" i livv-grund.
+Status: **godkänd av Mattias 17 november 2026, inte genomförd än.** Mattias gör ändringarna i Excel. Fram till dess gäller översättningen i avsnittet "Numrering i Excel-bladen" i livv-grund.
 
 Bakgrund: bladen använder den äldre numreringen, där A1 och A2 skrev utkast och A7 arkiverade. Rolltabellen A0 till A8 i arbetsdokumentet gäller nu.
 
