@@ -164,6 +164,8 @@ Medan tavlan körs får du en notis på Macen när något nytt väntar på ditt 
 - **Skicka tillbaka med kommentar.** Objektet går tillbaka till Utkast med a3_utfall Revidera, och kommentaren loggas. A0 ger den till A4 nästa gång teamet arbetar.
 - **Kopiera texten** när ett godkänt objekt ska publiceras.
 
+Typsnitten är Livvs egna: Crake i rubriker och Inter i text. Har datorn Crake installerat används det direkt. Annars hämtar tavlan Crake-filer från `00_Underlag` eller `00_Underlag/Fonter`, och utan dem visas ett liknande reservtypsnitt. Logotypen hämtas också från `00_Underlag`. Typsnitt och logotyp läggs aldrig i Git.
+
 Det är det enda tavlan skriver (`tavla/beslut.py`). Den kan aldrig publicera, schemalägga eller ändra något annat. Besluten tas bara emot från tavlan på den egna datorn: servern lyssnar på 127.0.0.1, kontrollerar värd och ursprung och kräver en nyckel som bara finns i sidan den själv levererar. Andra webbsidor i webbläsaren kan alltså inte fatta beslut åt dig. Avsluta med Ctrl+C. Exempeldata utan SharePoint: http://127.0.0.1:8787/?exempel
 
 ### Ändra teamet
