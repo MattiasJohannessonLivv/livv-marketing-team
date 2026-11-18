@@ -28,7 +28,7 @@ from datetime import date, datetime, time as klockslag
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from typing import Any, Iterable
-from urllib.parse import parse_qs
+from urllib.parse import parse_qs, unquote
 
 MAPP = Path(__file__).resolve().parent
 sys.path.insert(0, str(MAPP.parent / "mcp"))
@@ -167,6 +167,32 @@ def vantande(objekt: Iterable[dict[str, Any]]) -> list[dict[str, Any]]:
     return lista
 
 
+HTTP_FORKLARING = {
+    401: "inloggningen gick ut eller nekades. Kontrollera värdena i .env",
+    403: "appen saknar behörighet till filen eller mappen. Har behörigheten ändrats, till exempel vid delning?",
+    404: "filen eller mappen finns inte",
+    409: "filen är upptagen just nu",
+    423: "filen är låst, troligen öppen för redigering",
+    429: "för många anrop till SharePoint. Tavlan försöker igen om fem minuter",
+}
+
+
+def felbeskrivning(fel: Exception) -> str:
+    """Ett begripligt felmeddelande, utan hemligheter. Säger vilken fil det gäller när det går."""
+    if isinstance(fel, sp.Sparrfel):
+        return str(fel)
+    svar = getattr(fel, "response", None)
+    kod = getattr(svar, "status_code", None)
+    if kod is None:
+        return type(fel).__name__
+    url = str(getattr(getattr(fel, "request", None), "url", "") or "")
+    m = re.search(r":/(.+?):(?:/|$)", url)
+    fil = unquote(m[1]) if m else "rotmappen" if "/children" in url else "SharePoint"
+    forklaring = HTTP_FORKLARING.get(kod, "tillfälligt fel hos Microsoft. Tavlan försöker igen om fem minuter"
+                                     if kod >= 500 else "oväntat svar")
+    return f"SharePoint svarade {kod} för {fil}: {forklaring}."
+
+
 def logg_fran_bok(data: bytes) -> list[list[str]]:
     """Rader som [datum, tid, agent, objekt-ID, åtgärd, kommentar]."""
     from openpyxl import load_workbook
@@ -200,8 +226,8 @@ def hamta(graph: Any, nu: datetime | None = None) -> dict[str, Any]:
             continue
         try:
             logg += logg_fran_bok(graph.las(sokvag))
-        except sp.Sparrfel as fel:
-            varningar.append(f"{sokvag}: {fel}")
+        except Exception as fel:  # en loggfil som inte går att läsa stoppar inte tavlan
+            varningar.append(f"Loggen {sokvag} kunde inte läsas: {felbeskrivning(fel)}")
     logg.sort(key=lambda rad: (rad[0], rad[1]))
     # Bildförslag från Brand Studio och Mattias val, för objekt med godkänd text
     for o in objekt:
@@ -282,7 +308,8 @@ def bygg_hanterare(cache: Cache, beslut: Any = None, nyckel: str | None = None):
             return self.headers.get("Host", "") in {f"127.0.0.1:{port}", f"localhost:{port}"}
 
         def _fel(self, fel: Exception) -> None:
-            meddelande = str(fel) if isinstance(fel, sp.Sparrfel) else type(fel).__name__
+            meddelande = felbeskrivning(fel)
+            print(f"[{datetime.now():%H:%M}] {self.path.split('?', 1)[0]}: {meddelande}", flush=True)
             self._json(502, {"fel": meddelande})
 
         def do_GET(self) -> None:  # noqa: N802

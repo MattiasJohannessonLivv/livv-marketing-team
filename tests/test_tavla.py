@@ -197,6 +197,35 @@ class TestVantarOchNotiser(unittest.TestCase):
         self.assertNotIn("lank", d["objekt"][1])
 
 
+class TestFelbeskrivning(unittest.TestCase):
+    def fel(self, kod, url):
+        import httpx
+        req = httpx.Request("GET", url)
+        return httpx.HTTPStatusError("x", request=req, response=httpx.Response(kod, request=req))
+
+    def test_sager_fil_och_orsak(self):
+        bas = "https://graph.microsoft.com/v1.0/drives/D/items/R"
+        text = tavla.felbeskrivning(self.fel(403, bas + ":/09_Loggar/Logg_2026-11.xlsx:/content"))
+        self.assertIn("403", text)
+        self.assertIn("09_Loggar/Logg_2026-11.xlsx", text)
+        self.assertIn("behörighet", text)
+        text = tavla.felbeskrivning(self.fel(503, bas + ":/Innehallsregister.xlsx:/content"))
+        self.assertIn("Innehallsregister.xlsx", text)
+        self.assertIn("tillfälligt", text)
+        self.assertIn("rotmappen", tavla.felbeskrivning(self.fel(429, bas + "/children")))
+
+    def test_sparrfel_och_okant_fel(self):
+        self.assertEqual(tavla.felbeskrivning(sp.Sparrfel("Stopp")), "Stopp")
+        self.assertEqual(tavla.felbeskrivning(ValueError("x")), "ValueError")
+
+    def test_trasig_loggfil_stoppar_inte_tavlan(self):
+        g = FalskGraph({sp.REGISTER_FIL: testregister(), "09_Loggar/Logg_2026-11.xlsx": b"inte en excelfil"})
+        d = tavla.hamta(g, datetime(2026, 11, 18))
+        self.assertEqual(len(d["objekt"]), 1)
+        self.assertEqual(len(d["varningar"]), 1)
+        self.assertIn("Logg_2026-11.xlsx", d["varningar"][0])
+
+
 class TestWebbserver(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
