@@ -199,9 +199,12 @@ class TestVantarOchNotiser(unittest.TestCase):
 
 class TestFelbeskrivning(unittest.TestCase):
     def fel(self, kod, url):
-        import httpx
-        req = httpx.Request("GET", url)
-        return httpx.HTTPStatusError("x", request=req, response=httpx.Response(kod, request=req))
+        """Samma form som httpx.HTTPStatusError, utan att kräva httpx i testmiljön."""
+        from types import SimpleNamespace
+        fel = Exception("HTTPStatusError")
+        fel.request = SimpleNamespace(url=url)
+        fel.response = SimpleNamespace(status_code=kod)
+        return fel
 
     def test_sager_fil_och_orsak(self):
         bas = "https://graph.microsoft.com/v1.0/drives/D/items/R"

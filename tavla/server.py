@@ -186,11 +186,11 @@ def felbeskrivning(fel: Exception) -> str:
     if kod is None:
         return type(fel).__name__
     url = str(getattr(getattr(fel, "request", None), "url", "") or "")
-    m = re.search(r":/(.+?):(?:/|$)", url)
+    m = re.search(r"/items/[^/:]+:/(.+?):(?:/|$)", url)
     fil = unquote(m[1]) if m else "rotmappen" if "/children" in url else "SharePoint"
     forklaring = HTTP_FORKLARING.get(kod, "tillfälligt fel hos Microsoft. Tavlan försöker igen om fem minuter"
                                      if kod >= 500 else "oväntat svar")
-    return f"SharePoint svarade {kod} för {fil}: {forklaring}."
+    return f"SharePoint svarade {kod} för {fil}: {forklaring}" + ("" if forklaring.endswith("?") else ".")
 
 
 def logg_fran_bok(data: bytes) -> list[list[str]]:
