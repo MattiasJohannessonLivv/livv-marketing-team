@@ -64,7 +64,7 @@ Reglerna står i livv-grund, men de hålls också i kod, i tre lager:
 | Verktyg | Vad det gör | A0 | A3 | A4 |
 |---|---|---|---|---|
 | `lista_mapp`, `las_fil` | Läser i Livv Marketing Ops | ja | ja | ja |
-| `visa_bild` | Visar ett bildförslag i 12_Pictures för agenten, till exempel för alt-text | ja | ja | ja |
+| `visa_bild` | Visar ett bildförslag i 12_Pictures för agenten, till exempel för alt-text | ja | nej | nej |
 | `skapa_brief` | Ny brief i 01_Briefer | ja | nej | nej |
 | `spara_utkast` | Nytt utkast i 02_Utkast | ja | nej | ja |
 | `spara_rapport` | Rapport i 08_Rapporter | ja | nej | nej |
