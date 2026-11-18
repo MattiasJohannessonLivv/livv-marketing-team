@@ -225,6 +225,39 @@ class TestBilder(unittest.TestCase):
         self.assertEqual(tavla.vantande(d["objekt"])[0]["etikett"], "Publicera")
 
 
+class TestVisaBild(unittest.TestCase):
+    def test_agenten_ser_bildforslaget(self):
+        g = grund(status="Godkänd")
+        g.filer["12_Pictures/LIVV-2026-0002/LIVV-2026-0002_option-c.jpg"] = PNG
+        g.filer["12_Pictures/LIVV-2026-0002/LIVV-2026-0002_option-a.png"] = PNG
+        livv = sp.Livv(g)
+        self.assertEqual(livv.visa_bild("LIVV-2026-0002", "LIVV-2026-0002_option-c.jpg"), (PNG, "jpeg"))
+        self.assertEqual(livv.visa_bild("LIVV-2026-0002", "LIVV-2026-0002_option-a.png")[1], "png")
+
+    def test_bara_bilder_i_objektets_mapp(self):
+        g = grund()
+        g.filer["12_Pictures/LIVV-2026-0002/LIVV-2026-0002_image-brief_v01.md"] = b"x"
+        livv = sp.Livv(g)
+        for objekt_id, namn in (("LIVV-2026-0002", "../../Innehallsregister.xlsx"),
+                                ("LIVV-2026-0002", "LIVV-2026-0002_image-brief_v01.md"),
+                                ("../00_Underlag", "x.png"),
+                                ("LIVV-2026-0002", "saknas.png")):
+            with self.assertRaises(sp.Sparrfel):
+                livv.visa_bild(objekt_id, namn)
+
+    def test_for_stor_bild(self):
+        g = grund()
+        g.filer["12_Pictures/LIVV-2026-0002/stor.png"] = b"x" * (sp.MAX_BILD + 1)
+        with self.assertRaises(sp.Sparrfel):
+            sp.Livv(g).visa_bild("LIVV-2026-0002", "stor.png")
+
+    def test_verktyget_finns_i_servern(self):
+        import asyncio
+        server = sp.bygg_server(lambda: sp.Livv(grund()))
+        namn = [t.name for t in asyncio.run(server.list_tools())]
+        self.assertIn("visa_bild", namn)
+
+
 class TestLogotyp(unittest.TestCase):
     def test_logotyp_fran_underlag(self):
         g = grund()

@@ -32,6 +32,7 @@ ROT_ID = "01IDL2BRVMDAD4OA3NIFFZFBKDEFGJP7RS"  # Livv Marketing Ops
 GRAPH = "https://graph.microsoft.com/v1.0"
 TIDSZON = ZoneInfo("Europe/Stockholm")
 MAX_FILSTORLEK = 4 * 1024 * 1024  # enkel uppladdning i Graph klarar upp till 4 MB
+MAX_BILD = 5 * 1024 * 1024  # största bild som visas för en agent
 
 REGISTER_FIL = "Innehallsregister.xlsx"
 REGISTER_BLAD = "Register"
@@ -604,6 +605,19 @@ class Livv:
             raise Sparrfel("Rapportnamnet får bara innehålla bokstäver a till z, siffror, _ och - och sluta på .md eller .docx.")
         return self._spara_dokument("08_Rapporter", filnamn, innehall)
 
+    def visa_bild(self, objekt_id: str, namn: str) -> tuple[bytes, str]:
+        """Läser ett bildförslag i 12_Pictures/<objekt-ID> så att agenten kan se det. Bara läsning."""
+        if not OBJEKT_ID_RE.match(objekt_id or ""):
+            raise Sparrfel("Ogiltigt objekt-ID.")
+        namn = (namn or "").strip()
+        if "/" in namn or "\\" in namn or not namn.lower().endswith(BILDTYPER):
+            raise Sparrfel("Ange bara filnamnet på en PNG-, JPG- eller WEBP-bild i objektets mapp.")
+        data = self.g.las(f"{BILDMAPP}/{objekt_id}/{namn}")
+        if len(data) > MAX_BILD:
+            raise Sparrfel(f"Bilden är större än {MAX_BILD // (1024 * 1024)} MB och kan inte visas. Be Brand Studio exportera en mindre version.")
+        format_ = "jpeg" if namn.lower().endswith((".jpg", ".jpeg")) else namn.rsplit(".", 1)[1].lower()
+        return data, format_
+
     def spara_bildbrief(self, objekt_id: str, innehall: str) -> str:
         """Bildbrief till Brand Studio i 12_Pictures/<objekt-ID>. Först när Mattias godkänt texten."""
         if not OBJEKT_ID_RE.match(objekt_id or ""):
@@ -710,6 +724,13 @@ def bygg_server(livv_fabrik=None):
     @server.tool(description="Spara en rapport i 08_Rapporter. Skriver aldrig över.")
     def spara_rapport(filnamn: str, innehall: str) -> str:
         return livv().spara_rapport(filnamn, innehall)
+
+    @server.tool(description="Visa ett bildförslag i 12_Pictures/<objekt-ID> så att du kan se det, till exempel för att skriva alt-text. Ange objekt-ID och filnamnet. Bara läsning.")
+    def visa_bild(objekt_id: str, namn: str):
+        from mcp.server.mcpserver import Image
+
+        data, format_ = livv().visa_bild(objekt_id, namn)
+        return Image(data=data, format=format_)
 
     @server.tool(description="Spara en bildbrief på engelska till Brand Studio i 12_Pictures/<objekt-ID>. Bara när texten är godkänd. Skriver aldrig över. Bara A0.")
     def spara_bildbrief(objekt_id: str, innehall: str) -> str:
