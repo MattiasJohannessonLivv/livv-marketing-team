@@ -7,8 +7,9 @@ Loggen visar att det var Mattias som beslutade och att det skedde i tavlan.
 
 from __future__ import annotations
 
+import os
 import sys
-from datetime import datetime
+from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Any, Callable
 from urllib.parse import quote
@@ -17,7 +18,16 @@ sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "mcp"))
 
 import sharepoint_server as sp  # noqa: E402
 
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import publicera as pub  # noqa: E402
+
 JA = {"ja", "yes", "true", "1"}
+
+
+def _httpx_klient():
+    import httpx
+
+    return httpx.Client(timeout=60)
 MAX_KOMMENTAR = 1000
 
 
@@ -50,10 +60,15 @@ def hitta_brief(las: Any, rad: dict[str, Any]) -> dict[str, str] | None:
 
 
 class Beslut:
-    def __init__(self, las: Any, skrivgraph: Any = None, nu: Callable[[], datetime] | None = None) -> None:
+    def __init__(self, las: Any, skrivgraph: Any = None, nu: Callable[[], datetime] | None = None,
+                 env: dict | None = None, http_fabrik: Callable[[], Any] | None = None,
+                 linkedin_nyckel: Any = pub.las_linkedin_nyckel) -> None:
         self.las = las
         self._skrivgraph = skrivgraph
         self._nu = nu or (lambda: datetime.now(sp.TIDSZON))
+        self._env = env if env is not None else os.environ
+        self._http_fabrik = http_fabrik or _httpx_klient
+        self._linkedin_nyckel = linkedin_nyckel
 
     def _livv(self) -> sp.Livv:
         if self._skrivgraph is None:
@@ -94,6 +109,18 @@ class Beslut:
             "utkast": utkast,
             "brief": hitta_brief(self.las, r),
             "bilder": self.bilder(objekt_id),
+            "inlaggstext": pub.inlaggstext(utkast.get("text", "")) or "",
+            **self._publiceringsdel(r, utkast.get("text", "")),
+        }
+
+    def _publiceringsdel(self, r: dict[str, Any], utkast_text: str) -> dict[str, Any]:
+        if _text(r.get("status")) != "Godkänd":
+            return {}
+        logg = self._logg(_text(r.get("objekt_id")), self.las)
+        return {
+            "bild_vald": self._senast(logg, "Valde bild i teamtavlan"),
+            "alt_text": self._senast(logg, "Alt-text godkänd"),
+            "publicering": self._publiceringslage(r, logg, utkast_text),
         }
 
     def godkann(self, objekt_id: str) -> str:
@@ -120,6 +147,107 @@ class Beslut:
         # 4. Logga
         livv.logga("Mattias", objekt_id, "Godkände i teamtavlan", f"{mapp}/{filnamn}")
         return f"{objekt_id} är godkänd och ligger i {mapp}."
+
+    # ---------------- Publicering när Mattias klickar Publicera ----------------
+
+    def _logg(self, objekt_id: str, graph: Any) -> list[list[str]]:
+        """Loggrader för objektet, den här och förra månaden: [åtgärd, kommentar]."""
+        from openpyxl import load_workbook
+        import io
+
+        nu = self._nu()
+        forra = (nu.replace(day=1) - timedelta(days=1))
+        rader = []
+        for manad in (f"{forra:%Y-%m}", f"{nu:%Y-%m}"):
+            sokvag = f"09_Loggar/Logg_{manad}.xlsx"
+            try:  # en månad utan loggfil hoppas över
+                blad = load_workbook(io.BytesIO(graph.las(sokvag)), read_only=True, data_only=True).worksheets[0]
+            except Exception:
+                continue
+            for r in blad.iter_rows(min_row=2, values_only=True):
+                r = list(r) + [None] * 7
+                if _text(r[3]) == objekt_id:
+                    rader.append([_text(r[4]), _text(r[6])])
+        return rader
+
+    def _senast(self, logg: list[list[str]], atgard: str) -> str:
+        traffar = [kommentar for a, kommentar in logg if a == atgard]
+        return traffar[-1] if traffar else ""
+
+    @staticmethod
+    def _kanal(kanal: str) -> str:
+        k = kanal.strip().lower()
+        return "LinkedIn" if "linkedin" in k else "X" if k in {"x", "twitter", "x (twitter)"} else kanal
+
+    def _publiceringslage(self, r: dict[str, Any], logg: list[list[str]], utkast_text: str) -> dict[str, Any]:
+        kanal = self._kanal(_text(r.get("kanal")))
+        alla = pub.kanaler(self._env, self._nyckel())
+        lage: dict[str, Any] = dict(alla.get(kanal, {"redo": False, "sidor": [],
+                                                      "skal": f"Publicering i kanalen {kanal or 'okänd'} finns inte i tavlan."}))
+        lage["kanal"] = kanal
+        sidor = lage.get("sidor", [])
+        standard = self._env.get("LINKEDIN_STANDARD_SIDA", "Livv.se") if kanal == "LinkedIn" else (sidor[0] if sidor else "")
+        lage["standard"] = standard if standard in sidor else (sidor[0] if sidor else "")
+        hinder = []
+        text = pub.inlaggstext(utkast_text)
+        if not text:
+            hinder.append("Utkastet saknar avsnittet ## Inläggstext. Be A4 göra en ny version med det, eller publicera för hand.")
+        elif "[SAKNAS" in text:
+            hinder.append("Inläggstexten innehåller [SAKNAS].")
+        bilder = self.bilder(_text(r.get("objekt_id")))
+        vald = self._senast(logg, "Valde bild i teamtavlan")
+        if bilder and vald not in bilder:
+            hinder.append("Välj bild först.")
+        if vald in bilder and not self._senast(logg, "Alt-text godkänd"):
+            hinder.append("Alt-texten är inte godkänd än. Be A0 föreslå en.")
+        if self._senast(logg, "Publicerade i teamtavlan"):
+            hinder.append("Inlägget är redan publicerat från tavlan.")
+        if _text(r.get("status")) != "Godkänd":
+            hinder.append("Bara objekt med status Godkänd kan publiceras.")
+        lage["hinder"] = hinder
+        return lage
+
+    def _nyckel(self) -> dict | None:
+        return self._linkedin_nyckel() if callable(self._linkedin_nyckel) else self._linkedin_nyckel
+
+    def publicera(self, objekt_id: str, sida: str) -> str:
+        livv = self._livv()
+        r = self._rad(objekt_id, livv.g)  # läs direkt före publiceringen
+        mapp, filnamn, varumarke = _text(r.get("mapp")), _text(r.get("filnamn")), _text(r.get("varumarke"))
+        utkast_text = sp.fil_till_text(filnamn, livv.g.las(f"{mapp}/{filnamn}"))
+        logg = self._logg(objekt_id, livv.g)
+        lage = self._publiceringslage(r, logg, utkast_text)
+        if lage["hinder"]:
+            raise sp.Sparrfel(" ".join(lage["hinder"]))
+        if not lage.get("redo"):
+            raise sp.Sparrfel(lage.get("skal", "Kanalen är inte kopplad."))
+        if sida not in lage["sidor"]:
+            raise sp.Sparrfel(f"{sida} är inte en kopplad avsändare för {lage['kanal']}.")
+        text = pub.inlaggstext(utkast_text)
+        bildnamn = self._senast(logg, "Valde bild i teamtavlan")
+        bild = self.bild(objekt_id, bildnamn) if bildnamn else None
+        alt = self._senast(logg, "Alt-text godkänd")
+        http = self._http_fabrik()
+
+        # Publicera
+        if lage["kanal"] == "LinkedIn":
+            urn = pub.linkedin_sidor(self._env)[sida]
+            post_id, url = pub.LinkedIn(http, self._nyckel()["access_token"]).publicera(urn, text, bild, alt)
+        else:
+            post_id, url = pub.X(http, self._env).publicera(text, bild, bildnamn, alt)
+
+        # Logga direkt, så att en andra klick aldrig publicerar igen
+        livv.logga("Mattias", objekt_id, "Publicerade i teamtavlan", url, f"{lage['kanal']} som {sida}")
+        try:
+            livv.flytta_objekt(filnamn, varumarke, "Godkänd", "Publicerad")
+            livv.register_uppdatera(objekt_id, {
+                "status": "Publicerad", "mapp": sp.mapp_for_status("Publicerad", varumarke),
+                "publicerad_datum": self._nu().strftime("%Y-%m-%d"), "plattforms_id": post_id, "url": url,
+            })
+        except Exception as fel:
+            raise sp.Sparrfel(f"Inlägget ÄR publicerat: {url}. Men flytten eller registret blev inte klart ({fel}). "
+                              "Be A0 rätta raden. Publicera inte igen.") from fel
+        return f"{objekt_id} är publicerat på {lage['kanal']} som {sida}: {url}"
 
     # ---------------- Logotypen i 00_Underlag ----------------
 

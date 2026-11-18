@@ -382,6 +382,15 @@ details.b-sek summary { cursor: pointer; }
 .b-tillbaka textarea { width: 100%; font: inherit; font-size: 0.92rem; padding: 10px 12px; border-radius: 10px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); resize: vertical; margin-bottom: 8px; }
 .b-svar { margin: 0; font-weight: 600; font-size: 0.9rem; min-height: 1.2em; }
 .b-bilder { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px; }
+.b-pub { border-top: 1px solid var(--line); padding-top: 16px; }
+.b-hinder { margin: 0; padding: 10px 14px 10px 30px; background: var(--wait-soft); color: var(--wait); border-radius: 10px; font-size: 0.86rem; display: grid; gap: 4px; }
+.b-forhand { border: 1px solid var(--line); border-radius: 12px; padding: 14px; display: grid; gap: 12px; background: var(--surface); }
+.b-forhand-head { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; }
+.b-forhand-head select { font: inherit; padding: 4px 8px; border-radius: 8px; border: 1px solid var(--line); background: var(--surface); color: var(--ink); }
+.b-forhand-bild { display: grid; grid-template-columns: 120px minmax(0, 1fr); gap: 12px; align-items: start; }
+.b-forhand-bild img { width: 120px; aspect-ratio: 4 / 5; object-fit: cover; border-radius: 8px; }
+.b-forhand-bild p { margin: 4px 0 0; font-size: 0.86rem; }
+a.b-knapp { text-decoration: none; display: inline-block; }
 .b-bild { margin: 0; border: 2px solid var(--line); border-radius: 12px; overflow: hidden; background: var(--surface-2); display: grid; }
 .b-bild.vald { border-color: var(--ok); }
 .b-bild img { width: 100%; aspect-ratio: 4 / 5; object-fit: cover; display: block; background: var(--surface-2); }
@@ -675,6 +684,32 @@ function renderWaiting() {
 // ---------- Mattias beslut i tavlan ----------
 var KNAPPTEXT = { "Godkänn": "Läs och godkänn", "Beslut": "Läs och besluta", "Publicera": "Text och bild", "Välj bild": "Välj bild" };
 
+// Publicering: bara när Mattias själv klickar och bekräftar. Ingen agent kan publicera.
+function publiceringHtml(d) {
+  var p = d.publicering;
+  if (!p) return "";
+  var html = '<section class="b-sek b-pub"><div class="b-sek-head"><h3>Publicera</h3><span class="muted">' + esc(p.kanal || "") + "</span></div>";
+  if (p.hinder && p.hinder.length) {
+    html += '<ul class="b-hinder">' + p.hinder.map(function (h) { return "<li>" + esc(h) + "</li>"; }).join("") + "</ul>";
+  }
+  if (!p.redo) {
+    html += '<p class="muted">' + esc(p.skal || "Kanalen är inte kopplad än.") + "</p>";
+    if (p.logga_in) html += '<a class="b-knapp" href="linkedin/logga-in">Logga in med LinkedIn</a>';
+    return html + "</section>";
+  }
+  var sidor = p.sidor || [];
+  html += '<div class="b-forhand"><div class="b-forhand-head"><span class="eyebrow">Avsändare</span> <b id="b-avsandare">' + esc(p.standard) + "</b>" +
+    (sidor.length > 1 ? ' <label class="muted" for="b-sida">Byt:</label> <select id="b-sida">' + sidor.map(function (s) {
+      return '<option value="' + esc(s) + '"' + (s === p.standard ? " selected" : "") + ">" + esc(s) + "</option>";
+    }).join("") + "</select>" : '<input type="hidden" id="b-sida" value="' + esc(p.standard) + '">') + "</div>" +
+    textBlock(d.inlaggstext) +
+    (d.bild_vald ? '<div class="b-forhand-bild"><img src="' + bildUrl(d.id, d.bild_vald) + '" alt="' + esc(d.alt_text || "") + '"><div><span class="eyebrow">Alt-text</span><p>' + esc(d.alt_text || "Saknas") + "</p></div></div>" : "") +
+    "</div>";
+  if (p.dagar_kvar != null && p.dagar_kvar < 10) html += '<p class="muted">LinkedIn-inloggningen går ut om ' + p.dagar_kvar + ' dagar. <a href="linkedin/logga-in">Logga in igen</a></p>';
+  html += '<button type="button" class="b-knapp ok" id="b-publicera"' + (p.hinder && p.hinder.length ? " disabled" : "") + ">Publicera på " + esc(p.kanal) + " som " + esc(p.standard) + "</button>";
+  return html + "</section>";
+}
+
 function bildUrl(id, namn) { return "bild?id=" + encodeURIComponent(id) + "&namn=" + encodeURIComponent(namn); }
 function valdBild(id) {
   var o = OBJEKT.find(function (x) { return x.id === id; });
@@ -736,7 +771,8 @@ function visaBeslut(d, etikett) {
       '<textarea id="b-kommentar" rows="4"></textarea><button type="button" class="b-knapp" id="b-skicka">Skicka tillbaka</button></details>';
   }
   if (etikett === "Publicera" || etikett === "Välj bild") {
-    html += '<button type="button" class="b-knapp" id="b-kopiera">Kopiera texten</button><p class="muted">Publicera från rätt företagssida med den valda bilden, och ge sedan A0 datum, plattforms_id och url.</p>';
+    html += publiceringHtml(d);
+    html += '<button type="button" class="b-knapp" id="b-kopiera">Kopiera texten</button><p class="muted">Eller publicera för hand från rätt företagssida och ge sedan A0 datum, plattforms_id och url.</p>';
   }
   html += '<p class="b-svar" id="b-svar" role="status"></p></div>';
   inn.innerHTML = html;
@@ -760,9 +796,25 @@ function visaBeslut(d, etikett) {
   document.querySelectorAll(".b-valj").forEach(function (v) {
     v.addEventListener("click", function () { skickaBeslut("valjbild", { id: d.id, namn: v.getAttribute("data-namn") }); });
   });
+  var pk = document.getElementById("b-publicera");
+  if (pk) pk.addEventListener("click", function () {
+    var sida = document.getElementById("b-sida").value;
+    var kanal = d.publicering.kanal;
+    if (!pk.classList.contains("bekrafta")) {
+      pk.classList.add("bekrafta");
+      pk.textContent = "Bekräfta: publicera nu på " + kanal + " som " + sida;
+      return;
+    }
+    skickaBeslut("publicera", { id: d.id, sida: sida });
+  });
+  var sv = document.getElementById("b-sida");
+  if (sv) sv.addEventListener("change", function () {
+    document.getElementById("b-avsandare").textContent = sv.value;
+    if (pk) { pk.classList.remove("bekrafta"); pk.textContent = "Publicera på " + d.publicering.kanal + " som " + sv.value; }
+  });
   var c = document.getElementById("b-kopiera");
   if (c) c.addEventListener("click", function () {
-    var text = (d.utkast && d.utkast.text) || "";
+    var text = d.inlaggstext || (d.utkast && d.utkast.text) || "";
     var klart = function () { c.textContent = "Kopierad"; };
     if (navigator.clipboard) navigator.clipboard.writeText(text).then(klart, function () { visaSvar("Kopieringen gick inte. Markera texten och kopiera själv.", true); });
   });

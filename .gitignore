@@ -1,5 +1,7 @@
 # Hemligheter: ligger bara lokalt, aldrig i Git
 .env
+.env.*
+!.env.example
 
 # Lokal arbetsmapp för nedladdade filer
 .arbetsyta/

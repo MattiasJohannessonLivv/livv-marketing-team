@@ -47,6 +47,8 @@ A0 ger dig ett objekt-ID. Granska objektets senaste utkast och sätt ett utfall.
    - Regler: inga konkurrentjämförelser, inga emojis i B2B-kanaler om briefen inte säger det, inga personuppgifter, inga AI-bilder utom som intern skiss.
    - Skrivregeln: sök efter tecknen — och –. Varje träff utanför tillåtetlistan i livv-skrivregler är ett fel.
    - Filnamn och version följer regeln. `[SAKNAS: ...]` i texten betyder att objektet inte kan bli Godkänd.
+   - Utkastet har avsnitten `## Inläggstext` och `## Anteckningar`. Under Inläggstext står bara det som ska publiceras, ordagrant. Saknas avsnittet, eller står anteckningar i det: Revidera. Teamtavlan publicerar exakt det som står under Inläggstext.
+   - På X: inläggstexten är högst 280 tecken.
 4. Sätt varumärkespoäng 1 till 5: hur väl texten låter som Livv Group, Livv eller Unique och träffar målgruppen. Skriv en mening om varför.
 
 ## Utfall
