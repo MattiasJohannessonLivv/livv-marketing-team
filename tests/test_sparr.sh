@@ -65,6 +65,7 @@ kontrollera tillat "A0 sparar en bildbrief"                  "$(mcp sharepoint__
 kontrollera deny  "A2 kan inte spara bildbrief"             "$(mcp sharepoint__spara_bildbrief '{}' a2-researcher)"
 kontrollera deny  "A3 kan inte spara bildbrief"             "$(mcp sharepoint__spara_bildbrief '{}' a3-granskare)"
 kontrollera deny  "A4 kan inte spara bildbrief"             "$(mcp sharepoint__spara_bildbrief '{}' a4-contentcreator)"
+kontrollera tillat "A0 tittar på ett bildförslag"            "$(mcp sharepoint__visa_bild '{"objekt_id":"LIVV-2026-0002","namn":"LIVV-2026-0002_option-c.jpg"}')"
 
 echo "Radering och nätverk"
 kontrollera deny  "rm"                                       '{"tool_name":"Bash","tool_input":{"command":"rm -rf .arbetsyta"}}' 1

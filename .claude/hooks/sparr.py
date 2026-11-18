@@ -36,7 +36,7 @@ def fraga(skal):
 SHAREPOINT = {
     "lista_mapp", "las_fil", "skapa_brief", "spara_utkast", "spara_rapport",
     "flytta_objekt", "register_las", "register_ny_rad", "register_uppdatera", "logga",
-    "spara_bildbrief",
+    "spara_bildbrief", "visa_bild",
 }
 FARLIGA_ORD = re.compile(
     r"publish|post|schedul|send|share|tweet|reply|comment|boost|budget|bid|"
