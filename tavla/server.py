@@ -296,6 +296,27 @@ def bygg_hanterare(cache: Cache, beslut: Any = None, nyckel: str | None = None):
                 except Exception as fel:  # visas på sidan, utan hemligheter
                     self._fel(fel)
                 return
+            if sokvag == "/fonter.css":
+                try:
+                    css = beslut.fonter_css() if beslut is not None else ""
+                except Exception:  # utan Crake-filer används installerat typsnitt eller reservtypsnittet
+                    css = ""
+                self._svara(200, "text/css; charset=utf-8", css.encode("utf-8"))
+                return
+            if sokvag == "/font" and beslut is not None:
+                try:
+                    data, typ = beslut.font(parse_qs(fraga).get("namn", [""])[0])
+                    self._svara(200, typ, data)
+                except Exception as fel:
+                    self._fel(fel)
+                return
+            if sokvag == "/logo" and beslut is not None:
+                try:
+                    data, typ = beslut.logotyp()
+                    self._svara(200, typ, data)
+                except Exception as fel:
+                    self._fel(fel)
+                return
             if sokvag == "/bild" and beslut is not None:
                 q = parse_qs(fraga)
                 objekt_id, namn = q.get("id", [""])[0], q.get("namn", [""])[0]

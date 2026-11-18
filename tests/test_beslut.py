@@ -225,6 +225,41 @@ class TestBilder(unittest.TestCase):
         self.assertEqual(tavla.vantande(d["objekt"])[0]["etikett"], "Publicera")
 
 
+class TestLogotyp(unittest.TestCase):
+    def test_logotyp_fran_underlag(self):
+        g = grund()
+        g.filer["00_Underlag/livv_signatur_high (1).png"] = PNG
+        g.filer["00_Underlag/livv-group-logo-pres (1).pdf"] = b"%PDF"
+        data, typ = b.Beslut(LasVy(g), g, NU).logotyp()
+        self.assertEqual((data, typ), (PNG, "image/png"))
+
+    def test_ingen_logotyp(self):
+        with self.assertRaises(sp.Sparrfel):
+            b.Beslut(LasVy(grund()), None, NU).logotyp()
+
+
+class TestFonter(unittest.TestCase):
+    def test_crake_fran_underlag(self):
+        g = grund()
+        g.filer["00_Underlag/Fonter/Crake-Light.otf"] = b"otf1"
+        g.filer["00_Underlag/Fonter/Crake-SemiBold.woff2"] = b"w2"
+        g.filer["00_Underlag/Crake-Bold.ttf"] = b"ttf"
+        g.filer["00_Underlag/Fonter/Annat.otf"] = b"x"
+        beslut = b.Beslut(LasVy(g), None, NU)
+        css = beslut.fonter_css()
+        self.assertEqual(css.count("@font-face"), 3)
+        self.assertIn('url("font?namn=Crake-Light.otf"); font-weight: 300', css)
+        self.assertIn("font-weight: 600", css)
+        self.assertIn("font-weight: 700", css)
+        self.assertEqual(beslut.font("Crake-SemiBold.woff2"), (b"w2", "font/woff2"))
+        for namn in ("Annat.otf", "../Innehallsregister.xlsx", "Crake-Medium.otf"):
+            with self.assertRaises(sp.Sparrfel):
+                beslut.font(namn)
+
+    def test_inga_fonter_ger_tom_css(self):
+        self.assertEqual(b.Beslut(LasVy(grund()), None, NU).fonter_css().strip(), "")
+
+
 class TestRiktigLasvag(unittest.TestCase):
     def test_brief_hittas_via_lasgraph(self):
         g = grund()

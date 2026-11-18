@@ -11,6 +11,7 @@ import sys
 from datetime import datetime
 from pathlib import Path
 from typing import Any, Callable
+from urllib.parse import quote
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "mcp"))
 
@@ -119,6 +120,57 @@ class Beslut:
         # 4. Logga
         livv.logga("Mattias", objekt_id, "Godkände i teamtavlan", f"{mapp}/{filnamn}")
         return f"{objekt_id} är godkänd och ligger i {mapp}."
+
+    # ---------------- Logotypen i 00_Underlag ----------------
+
+    def logotyp(self) -> tuple[bytes, str]:
+        """Livvs logotyp från 00_Underlag, så att den aldrig behöver ligga i Git."""
+        typer = {".png": "image/png", ".svg": "image/svg+xml", ".jpg": "image/jpeg", ".jpeg": "image/jpeg"}
+        namn = sorted(n for n in self.las.lista("00_Underlag")
+                      if n.lower().startswith("livv_signatur") and Path(n).suffix.lower() in typer)
+        if not namn:
+            raise sp.Sparrfel("Hittar ingen logotyp (livv_signatur) i 00_Underlag.")
+        return self.las.las(f"00_Underlag/{namn[0]}"), typer[Path(namn[0]).suffix.lower()]
+
+    # ---------------- Livvs typsnitt Crake från 00_Underlag ----------------
+
+    FONTTYPER = {".woff2": "font/woff2", ".woff": "font/woff", ".otf": "font/otf", ".ttf": "font/ttf"}
+
+    def _fontfiler(self) -> list[str]:
+        """Crake-filer i 00_Underlag eller 00_Underlag/Fonter. Licensierade, så de ligger aldrig i Git."""
+        filer = []
+        for mapp in ("00_Underlag", "00_Underlag/Fonter"):
+            try:
+                namn = self.las.lista(mapp)
+            except Exception:
+                continue
+            filer += [f"{mapp}/{n}" for n in namn
+                      if n.lower().startswith("crake") and Path(n).suffix.lower() in self.FONTTYPER]
+        return sorted(filer)
+
+    @staticmethod
+    def _vikt(namn: str) -> int:
+        n = namn.lower().replace("-", "").replace(" ", "")
+        for ord_, vikt in (("extralight", 200), ("light", 300), ("semibold", 600), ("medium", 500), ("bold", 700)):
+            if ord_ in n:
+                return vikt
+        return 400
+
+    def fonter_css(self) -> str:
+        regler = []
+        for sokvag in self._fontfiler():
+            namn = sokvag.rsplit("/", 1)[1]
+            stil = "italic" if "italic" in namn.lower() else "normal"
+            url = "font?namn=" + quote(namn)
+            regler.append(f'@font-face {{ font-family: "Crake Livv"; src: url("{url}"); '
+                          f"font-weight: {self._vikt(namn)}; font-style: {stil}; font-display: swap; }}")
+        return "\n".join(regler) + "\n"
+
+    def font(self, namn: str) -> tuple[bytes, str]:
+        for sokvag in self._fontfiler():
+            if sokvag.rsplit("/", 1)[1] == namn:
+                return self.las.las(sokvag), self.FONTTYPER[Path(namn).suffix.lower()]
+        raise sp.Sparrfel("Typsnittet finns inte i 00_Underlag.")
 
     # ---------------- Bilder från Brand Studio ----------------
 
