@@ -296,6 +296,13 @@ def bygg_hanterare(cache: Cache, beslut: Any = None, nyckel: str | None = None):
                 except Exception as fel:  # visas på sidan, utan hemligheter
                     self._fel(fel)
                 return
+            if sokvag == "/logo" and beslut is not None:
+                try:
+                    data, typ = beslut.logotyp()
+                    self._svara(200, typ, data)
+                except Exception as fel:
+                    self._fel(fel)
+                return
             if sokvag == "/bild" and beslut is not None:
                 q = parse_qs(fraga)
                 objekt_id, namn = q.get("id", [""])[0], q.get("namn", [""])[0]

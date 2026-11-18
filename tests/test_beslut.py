@@ -225,6 +225,19 @@ class TestBilder(unittest.TestCase):
         self.assertEqual(tavla.vantande(d["objekt"])[0]["etikett"], "Publicera")
 
 
+class TestLogotyp(unittest.TestCase):
+    def test_logotyp_fran_underlag(self):
+        g = grund()
+        g.filer["00_Underlag/livv_signatur_high (1).png"] = PNG
+        g.filer["00_Underlag/livv-group-logo-pres (1).pdf"] = b"%PDF"
+        data, typ = b.Beslut(LasVy(g), g, NU).logotyp()
+        self.assertEqual((data, typ), (PNG, "image/png"))
+
+    def test_ingen_logotyp(self):
+        with self.assertRaises(sp.Sparrfel):
+            b.Beslut(LasVy(grund()), None, NU).logotyp()
+
+
 class TestRiktigLasvag(unittest.TestCase):
     def test_brief_hittas_via_lasgraph(self):
         g = grund()

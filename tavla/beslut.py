@@ -120,6 +120,17 @@ class Beslut:
         livv.logga("Mattias", objekt_id, "Godkände i teamtavlan", f"{mapp}/{filnamn}")
         return f"{objekt_id} är godkänd och ligger i {mapp}."
 
+    # ---------------- Logotypen i 00_Underlag ----------------
+
+    def logotyp(self) -> tuple[bytes, str]:
+        """Livvs logotyp från 00_Underlag, så att den aldrig behöver ligga i Git."""
+        typer = {".png": "image/png", ".svg": "image/svg+xml", ".jpg": "image/jpeg", ".jpeg": "image/jpeg"}
+        namn = sorted(n for n in self.las.lista("00_Underlag")
+                      if n.lower().startswith("livv_signatur") and Path(n).suffix.lower() in typer)
+        if not namn:
+            raise sp.Sparrfel("Hittar ingen logotyp (livv_signatur) i 00_Underlag.")
+        return self.las.las(f"00_Underlag/{namn[0]}"), typer[Path(namn[0]).suffix.lower()]
+
     # ---------------- Bilder från Brand Studio ----------------
 
     def bilder(self, objekt_id: str) -> list[str]:

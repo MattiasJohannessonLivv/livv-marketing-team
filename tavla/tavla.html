@@ -185,6 +185,9 @@ footer { color: var(--muted); font-size: 0.8rem; border-top: 1px solid var(--lin
 :root[data-theme="dark"] { --grok: #AFC0DE; --grok-soft: #232C3B; }
 .bar { max-width: 1240px; margin: 0 auto 22px; display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; }
 .brand { font-family: var(--font-display); font-weight: 600; font-size: 0.95rem; display: flex; align-items: center; gap: 10px; }
+.brand .logo { height: 26px; width: auto; display: block; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) .brand .logo { filter: invert(1); } }
+:root[data-theme="dark"] .brand .logo { filter: invert(1); }
 .brand .sample { font-family: var(--font-body); }
 .tabs { display: inline-flex; background: var(--surface); border: 1px solid var(--line); border-radius: 999px; padding: 3px; }
 .tabs a { padding: 6px 16px; border-radius: 999px; text-decoration: none; color: var(--muted); font-weight: 600; font-size: 0.85rem; }
@@ -410,7 +413,7 @@ details.b-sek summary { cursor: pointer; }
 </svg>
 
 <nav class="bar" aria-label="Vyer">
-  <div class="brand">Livv Marketing Ops <span class="sample" id="kalla">Hämtar data</span></div>
+  <div class="brand"><img class="logo" src="logo" alt="Livv" hidden onload="this.hidden=false" onerror="this.remove()"><span>Livv Marketing Ops</span> <span class="sample" id="kalla">Hämtar data</span></div>
   <div class="tabs">
     <a href="#teamet" id="tab-teamet">Teamet</a>
     <a href="#tavla" id="tab-tavla">Driftstavlan</a>
