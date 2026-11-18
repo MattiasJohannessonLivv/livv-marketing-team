@@ -36,6 +36,7 @@ sys.path.insert(0, str(MAPP))
 
 import sharepoint_server as sp  # noqa: E402
 from beslut import Beslut  # noqa: E402
+import publicera as pub  # noqa: E402
 
 VARD = "127.0.0.1"  # bara den egna datorn, aldrig nätverket
 CACHE_SEKUNDER = 300
@@ -288,6 +289,7 @@ def bygg_hanterare(cache: Cache, beslut: Any = None, nyckel: str | None = None):
     """Webbservern. Läser för alla sidor. Skriver bara via Mattias beslut i tavlan (POST),
     och bara med nyckeln som finns i sidan som servern själv levererade."""
     nyckel = nyckel or secrets.token_urlsafe(32)
+    linkedin_state: dict[str, float] = {}  # engångskoder för LinkedIn-inloggningen, mot förfalskade svar
 
     class Hanterare(BaseHTTPRequestHandler):
         def _svara(self, kod: int, typ: str, kropp: bytes) -> None:
@@ -322,6 +324,9 @@ def bygg_hanterare(cache: Cache, beslut: Any = None, nyckel: str | None = None):
                     self._json(200, cache.data())
                 except Exception as fel:  # visas på sidan, utan hemligheter
                     self._fel(fel)
+                return
+            if sokvag in {"/linkedin/logga-in", "/linkedin/svar"}:
+                self._linkedin(sokvag, parse_qs(fraga))
                 return
             if sokvag == "/fonter.css":
                 try:
@@ -370,9 +375,51 @@ def bygg_hanterare(cache: Cache, beslut: Any = None, nyckel: str | None = None):
                 return
             self._svara(404, "text/plain; charset=utf-8", "Finns inte".encode("utf-8"))
 
+        def _linkedin(self, sokvag: str, q: dict[str, list[str]]) -> None:
+            """Mattias loggar in med LinkedIn en gång. Nyckeln sparas i .env.linkedin."""
+            port = self.server.server_address[1]
+            redirect = f"http://localhost:{port}/linkedin/svar"
+            client_id = os.environ.get("LINKEDIN_CLIENT_ID", "")
+            if not client_id:
+                self._sida("LinkedIn är inte kopplad", "Appen hos LinkedIn saknas i .env. Se README.")
+                return
+            if sokvag == "/linkedin/logga-in":
+                state = secrets.token_urlsafe(24)
+                linkedin_state[state] = time.time()
+                self.send_response(302)
+                self.send_header("Location", pub.linkedin_inloggningsadress(client_id, redirect, state))
+                self.end_headers()
+                return
+            state = q.get("state", [""])[0]
+            if not state or time.time() - linkedin_state.pop(state, 0) > 600:
+                self._sida("Inloggningen gick inte igenom", "Svaret från LinkedIn kunde inte kontrolleras. Försök igen från tavlan.")
+                return
+            if q.get("error"):
+                self._sida("Inloggningen avbröts", "LinkedIn svarade: " + q.get("error_description", q["error"])[0])
+                return
+            try:
+                import httpx
+
+                with httpx.Client(timeout=30) as http:
+                    svar = pub.linkedin_byt_kod(http, q.get("code", [""])[0], redirect)
+                pub.spara_linkedin_nyckel(svar)
+            except Exception as fel:
+                self._sida("Inloggningen gick inte igenom", str(fel))
+                return
+            self._sida("LinkedIn är kopplad", "Du kan stänga den här fliken och gå tillbaka till tavlan.")
+
+        def _sida(self, rubrik: str, text: str) -> None:
+            from html import escape
+
+            kropp = (f'<!doctype html><meta charset="utf-8"><title>{escape(rubrik)}</title>'
+                     f'<body style="font-family: Inter, Arial, sans-serif; padding: 40px; max-width: 560px">'
+                     f'<h1 style="font-weight: 400">{escape(rubrik)}</h1><p>{escape(text)}</p>'
+                     f'<p><a href="/#tavla">Till tavlan</a></p></body>')
+            self._svara(200, "text/html; charset=utf-8", kropp.encode("utf-8"))
+
         def do_POST(self) -> None:  # noqa: N802
             sokvag = self.path.split("?", 1)[0]
-            if sokvag not in {"/godkann", "/tillbaka", "/valjbild"} or beslut is None:
+            if sokvag not in {"/godkann", "/tillbaka", "/valjbild", "/publicera"} or beslut is None:
                 self._svara(404, "text/plain; charset=utf-8", "Finns inte".encode("utf-8"))
                 return
             port = self.server.server_address[1]
@@ -389,6 +436,8 @@ def bygg_hanterare(cache: Cache, beslut: Any = None, nyckel: str | None = None):
                 objekt_id = str(data.get("id", ""))
                 if sokvag == "/godkann":
                     text = beslut.godkann(objekt_id)
+                elif sokvag == "/publicera":
+                    text = beslut.publicera(objekt_id, str(data.get("sida", "")))
                 elif sokvag == "/valjbild":
                     text = beslut.valj_bild(objekt_id, str(data.get("namn", "")))
                 else:

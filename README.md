@@ -29,6 +29,7 @@ livv-marketing-team/
   tavla/
     server.py                   läser register och logg, serverar tavlan på 127.0.0.1
     beslut.py                   Mattias beslut i tavlan: godkänn och skicka tillbaka
+    publicera.py                publicering till LinkedIn och X när Mattias klickar Publicera
     tavla.html                  teamtavlan
     exempeldata.json            exempel för att visa tavlan utan SharePoint
   .claude/
@@ -54,6 +55,7 @@ livv-marketing-team/
     test_excel.py               rullistor och loggkolumner efter skrivning via servern
     test_tavla.py               teamtavlan: omvandling, notiser och webbservern
     test_beslut.py              beslut i tavlan: godkänn, skicka tillbaka och skyddet mot andra sidor
+    test_publicera.py           publicering: inläggstext, LinkedIn, X och spärrar mot dubbelpublicering
 ```
 
 ## Så hålls reglerna tekniskt
@@ -151,6 +153,22 @@ Engångsinställning:
    - Åtgärd: Microsoft Teams, *Post message in a chat or channel*, som Flow bot i chatt med Anastasia Johannesson. Meddelande:
 
      > New image brief from the Livv marketing team: *File name*. Please create two or three options in Atelier and upload them to the same folder. The brief has the deadline. Open it here: *Link to item*
+
+### Publicera från tavlan
+När texten är godkänd, bilden vald och alt-texten godkänd visar tavlan knappen **Publicera** för objektet. Mattias väljer avsändare (Livv.se är förvalt, fler sidor läggs till i `LINKEDIN_SIDOR`), ser exakt vad som går ut och bekräftar. Tavlan publicerar bara texten under `## Inläggstext` i utkastet, laddar upp bilden med alt-texten, flyttar filen till 05_Publicerat, fyller i publicerad_datum, plattforms_id och url och loggar "Publicerade i teamtavlan". Ett objekt kan bara publiceras en gång från tavlan.
+
+Ingen agent kan publicera. Publiceringen finns bara i tavlans server (`tavla/publicera.py`), som agenterna inte når, och spärren stoppar alla agentanrop till LinkedIn och X. Utan nycklar i `.env` är knappen avstängd och tavlan säger vad som saknas.
+
+**Koppla LinkedIn, en gång:**
+1. Gå till linkedin.com/developers och välj **Create app**. Ange appens namn, till exempel *Livv Marketing Ops*, välj företagssidan Livv.se, lägg in en länk till integritetspolicyn och Livvs logotyp.
+2. Under **Settings**, välj **Verify** vid företagssidan. En admin för Livv.se godkänner via länken som skapas.
+3. Under **Products**, begär **Community Management API** och fyll i ansökan. LinkedIn granskar den, och det kan ta flera veckor. Appen bör bara ha den här produkten.
+4. Under **Auth**, lägg till Redirect URL `http://localhost:8787/linkedin/svar` och kopiera **Client ID** och **Client Secret** till `.env` (`LINKEDIN_CLIENT_ID`, `LINKEDIN_CLIENT_SECRET`).
+5. När ansökan är godkänd: starta om tavlan, öppna ett godkänt objekt och klicka **Logga in med LinkedIn**. Logga in med kontot som är admin för sidorna. Inloggningen sparas i `.env.linkedin` och gäller i 60 dagar, sedan ber tavlan dig logga in igen.
+
+**Koppla X:** lägg in nycklarna för Livv Groups utvecklarapp i `.env` (`X_API_KEY`, `X_API_SECRET`, `X_ACCESS_TOKEN`, `X_ACCESS_TOKEN_SECRET`). Appen behöver behörigheten *Read and write*, och nycklarna ska skapas för Livv Groups konto.
+
+Publiceringen mot LinkedIn och X är testad mot attrapper, inte mot de riktiga tjänsterna. Första riktiga publiceringen bör göras på ett objekt där det gör lite om något behöver rättas.
 
 ### Teamtavlan
 ```bash
