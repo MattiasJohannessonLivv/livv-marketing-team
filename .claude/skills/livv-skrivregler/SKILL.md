@@ -1,11 +1,11 @@
 ---
 name: livv-skrivregler
-description: "Livv Groups skriv- och publiceringsregler: inga tankstreck som satsbindare, och allt som publiceras på LinkedIn och X går ut från företagets egen sida eller eget konto, aldrig från en privat profil. Används vid varje utkast, inlägg, mejl, dokument och publicering."
+description: "Livv Groups skriv- och publiceringsregler: inga tankstreck som satsbindare, allt som publiceras skrivs på engelska, Livv beskrivs som hospitality partner och aldrig som grossist, och allt som publiceras på LinkedIn och X går ut från företagets egen sida eller eget konto, aldrig från en privat profil. Används vid varje utkast, inlägg, mejl, dokument och publicering."
 ---
 
 # Livv Group: skriv- och publiceringsregler
 
-Två stående regler. Den första gäller hur text skrivs, den andra hur den publiceras.
+Fyra stående regler. De tre första gäller hur text skrivs, den fjärde hur den publiceras.
 
 ---
 
@@ -53,7 +53,38 @@ Efter: What a guest remembers is assembled from a few hundred small decisions: t
 
 ---
 
-# 2. Publiceringsregel: företagssidan är avsändare
+# 2. Språkregel: allt som publiceras är på engelska
+
+## Regeln
+
+Allt som publiceras skrivs på engelska. Engelska är koncernspråket. Det gäller alla bolag (Livv Group, Livv och Unique), alla kanaler (LinkedIn, X, webb, nyhetsbrev, annonser) och allt som syns för läsaren: inläggstext, rubriker, CTA, annonstext, bildtext och alt-text. Beslut av Mattias 5 november 2026.
+
+Kolumnen sprak i registret ändrar inte regeln. Står något annat än en där: skriv på engelska och säg det till A0, så att Mattias kan rätta raden.
+
+## Vad som inte omfattas
+
+Intern text som inte publiceras får vara på svenska: briefer, anteckningar i utkast, granskningar, rapporter, loggen och svar till Mattias i chatten. Undantag från språkregeln gäller bara när Mattias uttryckligen beslutat det för ett visst objekt.
+
+---
+
+# 3. Positionering: hospitality partner, aldrig grossist
+
+## Regeln
+
+Livv är en hospitality partner till hotell och spa. Livv är aldrig en grossist och beskrivs aldrig som en. På engelska: "hospitality partner", aldrig "wholesaler", "wholesale" eller "hotel wholesaler". På svenska: aldrig "grossist" eller "hotellgrossist".
+
+Regeln gäller också omskrivningar som ger samma bild, till exempel att Livv främst säljer volym eller sortiment till lägsta pris. Beskriv i stället vad Livv gör tillsammans med hotellet: helhet, koncept och gästupplevelse, med fakta från 00_Underlag.
+
+## Exempel
+
+Före: Livv is a leading wholesaler of hotel amenities in the Nordics.
+Efter: Livv is a hospitality partner to hotels and spas.
+
+Ordet "Nordics" och liknande påståenden om marknad och storlek får bara användas om de står i 00_Underlag.
+
+---
+
+# 4. Publiceringsregel: företagssidan är avsändare
 
 ## Regeln
 
@@ -88,9 +119,11 @@ Publicera aldrig, och schemalägg aldrig, utan att Mattias uttryckligen godkänt
 # Checklista före publicering
 
 1. Sök igenom texten efter — och –. Varje träff utanför tillåtetlistan skrivs om.
-2. Kontrollera att avsändaren i skrivrutan är företagssidan på LinkedIn eller Livv Groups företagskonto på X.
-3. Kontrollera att texten är uttryckligen godkänd.
-4. Kontrollera om det redan finns ett färdigt utkast för inlägget i SharePoint‑mappen innan ett nytt skrivs.
-5. Efter publicering, uppdatera Status i innehållsplanen.
+2. Kontrollera att allt som publiceras är på engelska, även alt-text.
+3. Sök efter wholesale, wholesaler och grossist. Varje träff om Livv skrivs om till hospitality partner.
+4. Kontrollera att avsändaren i skrivrutan är företagssidan på LinkedIn eller Livv Groups företagskonto på X.
+5. Kontrollera att texten är uttryckligen godkänd.
+6. Kontrollera om det redan finns ett färdigt utkast för inlägget i SharePoint‑mappen innan ett nytt skrivs.
+7. Efter publicering, uppdatera Status i innehållsplanen.
 
 Rapportera aldrig en text som klar eller publicerad utan att ha gått igenom listan.
