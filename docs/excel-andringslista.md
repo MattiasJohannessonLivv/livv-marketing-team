@@ -52,10 +52,10 @@ Verktyget ändrar en cell bara om exakt en cell matchar. Finns ingen eller flera
 
 Status: **godkänt och genomfört 23 november 2026, kontrollerat av A0.** Första försöket, av Claude i Chrome kl. 17:21, sparades aldrig i registret. Mattias gjorde ändringen i SharePoint och filen sparades 17:57. A0 har jämfört kopian cell för cell med kopian från 16:16: exakt fem celler är ändrade (Listor E2 till E4, Kolumner C8 och D8), rullistan G2:G2000 pekar på Listor!$E$2:$E$2 och alla 13 rullistor finns kvar. Testerna går igenom.
 
-| Blad | Var | Nu | Föreslaget |
+| Blad | Var | Före | Efter |
 |---|---|---|---|
 | Listor | kolumnen sprak | sv, en, da | en |
 | Kolumner | sprak, Beskrivning | sv, en eller da | en. Allt som publiceras är på engelska |
 | Kolumner | sprak, Exempel | sv | en |
 
-Rullistan för sprak (G2:G2000) ska då peka på Listor!$E$2:$E$2. Engångsverktyget kan i dag bara ändra celler och lägga till listvärden, inte ta bort dem. Enklast är att Mattias gör ändringen för hand i Excel online och loggar den.
+Rullistan för sprak (G2:G2000) pekar nu på Listor!$E$2:$E$2. Mattias gjorde ändringen för hand i SharePoint, eftersom engångsverktyget bara kan ändra celler och lägga till listvärden, inte ta bort dem.
