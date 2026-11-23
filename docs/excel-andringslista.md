@@ -50,7 +50,7 @@ Verktyget ändrar en cell bara om exakt en cell matchar. Finns ingen eller flera
 
 # Förslag 2: språk (inte genomfört)
 
-Status: **förslag, väntar på Mattias godkännande.** Bakgrund: allt som publiceras skrivs på engelska (beslut 5 november 2026, regel 2 i livv-skrivregler). Alla rader i registret har redan sprak en.
+Status: **godkänt av Mattias 23 november 2026, inte genomfört än.** Mattias gör ändringen för hand i Excel online och loggar den. Bakgrund: allt som publiceras skrivs på engelska (beslut 5 november 2026, regel 2 i livv-skrivregler). Alla rader i registret har redan sprak en.
 
 | Blad | Var | Nu | Föreslaget |
 |---|---|---|---|
