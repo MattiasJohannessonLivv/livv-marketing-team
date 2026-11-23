@@ -29,6 +29,7 @@ livv-marketing-team/
   tavla/
     server.py                   läser register och logg, serverar tavlan på 127.0.0.1
     beslut.py                   Mattias beslut i tavlan: godkänn och skicka tillbaka
+    a0.py                       startar A0 i bakgrunden efter godkännande, för bildbriefen
     publicera.py                publicering till LinkedIn och X, efter bekräftelse i en ruta från macOS
     tavla.html                  teamtavlan
     exempeldata.json            exempel för att visa tavlan utan SharePoint
@@ -65,6 +66,7 @@ livv-marketing-team/
     test_excel.py               rullistor och loggkolumner efter skrivning via servern
     test_excel_andringar.py     engångsverktyget för ändringslistan
     test_tavla.py               teamtavlan: omvandling, notiser och webbservern
+    test_a0.py                  A0 startas efter godkännande i tavlan, i driftläge och med få verktyg
     test_beslut.py              beslut i tavlan: godkänn, skicka tillbaka och skyddet mot andra sidor
     test_publicera.py           publicering: rutan från macOS, inläggstext, LinkedIn, X och spärrar mot dubbelpublicering
 ```
@@ -194,9 +196,9 @@ Publiceringen mot LinkedIn och X är testad mot attrapper, inte mot de riktiga t
 Medan tavlan körs får du en notis på Macen när något nytt väntar på ditt beslut, och listan Väntar på dig har en länk direkt till filen i SharePoint. Notiserna stängs av med `TAVLA_NOTISER=0 ./tavla.sh`.
 
 **Besluta i tavlan.** Under Väntar på dig öppnar du ett objekt med **Läs och godkänn**. Utkastet och briefen visas i tavlan. Du kan:
-- **Godkänna.** Knappen kräver en bekräftelse. Tavlan kontrollerar att A3 har godkänt och att objektet står i Granskning, flyttar filen till 04_Godkant, fyller i godkand_av och godkand_datum och loggar att Mattias godkände. Nästa gång teamet arbetar skriver A0 bildbriefen.
+- **Godkänna.** Knappen kräver en bekräftelse. Tavlan kontrollerar att A3 har godkänt och att objektet står i Granskning, flyttar filen till 04_Godkant, fyller i godkand_av och godkand_datum och loggar att Mattias godkände. Sedan startar tavlan A0 i bakgrunden, som skriver bildbriefen direkt (`tavla/a0.py`). Körningen är i driftläge och kan bara läsa, spara bildbriefen och logga. Utskriften sparas i `.arbetsyta/a0-bildbrief/`. Kan A0 inte startas skriver den bildbriefen nästa gång du startar teamet.
 - **Skicka tillbaka med kommentar.** Objektet går tillbaka till Utkast med a3_utfall Revidera, och kommentaren loggas. A0 ger den till A4 nästa gång teamet arbetar.
-- **Välja bild och publicera**, se Publicera från tavlan.
+- **Välja bild och publicera.** Varje godkänt objekt har knappen **Publicera** i listan Väntar på dig. Den öppnar objektet vid publiceringen, se Publicera från tavlan.
 - **Kopiera texten** när du hellre publicerar för hand.
 
 Typsnitten är Livvs egna: Crake i rubriker och Inter i text. Har datorn Crake installerat används det direkt. Annars hämtar tavlan Crake-filer från `00_Underlag` eller `00_Underlag/Fonter`, och utan dem visas ett liknande reservtypsnitt. Logotypen hämtas också från `00_Underlag`. Typsnitt och logotyp läggs aldrig i Git.

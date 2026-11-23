@@ -3,6 +3,7 @@
 Servern hämtar Innehallsregister och loggfilerna i 09_Loggar via samma
 app-registrering som MCP-servern. Den skriver bara när Mattias själv godkänner
 ett objekt, skickar tillbaka det, väljer bild eller publicerar i tavlan (se beslut.py).
+Efter ett godkännande startar servern A0 i bakgrunden för bildbriefen (se a0.py).
 Varje publicering kräver att Mattias bekräftar i en ruta från macOS som servern visar,
 så ett anrop direkt till servern räcker aldrig. Sidan kan aldrig schemalägga.
 
@@ -37,6 +38,7 @@ sys.path.insert(0, str(MAPP))
 
 import sharepoint_server as sp  # noqa: E402
 from beslut import Beslut  # noqa: E402
+from a0 import Bildbriefstartare  # noqa: E402
 import publicera as pub  # noqa: E402
 
 VARD = "127.0.0.1"  # bara den egna datorn, aldrig nätverket
@@ -495,7 +497,8 @@ def main() -> None:
     port = int(os.environ.get("TAVLA_PORT", "8787"))
     graph = LasGraph()
     cache = Cache(lambda: hamta(graph))
-    server = ThreadingHTTPServer((VARD, port), bygg_hanterare(cache, Beslut(graph)))
+    beslut = Beslut(graph, efter_godkannande=Bildbriefstartare())  # A0 skriver bildbriefen direkt efter godkännande
+    server = ThreadingHTTPServer((VARD, port), bygg_hanterare(cache, beslut))
     print(f"Teamtavlan körs på http://{VARD}:{port}  (avsluta med Ctrl+C)")
     if os.environ.get("TAVLA_NOTISER", "1") != "0":
         threading.Thread(target=bevaka, args=(cache, Pingare()), daemon=True).start()

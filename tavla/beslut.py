@@ -64,7 +64,8 @@ class Beslut:
     def __init__(self, las: Any, skrivgraph: Any = None, nu: Callable[[], datetime] | None = None,
                  env: dict | None = None, http_fabrik: Callable[[], Any] | None = None,
                  linkedin_nyckel: Any = pub.las_linkedin_nyckel,
-                 bekrafta: Callable[..., bool] = pub.macos_bekraftelse) -> None:
+                 bekrafta: Callable[..., bool] = pub.macos_bekraftelse,
+                 efter_godkannande: Callable[[str], str] | None = None) -> None:
         self.las = las
         self._skrivgraph = skrivgraph
         self._nu = nu or (lambda: datetime.now(sp.TIDSZON))
@@ -72,6 +73,8 @@ class Beslut:
         self._http_fabrik = http_fabrik or _httpx_klient
         self._linkedin_nyckel = linkedin_nyckel
         self._bekrafta = bekrafta
+        # Startar A0 så att bildbriefen skrivs direkt (a0.py). Sätts av tavlans server, inte i testerna.
+        self._efter_godkannande = efter_godkannande
         self._publicerar = threading.Lock()  # en publicering i taget, så att två klick aldrig båda går ut
 
     def _livv(self) -> sp.Livv:
@@ -150,7 +153,14 @@ class Beslut:
                               "Be A0 rätta raden.") from fel
         # 4. Logga
         livv.logga("Mattias", objekt_id, "Godkände i teamtavlan", f"{mapp}/{filnamn}")
-        return f"{objekt_id} är godkänd och ligger i {mapp}."
+        svar = f"{objekt_id} är godkänd och ligger i {mapp}."
+        # 5. Bildbriefen: A0 får besked direkt. Godkännandet gäller även om A0 inte kan startas.
+        if self._efter_godkannande is not None:
+            try:
+                svar += " " + self._efter_godkannande(objekt_id)
+            except Exception:
+                svar += " A0 kunde inte startas. A0 skriver bildbriefen nästa gång du startar teamet."
+        return svar
 
     # ---------------- Publicering när Mattias klickar Publicera ----------------
 
