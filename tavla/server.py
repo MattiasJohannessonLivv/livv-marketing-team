@@ -28,7 +28,7 @@ from datetime import date, datetime, time as klockslag
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from typing import Any, Iterable
-from urllib.parse import parse_qs, unquote
+from urllib.parse import parse_qs
 
 MAPP = Path(__file__).resolve().parent
 sys.path.insert(0, str(MAPP.parent / "mcp"))
@@ -168,30 +168,14 @@ def vantande(objekt: Iterable[dict[str, Any]]) -> list[dict[str, Any]]:
     return lista
 
 
-HTTP_FORKLARING = {
-    401: "inloggningen gick ut eller nekades. Kontrollera värdena i .env",
-    403: "appen saknar behörighet till filen eller mappen. Har behörigheten ändrats, till exempel vid delning?",
-    404: "filen eller mappen finns inte",
-    409: "filen är upptagen just nu",
-    423: "filen är låst, troligen öppen för redigering",
-    429: "för många anrop till SharePoint. Tavlan försöker igen om fem minuter",
-}
-
-
 def felbeskrivning(fel: Exception) -> str:
-    """Ett begripligt felmeddelande, utan hemligheter. Säger vilken fil det gäller när det går."""
-    if isinstance(fel, sp.Sparrfel):
-        return str(fel)
-    svar = getattr(fel, "response", None)
-    kod = getattr(svar, "status_code", None)
-    if kod is None:
-        return type(fel).__name__
-    url = str(getattr(getattr(fel, "request", None), "url", "") or "")
-    m = re.search(r"/items/[^/:]+:/(.+?):(?:/|$)", url)
-    fil = unquote(m[1]) if m else "rotmappen" if "/children" in url else "SharePoint"
-    forklaring = HTTP_FORKLARING.get(kod, "tillfälligt fel hos Microsoft. Tavlan försöker igen om fem minuter"
-                                     if kod >= 500 else "oväntat svar")
-    return f"SharePoint svarade {kod} för {fil}: {forklaring}" + ("" if forklaring.endswith("?") else ".")
+    """Ett begripligt felmeddelande, utan hemligheter. Säger vilken fil det gäller när det går.
+    Samma förklaringar som SharePoint-servern, men utan feltext som kan visas för andra sidor."""
+    return sp.felbeskrivning(
+        fel, med_text=False,
+        forklaringar={429: "för många anrop till SharePoint. Tavlan försöker igen om fem minuter"},
+        vid_serverfel="tillfälligt fel hos Microsoft. Tavlan försöker igen om fem minuter",
+    )
 
 
 def logg_fran_bok(data: bytes) -> list[list[str]]:
