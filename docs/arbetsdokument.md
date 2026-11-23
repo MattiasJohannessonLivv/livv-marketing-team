@@ -55,7 +55,8 @@ Teamet arbetar i en veckorytm med daglig bevakning och nattlig datainhämtning. 
 
 | När | Vad | Agent | Utdata |
 |---|---|---|---|
-| Dagligen 06.00 | Trendscan av nätet och X | A1, A8 | Trendrapport i insiktsmappen |
+| Måndag | Trendspaning på nätet och X, de senaste sju dagarna | A1 | Trendrapport i 13_Insikter |
+| Dagligen 06.00, från fas 3 | Bevakning av samtal på X | A8 | Svarsförslag och trender för X |
 | Nattligen | Resultatimport från Google, Meta, LinkedIn och X | Skript, ingen agent | Nya rader i Matregister |
 | Måndag | Lärdomar, prioritering, veckoplan och briefer | A2, A0 | Briefer i 01_Briefer, rader i registret |
 | Tisdag till torsdag | Utkast, kanalanpassning och granskning | A4, A5 till A8, A3 | Utkast i 02_Utkast, granskade objekt i 03_Granskning |
@@ -204,7 +205,7 @@ Beslut 18 november 2026: Mattias kan publicera godkända objekt med knappen Publ
 **A1 Trendspotter, 23 november 2026**
 - Beslut: A1 byggs nu, före grinden till fas 3, medan teamet väntar på LinkedIns ansökan. Grok är godkänt internt.
 - Byggt: MCP-servern mot xAI med verktyget trendsok, verktyget spara_trendrapport för 13_Insikter, subagenten a1-trendspotter och spärrar så att bara A1 söker och sparar trendrapporter.
-- A1 körs när Mattias eller A0 ber om det. Den dagliga spaningen klockan 06.00 kommer i fas 4.
+- Beslut 23 november 2026: A1 söker en gång i veckan, på måndagar, inte varje morgon. A0 startar spaningen första gången teamet arbetar en vecka, samtidigt som A2:s veckoanalys. Därutöver när Mattias ber om det. Körning på schema utan att teamet är startat kommer i fas 4.
 - Första riktiga körningen 23 november 2026: trender inom spa och wellness, 9 till 23 november. Rapporten 13_Insikter/20261123_trender_spa_v01.md sparades och loggades. Modellen grok-4-1-fast och svarsformatet fungerade.
 
 **Arbetsregler för kopplingarna**

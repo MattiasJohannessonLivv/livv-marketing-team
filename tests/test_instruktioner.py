@@ -72,6 +72,7 @@ class TestA1(unittest.TestCase):
         a0 = las("CLAUDE.md")
         self.assertIn("`a1-trendspotter`", a0)
         self.assertIn("Du söker aldrig själv med Grok", a0)
+        self.assertIn("En gång i veckan: första gången du arbetar en vecka, från måndag", a0)
         self.assertIn("först när Mattias har verifierat dem och fört över dem till 00_Underlag", a0)
 
     def test_a1_skickar_inget_internt(self):
