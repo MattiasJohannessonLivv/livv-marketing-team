@@ -2,6 +2,8 @@
 
 Status: **genomförd 17 november 2026.** Godkänd av Mattias och genomförd med `verktyg/excel_andringar.py`. Alla 21 ändringar är gjorda och kontrollerade, rullistorna för ansvarig_agent och kanal är utökade, och ändringen är loggad i 09_Loggar. Översättningen i livv-grund är borttagen.
 
+Kontrollerad 23 november 2026 mot en färsk kopia från SharePoint: Statusflode, Kolumner och Listor stämmer med listan nedan, rullistan för kanal når X och rullistan för ansvarig_agent når Mattias. Rullistorna ligger nu som x14-tillägg och överlever en skrivning via MCP-servern.
+
 Bakgrund: bladen använder den äldre numreringen, där A1 och A2 skrev utkast och A7 arkiverade. Rolltabellen A0 till A8 i arbetsdokumentet gäller nu.
 
 ## Blad Statusflode
@@ -43,3 +45,17 @@ Rullistor och namngivna områden som pekar på listorna utökas så att de nya v
 4. Avsnittet "Numrering i Excel-bladen" i livv-grund tas bort i en egen commit.
 
 Verktyget ändrar en cell bara om exakt en cell matchar. Finns ingen eller flera stoppar det utan att skriva något.
+
+---
+
+# Förslag 2: språk (inte genomfört)
+
+Status: **förslag, väntar på Mattias godkännande.** Bakgrund: allt som publiceras skrivs på engelska (beslut 5 november 2026, regel 2 i livv-skrivregler). Alla rader i registret har redan sprak en.
+
+| Blad | Var | Nu | Föreslaget |
+|---|---|---|---|
+| Listor | kolumnen sprak | sv, en, da | en |
+| Kolumner | sprak, Beskrivning | sv, en eller da | en. Allt som publiceras är på engelska |
+| Kolumner | sprak, Exempel | sv | en |
+
+Rullistan för sprak (G2:G2000) ska då peka på Listor!$E$2:$E$2. Engångsverktyget kan i dag bara ändra celler och lägga till listvärden, inte ta bort dem. Enklast är att Mattias gör ändringen för hand i Excel online och loggar den.
