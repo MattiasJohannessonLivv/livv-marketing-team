@@ -2,8 +2,9 @@
 
 Servern hämtar Innehallsregister och loggfilerna i 09_Loggar via samma
 app-registrering som MCP-servern. Den skriver bara när Mattias själv godkänner
-ett objekt eller skickar tillbaka det i tavlan (se beslut.py). Sidan kan aldrig
-publicera, schemalägga eller ändra något annat.
+ett objekt, skickar tillbaka det, väljer bild eller publicerar i tavlan (se beslut.py).
+Varje publicering kräver att Mattias bekräftar i en ruta från macOS som servern visar,
+så ett anrop direkt till servern räcker aldrig. Sidan kan aldrig schemalägga.
 
 Medan tavlan körs kontrollerar den registret var femte minut och skickar en
 notis på Macen när något nytt väntar på Mattias. Stäng av med TAVLA_NOTISER=0.
@@ -170,7 +171,10 @@ def vantande(objekt: Iterable[dict[str, Any]]) -> list[dict[str, Any]]:
 
 def felbeskrivning(fel: Exception) -> str:
     """Ett begripligt felmeddelande, utan hemligheter. Säger vilken fil det gäller när det går.
-    Samma förklaringar som SharePoint-servern, men utan feltext som kan visas för andra sidor."""
+    Samma förklaringar som SharePoint-servern, men utan feltext som kan visas för andra sidor.
+    Fel från publiceringen skrivs av tavlan själv och visas som de är."""
+    if isinstance(fel, pub.Publiceringsfel):
+        return str(fel)
     return sp.felbeskrivning(
         fel, med_text=False,
         forklaringar={429: "för många anrop till SharePoint. Tavlan försöker igen om fem minuter"},

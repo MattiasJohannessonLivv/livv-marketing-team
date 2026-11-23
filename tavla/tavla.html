@@ -523,7 +523,7 @@ a.b-knapp { text-decoration: none; display: inline-block; }
   </section>
 
   <footer>
-    Tavlan hämtar Innehallsregister och loggen från SharePoint var femte minut. Den skriver bara när du själv godkänner ett objekt eller skickar tillbaka det, och den kan aldrig publicera.
+    Tavlan hämtar Innehallsregister och loggen från SharePoint var femte minut. Den skriver bara när du själv beslutar i tavlan: godkänner, skickar tillbaka, väljer bild eller publicerar. Varje publicering kräver dessutom att du bekräftar i en ruta från macOS.
   </footer>
 </div>
 
@@ -805,7 +805,7 @@ function visaBeslut(d, etikett) {
       pk.textContent = "Bekräfta: publicera nu på " + kanal + " som " + sida;
       return;
     }
-    skickaBeslut("publicera", { id: d.id, sida: sida });
+    skickaBeslut("publicera", { id: d.id, sida: sida }, "Bekräfta publiceringen i rutan från macOS. Den kan ligga bakom andra fönster.");
   });
   var sv = document.getElementById("b-sida");
   if (sv) sv.addEventListener("change", function () {
@@ -827,9 +827,9 @@ function visaSvar(text, fel) {
   s.className = "b-svar" + (fel ? " fel" : " ok");
 }
 
-function skickaBeslut(vad, data) {
+function skickaBeslut(vad, data, vantetext) {
   document.querySelectorAll("#b-atgard button").forEach(function (b) { b.disabled = true; });
-  visaSvar("Sparar i SharePoint.");
+  visaSvar(vantetext || "Sparar i SharePoint.");
   fetch(vad, { method: "POST", headers: { "Content-Type": "application/json", "X-Tavla-Nyckel": NYCKEL }, body: JSON.stringify(data) })
     .then(function (r) { return r.json().then(function (j) { if (!r.ok) throw new Error(j.fel || "svar " + r.status); return j; }); })
     .then(function (j) {

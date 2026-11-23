@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import os
 import sys
+import threading
 from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Any, Callable
@@ -62,13 +63,16 @@ def hitta_brief(las: Any, rad: dict[str, Any]) -> dict[str, str] | None:
 class Beslut:
     def __init__(self, las: Any, skrivgraph: Any = None, nu: Callable[[], datetime] | None = None,
                  env: dict | None = None, http_fabrik: Callable[[], Any] | None = None,
-                 linkedin_nyckel: Any = pub.las_linkedin_nyckel) -> None:
+                 linkedin_nyckel: Any = pub.las_linkedin_nyckel,
+                 bekrafta: Callable[..., bool] = pub.macos_bekraftelse) -> None:
         self.las = las
         self._skrivgraph = skrivgraph
         self._nu = nu or (lambda: datetime.now(sp.TIDSZON))
         self._env = env if env is not None else os.environ
         self._http_fabrik = http_fabrik or _httpx_klient
         self._linkedin_nyckel = linkedin_nyckel
+        self._bekrafta = bekrafta
+        self._publicerar = threading.Lock()  # en publicering i taget, så att två klick aldrig båda går ut
 
     def _livv(self) -> sp.Livv:
         if self._skrivgraph is None:
@@ -211,6 +215,14 @@ class Beslut:
         return self._linkedin_nyckel() if callable(self._linkedin_nyckel) else self._linkedin_nyckel
 
     def publicera(self, objekt_id: str, sida: str) -> str:
+        if not self._publicerar.acquire(blocking=False):
+            raise sp.Sparrfel("En publicering väntar redan på bekräftelse i rutan från macOS.")
+        try:
+            return self._publicera(objekt_id, sida)
+        finally:
+            self._publicerar.release()
+
+    def _publicera(self, objekt_id: str, sida: str) -> str:
         livv = self._livv()
         r = self._rad(objekt_id, livv.g)  # läs direkt före publiceringen
         mapp, filnamn, varumarke = _text(r.get("mapp")), _text(r.get("filnamn")), _text(r.get("varumarke"))
@@ -227,6 +239,11 @@ class Beslut:
         bildnamn = self._senast(logg, "Valde bild i teamtavlan")
         bild = self.bild(objekt_id, bildnamn) if bildnamn else None
         alt = self._senast(logg, "Alt-text godkänd")
+
+        # Mattias bekräftar i en ruta från macOS som tavlans server visar. Ett anrop till
+        # servern räcker alltså inte för att publicera: en människa vid datorn måste svara.
+        if not self._bekrafta(objekt_id=objekt_id, kanal=lage["kanal"], sida=sida, text=text, bildnamn=bildnamn):
+            raise sp.Sparrfel("Publiceringen bekräftades inte i rutan från macOS. Inget publicerades.")
         http = self._http_fabrik()
 
         # Publicera
