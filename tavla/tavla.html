@@ -610,7 +610,7 @@ function vantar() {
     if (o.status === "Godkänd" && o.bilder && o.bilder.length && !o.bild_vald) {
       lista.push({ o: o, typ: "ok", etikett: "Välj bild", text: "Brand Studio har lagt " + o.bilder.length + (o.bilder.length === 1 ? " bildförslag" : " bildförslag") + ". Välj den bild som ska följa med inlägget." });
     } else if (o.status === "Godkänd") {
-      lista.push({ o: o, typ: "wait", etikett: "Publicera", text: (o.plan ? "Planerad " + datumKort(o.plan) + ". " : "Inget publiceringsdatum satt. ") + (o.bild_vald ? "Bild vald. " : "") + "Publicera från företagssidan och ge A0 datum, plattforms_id och url." });
+      lista.push({ o: o, typ: "wait", etikett: "Publicera", text: (o.plan ? "Planerad " + datumKort(o.plan) + ". " : "Inget publiceringsdatum satt. ") + (o.bild_vald ? "Bild vald. " : "") + "Klicka Publicera, kontrollera text och bild och bekräfta. Eller publicera för hand och ge A0 datum, plattforms_id och url." });
     }
     if (o.status === "Schemalagd") {
       lista.push({ o: o, typ: "wait", etikett: "Bekräfta", text: "Schemalagd" + (o.plan ? " till " + datumKort(o.plan) : "") + ". Ge A0 datum, plattforms_id och url när inlägget är ute." });
@@ -682,7 +682,7 @@ function renderWaiting() {
 }
 
 // ---------- Mattias beslut i tavlan ----------
-var KNAPPTEXT = { "Godkänn": "Läs och godkänn", "Beslut": "Läs och besluta", "Publicera": "Text och bild", "Välj bild": "Välj bild" };
+var KNAPPTEXT = { "Godkänn": "Läs och godkänn", "Beslut": "Läs och besluta", "Publicera": "Publicera", "Välj bild": "Välj bild" };
 
 // Publicering: bara när Mattias själv klickar och bekräftar. Ingen agent kan publicera.
 function publiceringHtml(d) {
@@ -777,6 +777,9 @@ function visaBeslut(d, etikett) {
   html += '<p class="b-svar" id="b-svar" role="status"></p></div>';
   inn.innerHTML = html;
   document.getElementById("b-stang").addEventListener("click", stangBeslut);
+  // Från knappen Publicera i listan: gå direkt till publiceringen
+  var pubSek = etikett === "Publicera" ? inn.querySelector(".b-pub") : null;
+  if (pubSek) setTimeout(function () { pubSek.scrollIntoView({ block: "start" }); var k = document.getElementById("b-publicera"); if (k && !k.disabled) k.focus(); }, 0);
 
   var g = document.getElementById("b-godkann");
   if (g) g.addEventListener("click", function () {
