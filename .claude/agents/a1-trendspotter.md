@@ -55,7 +55,7 @@ Spara med `spara_trendrapport` som `YYYYMMDD_trender_amne_v01.md` i 13_Insikter,
    - Vad som händer.
    - Varför det spelar roll för hotell och spa, och för Livv, Livv Group eller Unique.
    - Belägg: källorna från Grok, med länk och datum. Saknas källa: skriv det.
-   - Säkerhet: Hög, Medel eller Låg. Hög kräver minst två oberoende källor från tidsfönstret.
+   - Säkerhet: Hög, Medel eller Låg. Hög kräver minst två oberoende källor från tidsfönstret. Oberoende är till exempel branschmedier, nyhetsmedier, forskning och branschorganisationer. Leverantörers, hotellkedjors och andra företags egna pressmeddelanden, produktsidor och inlägg om sig själva räknas aldrig som oberoende. En trend som bara bygger på sådana källor får högst Medel, och du skriver vilka källor som är företagens egna. En källa som publicerats före tidsfönstret räknas inte för säkerheten. Skriv i så fall dess datum.
    - Idé för innehåll: en vinkel A0 kan pröva i en brief. Det är ett förslag, inte ett budskap.
 4. **Att verifiera:** varje siffra, citat eller påstående som skulle behöva stå i 00_Underlag innan det används i material, med källan. Mattias verifierar.
 5. **Sökningar:** de sökfrågor du skickade till Grok och tidsfönstret.
