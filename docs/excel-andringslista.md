@@ -50,7 +50,7 @@ Verktyget ändrar en cell bara om exakt en cell matchar. Finns ingen eller flera
 
 # Förslag 2: språk (inte genomfört)
 
-Status: **godkänt av Mattias 23 november 2026, inte genomfört än.** Mattias gör ändringen för hand i Excel online och loggar den. Bakgrund: allt som publiceras skrivs på engelska (beslut 5 november 2026, regel 2 i livv-skrivregler). Alla rader i registret har redan sprak en.
+Status: **godkänt av Mattias och genomfört 23 november 2026** direkt i SharePoint med Excel för webben. Listor E2 är en, E3 och E4 tomma, Kolumner uppdaterad och rullistan G2:G2000 pekar på Listor!$E$2:$E$2. Loggat på rad 65 i Logg_2026-11.xlsx. Ändringen är kontrollerad i SharePoint men ännu inte i en kopia av A0. Bakgrund: allt som publiceras skrivs på engelska (beslut 5 november 2026, regel 2 i livv-skrivregler). Alla rader i registret har redan sprak en.
 
 | Blad | Var | Nu | Föreslaget |
 |---|---|---|---|
