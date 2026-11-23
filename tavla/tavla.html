@@ -970,7 +970,7 @@ var ROLL = {
     aldrig: ["Granskar aldrig sitt eget material", "Publicerar eller schemalägger aldrig"],
     verktyg: "Alla verktyg i SharePoint-servern: brief, utkast, rapport, flytt, register och logg", steg: [2] },
   A1: { kort: "Trender", ikon: "i-radar", typ: "grok",
-    gor: ["Söker trender på nätet och X med Grok när du eller A0 ber om det", "Skriver trendrapporter i 13_Insikter som idéunderlag"],
+    gor: ["Söker trender på nätet och X med Grok varje måndag och när du ber om det", "Skriver trendrapporter i 13_Insikter som idéunderlag"],
     aldrig: ["En trend blir aldrig fakta förrän du verifierat den och lagt den i 00_Underlag", "Skickar aldrig internt material till Grok"],
     verktyg: "Trendsök med Grok, läsning i SharePoint och trendrapporter i 13_Insikter", steg: [1] },
   A2: { kort: "Research", ikon: "i-chart", typ: "claude",
@@ -1033,7 +1033,7 @@ var PROFIL = {
   ],
   A1: [
     ["Läser", "Nätet och X via Grok, och tidigare trendrapporter i 13_Insikter"],
-    ["Gör", "Bevakar trender inom hotell, spa och hospitality när du eller A0 ber om det. Varje morgon från fas 4"],
+    ["Gör", "Bevakar trender inom hotell, spa och hospitality varje måndag och när du ber om det"],
     ["Skriver", "Trendrapporter som idéunderlag"],
     ["Feedback", "Trender till A0 som underlag för briefer"],
     ["Kan aldrig", "Göra en trend till fakta innan du verifierat den och lagt den i 00_Underlag, eller skicka internt material till Grok"]
@@ -1348,9 +1348,8 @@ function renderWeek() {
     return '<div class="wk-block ' + cls + '"' + (style ? ' style="' + style + '"' : "") + ">" + who(ids) + '<div class="what">' + what + '</div><div class="out">' + out + "</div></div>";
   }
   w.innerHTML =
-    '<div class="wk-block band plan"><span class="when">Varje morgon 06.00</span>' + who(["A1", "A8"]) + '<span><span class="what">Trendscan av nätet och X</span> <span class="out">Trendrapport i insiktsmappen</span></span></div>' +
     '<div class="wk-day">Måndag</div><div class="wk-day" style="grid-column: span 3">Tisdag till torsdag</div><div class="wk-day">Fredag</div>' +
-    block("", "Lärdomar, prioritering, veckoplan och briefer", "Briefer i 01_Briefer, rader i registret", ["A2", "A0"]) +
+    block("", "Lärdomar, trender, prioritering, veckoplan och briefer", "Analys i 08_Rapporter, trendrapport i 13_Insikter, briefer i 01_Briefer", ["A2", "A1", "A0"]) +
     block("", "Utkast, kanalanpassning och granskning", "Utkast i 02_Utkast, granskade objekt i 03_Granskning", ["A4", "A5", "A6", "A7", "A8", "A3"], "grid-column: span 3") +
     block("", "Godkännandepass och veckorapport", "Godkända objekt i 04_Godkant, kort rapport", ["M", "A0"]) +
     '<div class="wk-block band plan"><span class="when">Varje natt</span>' + who(["S"]) + '<span><span class="what">Resultatimport från Google, Meta, LinkedIn och X</span> <span class="out">Nya rader i Matregister</span></span></div>' +
