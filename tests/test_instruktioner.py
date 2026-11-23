@@ -56,5 +56,16 @@ class TestIngenTextPaBilden(unittest.TestCase):
         self.assertRegex(a3, r"Bilden: utkastet får inte innehålla något till bilden.*Revidera")
 
 
+class TestHamtning(unittest.TestCase):
+    """starta.sh och tavla.sh hämtar main själva, så att spärren aldrig behöver tillåta git pull."""
+
+    def test_skripten_hamtar_main(self):
+        hamta = las("hamta.sh")
+        self.assertIn("git pull --ff-only --quiet origin main", hamta)
+        self.assertIn('!= "main"', hamta)
+        self.assertRegex(las("starta.sh"), r'if \[ "\$LIVV_UTVECKLING" = "0" \]; then\n  source \./hamta\.sh')
+        self.assertIn("source ./hamta.sh", las("tavla.sh"))
+
+
 if __name__ == "__main__":
     unittest.main()

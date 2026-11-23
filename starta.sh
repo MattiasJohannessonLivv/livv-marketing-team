@@ -22,5 +22,11 @@ if [ "${1:-}" = "--utveckling" ]; then
   echo "Utvecklingsläge: projektfilerna kan ändras."
 fi
 
+# I drift hämtas senaste godkända versionen från main innan teamet startar.
+# Det görs här, utanför Claude, så att spärren aldrig behöver tillåta git pull.
+if [ "$LIVV_UTVECKLING" = "0" ]; then
+  source ./hamta.sh
+fi
+
 mkdir -p .arbetsyta
 exec claude "$@"
