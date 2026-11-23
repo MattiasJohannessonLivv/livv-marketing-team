@@ -1,6 +1,6 @@
 {
   "model": "opus",
-  "enabledMcpjsonServers": ["sharepoint"],
+  "enabledMcpjsonServers": ["sharepoint", "xai"],
   "permissions": {
     "deny": [
       "WebFetch",

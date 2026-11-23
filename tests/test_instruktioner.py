@@ -67,5 +67,25 @@ class TestHamtning(unittest.TestCase):
         self.assertIn("source ./hamta.sh", las("tavla.sh"))
 
 
+class TestA1(unittest.TestCase):
+    def test_a0_vet_om_a1_och_regeln_om_fakta(self):
+        a0 = las("CLAUDE.md")
+        self.assertIn("`a1-trendspotter`", a0)
+        self.assertIn("Du söker aldrig själv med Grok", a0)
+        self.assertIn("först när Mattias har verifierat dem och fört över dem till 00_Underlag", a0)
+
+    def test_a1_skickar_inget_internt(self):
+        a1 = las(".claude/agents/a1-trendspotter.md")
+        self.assertIn("Till Grok skickas bara korta sökfrågor", a1)
+        self.assertIn("LIVV_ROLL=a1-trendspotter", a1)
+        self.assertIn("Idéunderlag. Inte verifierat.", a1)
+
+    def test_xai_ar_kopplad(self):
+        import json
+
+        self.assertIn("xai", json.loads(las(".mcp.json"))["mcpServers"])
+        self.assertIn("xai", json.loads(las(".claude/settings.json"))["enabledMcpjsonServers"])
+
+
 if __name__ == "__main__":
     unittest.main()

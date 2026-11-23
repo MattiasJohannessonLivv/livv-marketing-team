@@ -192,5 +192,26 @@ class TestIngenBildtext(unittest.TestCase):
                                                    self.UTKAST.format(rad=rad))
 
 
+class TestTrendrapport(unittest.TestCase):
+    def test_sparas_i_13_insikter(self):
+        g = LatsasGraph()
+        g.mappar.add("13_Insikter")
+        livv = s.Livv(g)
+        self.assertEqual(livv.spara_trendrapport("20261124_trender_spa_v01.md", "Idéunderlag."), "13_Insikter/20261124_trender_spa_v01.md")
+        with self.assertRaises(s.Sparrfel):
+            livv.spara_trendrapport("20261124_trender_spa_v01.md", "Ny text")  # skriver aldrig över
+
+    def test_stoppar(self):
+        g = LatsasGraph()
+        with self.assertRaises(s.Sparrfel) as fel:
+            s.Livv(g).spara_trendrapport("20261124_trender_spa_v01.md", "x")
+        self.assertIn("Mattias skapar den", str(fel.exception))
+        g.mappar.add("13_Insikter")
+        for namn in ("trender.md", "20261124_trender_Spa_v01.md", "20261124_analys_spa_v01.md", "../20261124_trender_spa_v01.md"):
+            with self.subTest(namn=namn):
+                with self.assertRaises(s.Sparrfel):
+                    s.Livv(g).spara_trendrapport(namn, "x")
+
+
 if __name__ == "__main__":
     unittest.main()

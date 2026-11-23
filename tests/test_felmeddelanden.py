@@ -102,7 +102,7 @@ class TestVerkligOrsak(unittest.TestCase):
     def test_alla_verktyg_ger_orsaken(self):
         server = self.server(LatsasGraph())
         verktyg = asyncio.run(server.list_tools())
-        self.assertEqual(len(verktyg), 12)
+        self.assertEqual(len(verktyg), 13)
         las = next(v for v in verktyg if v.name == "las_fil")
         self.assertIn("sokvag", las.input_schema["properties"])  # schemat följer med genom omslaget
         self.assertIn("Annan_mapp är ingen mapp", anropa(server, "las_fil", {"sokvag": "Annan_mapp/x.md"}))

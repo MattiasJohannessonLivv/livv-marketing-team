@@ -84,6 +84,10 @@ FILNAMN_RE = re.compile(
 OBJEKT_ID_RE = re.compile(r"^(LIVV|UNIQ)-\d{4}-\d{4}$")
 RAPPORTNAMN_RE = re.compile(r"^[A-Za-z0-9_-]+\.(md|docx)$")
 
+# Trendrapporter från A1 i 13_Insikter. Idéunderlag, aldrig fakta.
+INSIKTSMAPP = "13_Insikter"
+TRENDRAPPORT_RE = re.compile(r"^\d{8}_trender_[a-z0-9-]+_v\d{2}\.md$")
+
 # Bildbriefer till Brand Studio och bildförslagen tillbaka, en mapp per objekt
 BILDMAPP = "12_Pictures"
 BILDTYPER = (".png", ".jpg", ".jpeg", ".webp")
@@ -688,6 +692,18 @@ class Livv:
             raise Sparrfel("Rapportnamnet får bara innehålla bokstäver a till z, siffror, _ och - och sluta på .md eller .docx.")
         return self._spara_dokument("08_Rapporter", filnamn, innehall)
 
+    def spara_trendrapport(self, filnamn: str, innehall: str) -> str:
+        """Trendrapport från A1 i 13_Insikter. Skriver aldrig över, och mappen skapas aldrig av teamet."""
+        if not TRENDRAPPORT_RE.match(filnamn or ""):
+            raise Sparrfel("Trendrapporten ska heta YYYYMMDD_trender_amne_vNN.md, med små bokstäver a till z, siffror och - i ämnet.")
+        if not (innehall or "").strip():
+            raise Sparrfel("Trendrapporten är tom.")
+        if not self.g.finns(INSIKTSMAPP):
+            raise Sparrfel("Mappen 13_Insikter saknas i Livv Marketing Ops. Mattias skapar den.")
+        sokvag = f"{INSIKTSMAPP}/{filnamn}"
+        self.g.skriv(sokvag, innehall.encode("utf-8"), ersatt=False)
+        return sokvag
+
     def visa_bild(self, objekt_id: str, namn: str) -> tuple[bytes, str]:
         """Läser ett bildförslag i 12_Pictures/<objekt-ID> så att agenten kan se det. Bara läsning."""
         if not OBJEKT_ID_RE.match(objekt_id or ""):
@@ -826,6 +842,10 @@ def bygg_server(livv_fabrik=None):
     @verktyg("Spara en rapport i 08_Rapporter. Skriver aldrig över.")
     def spara_rapport(filnamn: str, innehall: str) -> str:
         return livv().spara_rapport(filnamn, innehall)
+
+    @verktyg("Spara en trendrapport i 13_Insikter. Namn YYYYMMDD_trender_amne_vNN.md. Skriver aldrig över. Bara A1.")
+    def spara_trendrapport(filnamn: str, innehall: str) -> str:
+        return livv().spara_trendrapport(filnamn, innehall)
 
     @verktyg("Visa ett bildförslag i 12_Pictures/<objekt-ID> så att du kan se det, till exempel för att skriva alt-text. Ange objekt-ID och filnamnet. Bara läsning.")
     def visa_bild(objekt_id: str, namn: str):

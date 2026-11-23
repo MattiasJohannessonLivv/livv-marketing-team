@@ -9,6 +9,15 @@
         "AZURE_CLIENT_ID": "${AZURE_CLIENT_ID}",
         "AZURE_CLIENT_SECRET": "${AZURE_CLIENT_SECRET}"
       }
+    },
+    "xai": {
+      "type": "stdio",
+      "command": "python3",
+      "args": ["${CLAUDE_PROJECT_DIR:-.}/mcp/xai_server.py"],
+      "env": {
+        "XAI_API_KEY": "${XAI_API_KEY:-}",
+        "XAI_MODELL": "${XAI_MODELL:-}"
+      }
     }
   }
 }

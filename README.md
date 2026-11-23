@@ -12,7 +12,8 @@ Hela specifikationen finns i [docs/arbetsdokument.md](docs/arbetsdokument.md).
 | Klart | Kommer senare |
 |---|---|
 | A0 Marketing Director (huvudsessionen) | A5 Google (fas 2) |
-| A2 Researcher, med exporter i 11_Dataimport | A1 Trendspotter, A6 Meta, A7 LinkedIn, A8 X (fas 3) |
+| A1 Trendspotter med Grok, byggd före fas 3 | |
+| A2 Researcher, med exporter i 11_Dataimport | A6 Meta, A7 LinkedIn, A8 X (fas 3) |
 | A3 Granskare, A4 Contentcreator | Automatisk import till Matregister (fas 2) |
 | SharePoint-koppling, spärrar, skills, teamtavlan | Schemalagda körningar (fas 4) |
 
@@ -40,6 +41,7 @@ livv-marketing-team/
   .claude/
     settings.json               modell, behörigheter och registrering av spärren
     agents/
+      a1-trendspotter.md        A1: söker trender med Grok och skriver trendrapporter i 13_Insikter
       a2-researcher.md          A2: analyserar exporter, läser bara och skriver rapporter
       a3-granskare.md           A3: granskar, kan aldrig skapa briefer
       a4-contentcreator.md      A4: skriver utkast, flyttar inga filer, skriver aldrig text till bilden
@@ -51,6 +53,7 @@ livv-marketing-team/
       sparr.py                  spärrens logik
   mcp/
     sharepoint_server.py        egen MCP-server mot Microsoft Graph
+    xai_server.py               MCP-server mot xAI med ett verktyg, trendsok, för A1
     requirements.txt
   verktyg/
     excel_andringar.py          engångsverktyg för ändringslistan, körs av Mattias
@@ -62,6 +65,7 @@ livv-marketing-team/
   tests/
     test_sparr.sh               tester för spärren
     test_sokvagar.py            tester för servern, utan nätverk
+    test_xai.py                 xAI-servern: sökfrågan, stopp för internt material och svaret
     test_felmeddelanden.py      verktygen visar alltid den verkliga orsaken till ett fel
     test_instruktioner.py       regler som måste stå kvar i CLAUDE.md, A3, A4 och livv-grund
     test_excel.py               rullistor och loggkolumner efter skrivning via servern
@@ -77,21 +81,25 @@ Reglerna står i livv-grund, men de hålls också i kod, i tre lager:
 
 **1. SharePoint-servern** (`mcp/sharepoint_server.py`) har bara de verktyg loopen behöver. driveId och rotmappen är låsta i koden. Servern arbetar bara med sökvägar inne i Livv Marketing Ops och avvisar allt annat. Den har inga verktyg för att radera, byta namn, dela eller ändra behörigheter. Briefer och utkast skrivs aldrig över: en ny version får nytt vNN. Bara tillåtna statusbyten går att göra, och inget flyttas ut ur 06_Arkiv.
 
-| Verktyg | Vad det gör | A0 | A2 | A3 | A4 |
-|---|---|---|---|---|---|
-| `lista_mapp`, `las_fil` | Läser i Livv Marketing Ops | ja | ja | ja | ja |
-| `visa_bild` | Visar ett bildförslag i 12_Pictures för agenten, till exempel för alt-text | ja | nej | nej | nej |
-| `skapa_brief` | Ny brief i 01_Briefer | ja | nej | nej | nej |
-| `spara_utkast` | Nytt utkast i 02_Utkast. Stoppar utkast med text till bilden | ja | nej | nej | ja |
-| `spara_rapport` | Rapport i 08_Rapporter | ja | ja | nej | nej |
-| `spara_bildbrief` | Bildbrief i 12_Pictures/<objekt-ID>, när texten är godkänd | ja | nej | nej | nej |
-| `flytta_objekt` | Flyttar fil vid statusbyte | ja | nej | bara till Granskning eller Avvisad | nej |
-| `register_las` | Läser rader i Innehallsregister | ja | ja | ja | ja |
-| `register_uppdatera` | Ändrar rader i Innehallsregister | ja | nej | ja | ja |
-| `register_ny_rad` | Nytt objekt i registret | ja | nej | nej | nej |
-| `logga` | Rad i 09_Loggar | ja | ja | ja | ja |
+| Verktyg | Vad det gör | A0 | A1 | A2 | A3 | A4 |
+|---|---|---|---|---|---|---|
+| `lista_mapp`, `las_fil` | Läser i Livv Marketing Ops | ja | ja | ja | ja | ja |
+| `visa_bild` | Visar ett bildförslag i 12_Pictures för agenten, till exempel för alt-text | ja | nej | nej | nej | nej |
+| `skapa_brief` | Ny brief i 01_Briefer | ja | nej | nej | nej | nej |
+| `spara_utkast` | Nytt utkast i 02_Utkast. Stoppar utkast med text till bilden | ja | nej | nej | nej | ja |
+| `spara_rapport` | Rapport i 08_Rapporter | ja | nej | ja | nej | nej |
+| `spara_trendrapport` | Trendrapport i 13_Insikter. Skriver aldrig över | nej | ja | nej | nej | nej |
+| `spara_bildbrief` | Bildbrief i 12_Pictures/<objekt-ID>, när texten är godkänd | ja | nej | nej | nej | nej |
+| `flytta_objekt` | Flyttar fil vid statusbyte | ja | nej | nej | bara till Granskning eller Avvisad | nej |
+| `register_las` | Läser rader i Innehallsregister | ja | nej | ja | ja | ja |
+| `register_uppdatera` | Ändrar rader i Innehallsregister | ja | nej | nej | ja | ja |
+| `register_ny_rad` | Nytt objekt i registret | ja | nej | nej | nej | nej |
+| `logga` | Rad i 09_Loggar | ja | ja | ja | ja | ja |
+| `trendsok` (xAI-servern) | Söker trender med Grok på webben och X. Bara korta sökfrågor, aldrig internt material | nej | ja | nej | nej | nej |
 
 Går ett verktyg fel visar det alltid orsaken: spärrens skäl, eller SharePoints svar med kod, fil och Microsofts egen felkod. Ett exempel är 423 när loggfilen är öppen i Excel.
+
+**xAI-servern** (`mcp/xai_server.py`) har bara verktyget `trendsok`. Den skickar en kort sökfråga och ett tidsfönster till Grok och stoppar frågor som innehåller objekt-ID, mappnamn, filnamn, e-postadresser, telefonnummer eller långa textstycken.
 
 **2. Spärren** (`.claude/hooks/sparr-publicering.sh`) körs före varje verktygsanrop, oavsett vad agenten fått för instruktion:
 - Alla MCP-verktyg utanför SharePoint-servern stoppas. Det gäller LinkedIn, Meta, Google, X, e-post, Slack, HubSpot och Canva, även kopplingar från ditt claude.ai-konto. Därmed går det inte att publicera, schemalägga eller ändra budget, bud eller kampanj.
@@ -99,11 +107,12 @@ Går ett verktyg fel visar det alltid orsaken: spärrens skäl, eller SharePoint
 - Radering (`rm`, `find -delete`, `git clean`, `gh ... delete` och liknande) och nätverksanrop från skalet (`curl`, `wget` och liknande) stoppas alltid.
 - I drift får agenterna bara skriva lokalt i `.arbetsyta/`, och skalet får bara köra läsande kommandon. `git ls-remote` och `git fetch` räknas som läsande, men utan `--upload-pack` och utan tvingade referenser. `.env` kan aldrig läsas eller ändras.
 - `gh` får bara användas i utvecklingsläge.
-- A2, A3 och A4 har egna rollspärrar utöver sina verktygslistor.
+- Bara A1 får använda `trendsok` och `spara_trendrapport`. A1 får inget annat skrivande.
+- A1, A2, A3 och A4 har egna rollspärrar utöver sina verktygslistor.
 
 Servern sparar aldrig om Excel-filerna med ett bibliotek som tolkar hela arbetsboken. Den ändrar bara de berörda cellerna i bladets XML och kopierar resten av filen oförändrad. Annars försvinner rullistor som Excel lagrar som tillägg, till exempel listorna som pekar på det dolda bladet Listor. `tests/test_excel.py` kontrollerar detta och kan köras mot riktiga kopior, se nedan.
 
-**3. Verktygslistor per agent** i `.claude/agents/`. A2, A3 och A4 har varken skal eller lokala skrivverktyg.
+**3. Verktygslistor per agent** i `.claude/agents/`. A1, A2, A3 och A4 har varken skal eller lokala skrivverktyg.
 
 ## Kom igång
 
@@ -159,6 +168,14 @@ A2 analyserar varje vecka det som ligger i 11_Dataimport i SharePoint. Exportera
 | `X Livv Group` | X, Analytics | Inläggsstatistik |
 
 Spara som CSV eller XLSX. LinkedIn exporterar som XLS: öppna filen i Excel och spara som XLSX. Döp filen med datum och vecka, till exempel `20261124_linkedin_livvse_v47.xlsx`. Mapparna ligger direkt i 11_Dataimport och skapas för hand första gången. Saknas en export analyserar A2 resten och skriver vad som saknades.
+
+### Trender från A1
+A1 Trendspotter söker med Grok på webben och X och skriver en trendrapport i `13_Insikter`. Be A0 om det, till exempel "Be A1 spana på trender inom spa och wellness de senaste två veckorna". Trenderna är idéunderlag. En siffra, ett citat eller ett påstående används i material först när Mattias har verifierat det och fört över det till 00_Underlag. Till Grok skickas bara korta sökfrågor, aldrig internt material.
+
+Engångsinställning:
+1. Skapa mappen `13_Insikter` direkt i Livv Marketing Ops. Agenterna får inte skapa huvudmappar.
+2. Skapa en API-nyckel på console.x.ai under **API Keys** och lägg den i `.env` som `XAI_API_KEY`. Lägg aldrig nyckeln i en chatt.
+3. Starta om teamet. Första gången frågar Claude Code om du godkänner servern xai: svara ja.
 
 ### Bilder från Brand Studio
 När Mattias har godkänt texten, i chatten eller i teamtavlan, skriver A0 alltid en bildbrief på engelska i `12_Pictures/<objekt-ID>`. Bilderna har aldrig text, och A4 skriver aldrig något till bilden. Brand Studio (Anastasia Johannesson) får en notis i Teams, skapar tre förslag i Atelier och laddar upp dem i samma mapp. Mattias väljer bild i teamtavlan och laddar ned den därifrån. Ingen agent skapar bilder.
@@ -221,6 +238,7 @@ Nu:
 - **Testa rutan från macOS** första gången du publicerar från tavlan, gärna på ett objekt där det gör lite om något behöver rättas. Rutan är testad mot en attrapp, inte på en Mac, och den kan hamna bakom andra fönster.
 - **Integritetspolicyn på livv.se/se/integritetspolicy** är tom och blockerar LinkedIn. Webbansvarig tar fram texten och den som ansvarar för GDPR godkänner den. Begär sedan Community Management API i appen.
 - **Nycklarna för X**: lägg in dem för Livv Groups utvecklarapp, med Read and write, enligt Publicera från tavlan.
+- **A1 Trendspotter:** skapa mappen 13_Insikter och lägg API-nyckeln från xAI i `.env`. Se Trender från A1.
 - **Tjänstekonto för flödet** Livv bildbrief till Brand Studio: Jesper på IT har fått frågan 23 november 2026. Tills det är klart går flödet via ditt konto.
 
 Senare:
