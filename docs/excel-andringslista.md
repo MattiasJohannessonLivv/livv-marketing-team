@@ -2,6 +2,8 @@
 
 Status: **genomförd 17 november 2026.** Godkänd av Mattias och genomförd med `verktyg/excel_andringar.py`. Alla 21 ändringar är gjorda och kontrollerade, rullistorna för ansvarig_agent och kanal är utökade, och ändringen är loggad i 09_Loggar. Översättningen i livv-grund är borttagen.
 
+Kontrollerad 23 november 2026 mot en färsk kopia från SharePoint: Statusflode, Kolumner och Listor stämmer med listan nedan, rullistan för kanal når X och rullistan för ansvarig_agent når Mattias. Rullistorna ligger nu som x14-tillägg och överlever en skrivning via MCP-servern.
+
 Bakgrund: bladen använder den äldre numreringen, där A1 och A2 skrev utkast och A7 arkiverade. Rolltabellen A0 till A8 i arbetsdokumentet gäller nu.
 
 ## Blad Statusflode
@@ -43,3 +45,17 @@ Rullistor och namngivna områden som pekar på listorna utökas så att de nya v
 4. Avsnittet "Numrering i Excel-bladen" i livv-grund tas bort i en egen commit.
 
 Verktyget ändrar en cell bara om exakt en cell matchar. Finns ingen eller flera stoppar det utan att skriva något.
+
+---
+
+# Förslag 2: språk (genomfört)
+
+Status: **godkänt och genomfört 23 november 2026, kontrollerat av A0.** Första försöket, av Claude i Chrome kl. 17:21, sparades aldrig i registret. Mattias gjorde ändringen i SharePoint och filen sparades 17:57. A0 har jämfört kopian cell för cell med kopian från 16:16: exakt fem celler är ändrade (Listor E2 till E4, Kolumner C8 och D8), rullistan G2:G2000 pekar på Listor!$E$2:$E$2 och alla 13 rullistor finns kvar. Testerna går igenom.
+
+| Blad | Var | Före | Efter |
+|---|---|---|---|
+| Listor | kolumnen sprak | sv, en, da | en |
+| Kolumner | sprak, Beskrivning | sv, en eller da | en. Allt som publiceras är på engelska |
+| Kolumner | sprak, Exempel | sv | en |
+
+Rullistan för sprak (G2:G2000) pekar nu på Listor!$E$2:$E$2. Mattias gjorde ändringen för hand i SharePoint, eftersom engångsverktyget bara kan ändra celler och lägga till listvärden, inte ta bort dem.

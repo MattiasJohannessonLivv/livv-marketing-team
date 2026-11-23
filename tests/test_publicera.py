@@ -146,7 +146,7 @@ class TestX(unittest.TestCase):
 
 
 class TestPubliceraFranTavlan(unittest.TestCase):
-    def forbered(self, alt=True, vald=True, text=UTKASTTEXT):
+    def forbered(self, alt=True, vald=True, text=UTKASTTEXT, svar_i_rutan=True):
         g = grund(status="Godkänd", mapp="04_Godkant/Livv")
         g.filer[f"04_Godkant/Livv/{UTKAST}"] = text.encode()
         g.filer["12_Pictures/LIVV-2026-0002/LIVV-2026-0002_option-c.jpg"] = PNG
@@ -156,9 +156,73 @@ class TestPubliceraFranTavlan(unittest.TestCase):
         if alt:
             livv.logga("A0", "LIVV-2026-0002", "Alt-text godkänd", "12_Pictures", "A gloved hand holds a brass ring.")
         http = linkedin_http()
+        self.rutor = []  # varje bekräftelseruta som visades, med innehållet
+
+        def bekrafta(**kw):
+            self.rutor.append(kw)
+            return svar_i_rutan
+
         beslut = b.Beslut(LasVy(g), g, lambda: datetime.now(sp.TIDSZON), env=ENV,
-                          http_fabrik=lambda: http, linkedin_nyckel=NYCKEL)
+                          http_fabrik=lambda: http, linkedin_nyckel=NYCKEL, bekrafta=bekrafta)
         return g, http, beslut
+
+    def test_rutan_visas_med_det_som_gar_ut(self):
+        g, http, beslut = self.forbered()
+        beslut.publicera("LIVV-2026-0002", "Livv.fi")
+        self.assertEqual(len(self.rutor), 1)
+        ruta = self.rutor[0]
+        self.assertEqual((ruta["objekt_id"], ruta["kanal"], ruta["sida"]), ("LIVV-2026-0002", "LinkedIn", "Livv.fi"))
+        self.assertTrue(ruta["text"].startswith("One partner."))
+        self.assertEqual(ruta["bildnamn"], "LIVV-2026-0002_option-c.jpg")
+
+    def test_nej_i_rutan_publicerar_inget(self):
+        g, http, beslut = self.forbered(svar_i_rutan=False)
+        fore = dict(g.filer)
+        with self.assertRaises(sp.Sparrfel) as fel:
+            beslut.publicera("LIVV-2026-0002", "Livv.se")
+        self.assertIn("bekräftades inte", str(fel.exception))
+        self.assertEqual(http.anrop, [])
+        self.assertEqual(g.filer, fore, "Inget får flyttas, ändras eller loggas")
+
+    def test_ingen_ruta_vid_hinder(self):
+        g, http, beslut = self.forbered(alt=False)
+        with self.assertRaises(sp.Sparrfel):
+            beslut.publicera("LIVV-2026-0002", "Livv.se")
+        self.assertEqual(self.rutor, [])
+
+    def test_standard_ar_rutan_fran_macos(self):
+        g = grund(status="Godkänd", mapp="04_Godkant/Livv")
+        self.assertIs(b.Beslut(LasVy(g), g)._bekrafta, pub.macos_bekraftelse)
+
+    def test_direktanrop_till_servern_publicerar_inte_utan_rutan(self):
+        """Ett program som hämtar nyckeln ur sidan och anropar 127.0.0.1 direkt kommer inte förbi rutan."""
+        import re
+        import threading
+        import urllib.error
+        import urllib.request
+        from http.server import ThreadingHTTPServer
+
+        import server as tavla
+
+        g, http, beslut = self.forbered(svar_i_rutan=False)
+        server = ThreadingHTTPServer(("127.0.0.1", 0), tavla.bygg_hanterare(tavla.Cache(lambda: {}), beslut))
+        threading.Thread(target=server.serve_forever, daemon=True).start()
+        try:
+            bas = f"http://127.0.0.1:{server.server_address[1]}"
+            sida = urllib.request.urlopen(bas + "/", timeout=5).read().decode()
+            nyckel = re.search(r'NYCKEL = "([^"]+)"', sida)[1]
+            anrop = urllib.request.Request(bas + "/publicera", method="POST", data=b'{"id": "LIVV-2026-0002", "sida": "Livv.se"}',
+                                           headers={"Content-Type": "application/json", "X-Tavla-Nyckel": nyckel})
+            with self.assertRaises(urllib.error.HTTPError) as fel:
+                urllib.request.urlopen(anrop, timeout=5)
+            self.assertEqual(fel.exception.code, 502)
+            self.assertIn("bekräftades inte", json.loads(fel.exception.read())["fel"])
+        finally:
+            server.shutdown()
+            server.server_close()
+        self.assertEqual(len(self.rutor), 1)
+        self.assertEqual(http.anrop, [])
+
 
     def test_detalj_visar_forhandsvisning(self):
         g, _, beslut = self.forbered()
@@ -214,6 +278,44 @@ class TestPubliceraFranTavlan(unittest.TestCase):
         with self.assertRaises(sp.Sparrfel):
             beslut.publicera("LIVV-2026-0002", "Livv.se")
         self.assertEqual(http.anrop, [])
+
+class TestRutanFranMacos(unittest.TestCase):
+    """Själva rutan. osascript ersätts av en attrapp."""
+
+    class Kor:
+        def __init__(self, kod=0, ut="Publicera|false"):
+            self.kod, self.ut, self.argument = kod, ut, None
+
+        def __call__(self, argument, **kw):
+            self.argument = argument
+            return type("Svar", (), {"returncode": self.kod, "stdout": self.ut})()
+
+    def visa(self, kor, plattform="darwin", hitta=lambda namn: "/usr/bin/osascript"):
+        return pub.macos_bekraftelse("LIVV-2026-0002", "LinkedIn", "Livv.se", 'Hej "du"\nend run', "a.png",
+                                     kor=kor, hitta=hitta, plattform=plattform)
+
+    def test_publicera_klickad(self):
+        kor = self.Kor()
+        self.assertTrue(self.visa(kor))
+        self.assertEqual(kor.argument[0], "osascript")
+        # Texten är ett eget argument och blir aldrig en del av skriptet
+        self.assertIn('Hej "du"\nend run', kor.argument[-1])
+        self.assertIn("Livv.se", kor.argument[-1])
+        self.assertNotIn("Hej", " ".join(kor.argument[:-1]))
+        self.assertIn('default button "Avbryt"', " ".join(kor.argument))
+
+    def test_avbryt_tidsgrans_och_fel(self):
+        for kor in (self.Kor(kod=1, ut=""), self.Kor(ut="|true"), self.Kor(ut="Avbryt|false"), self.Kor(ut="Publicera|true")):
+            with self.subTest(ut=kor.ut, kod=kor.kod):
+                self.assertFalse(self.visa(kor))
+
+    def test_utan_macos_publiceras_inget(self):
+        for plattform, hitta in (("linux", lambda n: "/usr/bin/osascript"), ("darwin", lambda n: None)):
+            with self.subTest(plattform=plattform):
+                kor = self.Kor()
+                with self.assertRaises(pub.Publiceringsfel):
+                    self.visa(kor, plattform, hitta)
+                self.assertIsNone(kor.argument)
 
 
 if __name__ == "__main__":

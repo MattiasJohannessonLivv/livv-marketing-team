@@ -169,5 +169,28 @@ class TestLoopen(unittest.TestCase):
             self.livv.logga("A9", "LIVV-2026-0001", "x", "y")
 
 
+class TestIngenBildtext(unittest.TestCase):
+    """A4 skriver aldrig text till bilden. Servern stoppar utkast som gör det."""
+
+    UTKAST = "## Inläggstext\nGästen sover bättre.\n\n## Anteckningar\n{rad}\n"
+
+    def test_stoppas(self):
+        for rad in ["Text på bilden: Sov gott", "**Förslag på text i bilden:** Sov gott", "- Bildtext: Sov gott",
+                    "### Rubrik på bilden", "Image text: Sleep well", "Text overlay: Sleep well",
+                    "1. Headline on the image: Sleep well", "Overlay: Sleep well", "Suggested copy for the visual: x"]:
+            with self.subTest(rad=rad):
+                with self.assertRaises(s.Sparrfel) as fel:
+                    s.Livv(LatsasGraph()).spara_utkast("Livv", "20261116_livv_linkedin_vinter_inlagg_v01.md",
+                                                       self.UTKAST.format(rad=rad))
+                self.assertIn("text till bilden", str(fel.exception))
+
+    def test_vanlig_text_slapps_igenom(self):
+        for rad in ["Källa: 00_Underlag/Produktblad.pdf", "Texten bygger på lärdomen om CTA.",
+                    "Bilden tas fram av Brand Studio.", "Vi valde en fråga i slutet."]:
+            with self.subTest(rad=rad):
+                s.Livv(LatsasGraph()).spara_utkast("Livv", "20261116_livv_linkedin_vinter_inlagg_v01.md",
+                                                   self.UTKAST.format(rad=rad))
+
+
 if __name__ == "__main__":
     unittest.main()

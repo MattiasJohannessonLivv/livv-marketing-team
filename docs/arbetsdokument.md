@@ -173,11 +173,40 @@ Teamet byggs i fyra faser. Varje fas har en grind som ska vara uppfylld innan n�
 
 Starta LinkedIns och Googles API-ansökningar redan i fas 1, eftersom godkännandet kan ta flera veckor.
 
+## Publicering från tavlan: läge
+
+Beslut 18 november 2026: Mattias kan publicera godkända objekt med knappen Publicera i teamtavlan. Ingen agent publicerar. Se README, "Publicera från tavlan".
+
+**LinkedIn, klart 18 november 2026**
+- Appen Livv Marketing Ops är skapad och verifierad mot företagssidan Livv.se (organisations-id 42934065).
+- Kvadratisk logotyp uppladdad. Redirect URL `http://localhost:8787/linkedin/svar`.
+- Länk till integritetspolicy i appen: livv.se/se/integritetspolicy.
+- Branschen på Livv.se är ändrad från Wholesale till Hospitality.
+- Mattias har lagt in appens nycklar och sidan i sin lokala konfiguration.
+
+**LinkedIn, blockerat**
+- Integritetspolicyn på livv.se/se/integritetspolicy är tom. Livv.fi har en på finska för Guest Comfort Oy, som inte passar. Webbansvarig tar fram texten och den som ansvarar för GDPR godkänner den. Den skrivs inte av en agent.
+
+**LinkedIn, kvar**
+1. När policyn ligger ute: kontrollera sidan och begär Community Management API i appen. Inga andra produkter i samma app.
+2. LinkedIns granskning, ofta flera veckor.
+3. När den är godkänd: logga in med LinkedIn i tavlan. Inloggningen gäller i 60 dagar.
+4. Livv.fi läggs till som sida när den ska användas.
+
+**X, kvar**
+- Mattias lägger in nycklarna för Livv Groups utvecklarapp, med behörigheten Read and write och Access Token skapad för Livv Groups konto.
+
+**Arbetsregler för kopplingarna**
+- Agenter godkänner aldrig avtal eller villkor och skickar inga meddelanden för Mattias räkning.
+- Hemliga nycklar läggs in av Mattias själv, aldrig av en agent.
+
 ## Öppna frågor och beslut
 
 Beslutat: A3 behålls som egen granskare, teamet består av nio roller.
 
 Beslutat: spärren tillåter `git ls-remote` och `git fetch` i drift och `gh` i utvecklingsläge. Radering via `gh` är alltid spärrad.
+
+Beslutat 23 november 2026: Claude i Chrome får ändra i Excel-filerna i SharePoint på Mattias uppdrag, enligt avsnittet Skriva i Excel-filerna i livv-grund. Publicering ingår inte.
 
 - [ ] Stämmer föreslagen numrering A0 till A8 med hur A1, A2 och A4 till A7 redan är definierade i livv-grund?
 - [x] Var körs teamet: på en dator som alltid är igång, en server eller i molnet? Beslut 17 november 2026: på Mattias dator, och schemalagda körningar på en liten Linux-server hos IT. Se Var det körs.

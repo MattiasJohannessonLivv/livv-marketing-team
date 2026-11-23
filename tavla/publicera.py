@@ -37,6 +37,59 @@ class Publiceringsfel(Exception):
 
 
 # ---------------------------------------------------------------------------
+# Bekräftelse i en ruta från macOS före varje publicering
+# ---------------------------------------------------------------------------
+# Tavlans nyckel finns i sidan som servern levererar, så ett program på datorn som
+# anropar 127.0.0.1:8787 direkt kan skicka samma anrop som tavlan. Därför räcker inte
+# klicket i webbläsaren. Rutan visas av tavlans egen server och måste besvaras av en
+# människa vid datorn. Utan svar, med Avbryt eller där rutan inte kan visas: ingen publicering.
+
+BEKRAFTA_KNAPP = "Publicera"
+AVBRYT_KNAPP = "Avbryt"
+BEKRAFTA_SEKUNDER = 120
+FORHANDSVISNING = 700
+
+BEKRAFTA_SKRIPT = [
+    "on run argv",
+    f'display dialog (item 1 of argv) with title "Livv teamtavla" buttons {{"{AVBRYT_KNAPP}", "{BEKRAFTA_KNAPP}"}} '
+    f'default button "{AVBRYT_KNAPP}" cancel button "{AVBRYT_KNAPP}" with icon caution giving up after {BEKRAFTA_SEKUNDER}',
+    'return (button returned of result) & "|" & ((gave up of result) as text)',
+    "end run",
+]
+
+
+def bekraftelsetext(objekt_id: str, kanal: str, sida: str, text: str, bildnamn: str = "") -> str:
+    visas = text if len(text) <= FORHANDSVISNING else text[:FORHANDSVISNING].rstrip() + " …"
+    return (f"Publicera {objekt_id} på {kanal} som {sida}?\n\n{visas}\n\n"
+            f"Bild: {bildnamn or 'ingen'}\n\n"
+            "Inlägget går ut direkt och kan inte tas tillbaka härifrån.")
+
+
+def macos_bekraftelse(objekt_id: str, kanal: str, sida: str, text: str, bildnamn: str = "",
+                      kor: Any = None, hitta: Any = None, plattform: str | None = None) -> bool:
+    """Visar rutan och returnerar True bara om Mattias klickade Publicera."""
+    import shutil
+    import subprocess
+    import sys
+
+    kor = kor or subprocess.run
+    hitta = hitta or shutil.which
+    if (plattform or sys.platform) != "darwin" or not hitta("osascript"):
+        raise Publiceringsfel("Publicering kräver en bekräftelseruta från macOS, och den kan inte visas här. "
+                              "Inget publicerades. Publicera från tavlan på Macen eller för hand från företagssidan.")
+    argument = ["osascript"]
+    for rad in BEKRAFTA_SKRIPT:
+        argument += ["-e", rad]
+    # Texten skickas som argument och blir aldrig en del av skriptet.
+    argument.append(bekraftelsetext(objekt_id, kanal, sida, text, bildnamn))
+    try:
+        svar = kor(argument, capture_output=True, text=True, timeout=BEKRAFTA_SEKUNDER + 30)
+    except Exception:
+        return False
+    return svar.returncode == 0 and (svar.stdout or "").strip() == f"{BEKRAFTA_KNAPP}|false"
+
+
+# ---------------------------------------------------------------------------
 # Inläggstexten
 # ---------------------------------------------------------------------------
 

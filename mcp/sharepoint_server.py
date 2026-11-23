@@ -13,15 +13,18 @@ Hemligheterna läses från miljövariabler, se .env.example.
 
 from __future__ import annotations
 
+import functools
 import html
 import io
 import os
 import posixpath
 import re
+import sys
+import traceback
 import zipfile
 from datetime import datetime
 from typing import Any
-from urllib.parse import quote
+from urllib.parse import quote, unquote
 from zoneinfo import ZoneInfo
 
 # Platser från livv-grund. De är låsta här i koden med avsikt:
@@ -91,6 +94,58 @@ class Sparrfel(Exception):
     """Ett anrop som bryter mot reglerna. Inget har ändrats."""
 
 
+# Förklaringar till svar från SharePoint. Används av verktygen och av teamtavlan.
+HTTP_FORKLARING = {
+    400: "SharePoint godtog inte anropet",
+    401: "inloggningen gick ut eller nekades. Kontrollera värdena i .env",
+    403: "appen saknar behörighet till filen eller mappen. Har behörigheten ändrats, till exempel vid delning?",
+    404: "filen eller mappen finns inte",
+    409: "filen är upptagen just nu. Försök igen om en stund",
+    412: "filen ändrades av någon annan samtidigt. Försök igen",
+    413: "filen är för stor för att laddas upp",
+    423: "filen är låst, troligen öppen i Excel. Stäng filen överallt, även i webbläsaren, och försök igen",
+    429: "för många anrop till SharePoint. Vänta en stund och försök igen",
+    507: "lagringsutrymmet i SharePoint är fullt",
+}
+
+
+def _graph_fel(svar: Any) -> str:
+    """Graphs egen felkod och text, till exempel resourceLocked. Tom om den saknas."""
+    try:
+        fel = svar.json().get("error", {})
+    except Exception:
+        return ""
+    if not isinstance(fel, dict):
+        return ""
+    delar = [str(fel.get("code") or "").strip(), str(fel.get("message") or "").strip()]
+    return ": ".join(d for d in delar if d)[:300]
+
+
+def felbeskrivning(fel: BaseException, med_text: bool = True,
+                   forklaringar: dict[int, str] | None = None,
+                   vid_serverfel: str = "tillfälligt fel hos Microsoft. Försök igen om en stund") -> str:
+    """Den verkliga orsaken till ett fel, i klartext och utan hemligheter.
+
+    Sparrfel visas som de är. Svar från SharePoint visas med kod, fil, förklaring och
+    Microsofts egen felkod. Övriga fel visas med typ, och med sin text när med_text är sant.
+    """
+    if isinstance(fel, Sparrfel):
+        return str(fel)
+    svar = getattr(fel, "response", None)
+    kod = getattr(svar, "status_code", None)
+    if not isinstance(kod, int):
+        text = str(fel).strip()
+        return f"{type(fel).__name__}: {text}" if med_text and text else type(fel).__name__
+    url = str(getattr(getattr(fel, "request", None), "url", "") or "")
+    m = re.search(r"/items/[^/:]+:/(.+?):(?:/|$)", url)
+    fil = unquote(m[1]) if m else "rotmappen" if "/children" in url else "SharePoint"
+    forklaring = {**HTTP_FORKLARING, **(forklaringar or {})}.get(
+        kod, vid_serverfel if kod >= 500 else "oväntat svar")
+    ut = f"SharePoint svarade {kod} för {fil}: {forklaring}" + ("" if forklaring.endswith("?") else ".")
+    graph = _graph_fel(svar) if med_text else ""
+    return f"{ut} Microsoft: {graph}" if graph else ut
+
+
 # ---------------------------------------------------------------------------
 # Kontroller utan nätverk. De testas i tests/test_sokvagar.py.
 # ---------------------------------------------------------------------------
@@ -151,6 +206,29 @@ def kontrollera_filnamn(filnamn: str, varumarke: str, ska_vara_brief: bool) -> r
     if not ska_vara_brief and m["format"] == "brief":
         raise Sparrfel("Ett utkast får inte ha formatet brief i filnamnet.")
     return m
+
+
+# Bilderna har aldrig text, och A4 skriver aldrig något till bilden. Rader som är
+# etiketter för text till bilden stoppas, till exempel "Text på bilden:" eller "**Image text**".
+BILDTEXT_RE = re.compile(
+    r"^[\s>#*_\-\d.)]*(?:förslag\s+(?:på|till)\s+|forslag\s+(?:pa|till)\s+|suggested\s+)?(?:"
+    r"(?:text|rubrik|copy|budskap|slogan|ord)\s+(?:på|pa|i|över|over|till)\s+(?:själva\s+)?bild(?:en)?"
+    r"|bild(?:text|rubrik|copy)|text\s*-?\s*overlay|overlay(?:\s*-?\s*text)?"
+    r"|(?:image|visual|picture|graphic)\s+(?:text|copy|headline|overlay|caption)"
+    r"|(?:text|copy|headline|caption|wording)\s+(?:on|in|over|for)\s+(?:the\s+)?(?:image|visual|picture|graphic)"
+    r")(?![\wåäö])",
+    re.I | re.M,
+)
+
+
+def kontrollera_ingen_bildtext(innehall: str) -> None:
+    m = BILDTEXT_RE.search(innehall or "")
+    if m:
+        rad = innehall[m.start():].split("\n", 1)[0].strip()
+        raise Sparrfel(
+            f"Utkastet innehåller text till bilden: \"{rad[:120]}\". Bilderna har aldrig text, och utkastet "
+            "skriver ingenting till bilden. Ta bort det och spara igen. Stoppat."
+        )
 
 
 def text_till_docx(innehall: str) -> bytes:
@@ -236,6 +314,10 @@ def _bladets_delar(filer: dict[str, bytes], bladnamn: str) -> str:
     raise Sparrfel(f"Hittar inte bladet {bladnamn} i arbetsboken. Stoppat.")
 
 
+# Tecken som inte får finnas i XML gör arbetsboken oläsbar. De tas bort innan de skrivs.
+_OGILTIG_XML_RE = re.compile("[\x00-\x08\x0b\x0c\x0e-\x1f￾￿]")
+
+
 def _cell_xml(ref: str, varde: Any, stil: str | None) -> str:
     s = f' s="{stil}"' if stil is not None else ""
     if varde is None or varde == "":
@@ -244,7 +326,7 @@ def _cell_xml(ref: str, varde: Any, stil: str | None) -> str:
         return f'<c r="{ref}"{s} t="b"><v>{int(varde)}</v></c>'
     if isinstance(varde, (int, float)):
         return f'<c r="{ref}"{s}><v>{varde}</v></c>'
-    text = html.escape(str(varde), quote=False)
+    text = html.escape(_OGILTIG_XML_RE.sub("", str(varde)), quote=False)
     return f'<c r="{ref}"{s} t="inlineStr"><is><t xml:space="preserve">{text}</t></is></c>'
 
 
@@ -598,6 +680,7 @@ class Livv:
 
     def spara_utkast(self, varumarke: str, filnamn: str, innehall: str) -> str:
         kontrollera_filnamn(filnamn, varumarke, ska_vara_brief=False)
+        kontrollera_ingen_bildtext(innehall)
         return self._spara_dokument(mapp_for_status("Utkast", varumarke), filnamn, innehall)
 
     def spara_rapport(self, filnamn: str, innehall: str) -> str:
@@ -690,6 +773,7 @@ class Livv:
 
 def bygg_server(livv_fabrik=None):
     from mcp.server.mcpserver import MCPServer
+    from mcp.server.mcpserver.exceptions import ToolError
 
     server = MCPServer(
         "sharepoint",
@@ -705,54 +789,72 @@ def bygg_server(livv_fabrik=None):
             _livv["x"] = (livv_fabrik or (lambda: Livv(Graph())))()
         return _livv["x"]
 
-    @server.tool(description="Lista innehållet i en mapp i Livv Marketing Ops. Tom sökväg ger rotmappen.")
+    # MCP-biblioteket visar bara "Error executing tool <namn>" för fel som inte är ToolError,
+    # även för Sparrfel och svar från SharePoint. Därför görs varje fel om till ToolError
+    # med den verkliga orsaken. Hela förloppet skrivs dessutom till serverns stderr.
+    def verktyg(description: str):
+        def dekor(fn):
+            @functools.wraps(fn)
+            def omslag(*args, **kwargs):
+                try:
+                    return fn(*args, **kwargs)
+                except ToolError:
+                    raise
+                except Exception as fel:
+                    if not isinstance(fel, Sparrfel):
+                        traceback.print_exc(file=sys.stderr)
+                    raise ToolError(felbeskrivning(fel)) from fel
+            return server.tool(description=description)(omslag)
+        return dekor
+
+    @verktyg("Lista innehållet i en mapp i Livv Marketing Ops. Tom sökväg ger rotmappen.")
     def lista_mapp(sokvag: str = "") -> list[dict]:
         return livv().lista_mapp(sokvag)
 
-    @server.tool(description="Läs en fil i Livv Marketing Ops som text (md, txt, csv, docx, xlsx).")
+    @verktyg("Läs en fil i Livv Marketing Ops som text (md, txt, csv, docx, xlsx).")
     def las_fil(sokvag: str) -> str:
         return livv().las_fil(sokvag)
 
-    @server.tool(description="Skapa en ny brief i 01_Briefer/<varumärke>. Skriver aldrig över. Bara A0.")
+    @verktyg("Skapa en ny brief i 01_Briefer/<varumärke>. Skriver aldrig över. Bara A0.")
     def skapa_brief(varumarke: str, filnamn: str, innehall: str) -> str:
         return livv().skapa_brief(varumarke, filnamn, innehall)
 
-    @server.tool(description="Spara ett nytt utkast i 02_Utkast/<varumärke>. Skriver aldrig över: ny version får nytt vNN.")
+    @verktyg("Spara ett nytt utkast i 02_Utkast/<varumärke>. Skriver aldrig över: ny version får nytt vNN.")
     def spara_utkast(varumarke: str, filnamn: str, innehall: str) -> str:
         return livv().spara_utkast(varumarke, filnamn, innehall)
 
-    @server.tool(description="Spara en rapport i 08_Rapporter. Skriver aldrig över.")
+    @verktyg("Spara en rapport i 08_Rapporter. Skriver aldrig över.")
     def spara_rapport(filnamn: str, innehall: str) -> str:
         return livv().spara_rapport(filnamn, innehall)
 
-    @server.tool(description="Visa ett bildförslag i 12_Pictures/<objekt-ID> så att du kan se det, till exempel för att skriva alt-text. Ange objekt-ID och filnamnet. Bara läsning.")
+    @verktyg("Visa ett bildförslag i 12_Pictures/<objekt-ID> så att du kan se det, till exempel för att skriva alt-text. Ange objekt-ID och filnamnet. Bara läsning.")
     def visa_bild(objekt_id: str, namn: str):
         from mcp.server.mcpserver import Image
 
         data, format_ = livv().visa_bild(objekt_id, namn)
         return Image(data=data, format=format_)
 
-    @server.tool(description="Spara en bildbrief på engelska till Brand Studio i 12_Pictures/<objekt-ID>. Bara när texten är godkänd. Skriver aldrig över. Bara A0.")
+    @verktyg("Spara en bildbrief på engelska till Brand Studio i 12_Pictures/<objekt-ID>. Bara när texten är godkänd. Skriver aldrig över. Bara A0.")
     def spara_bildbrief(objekt_id: str, innehall: str) -> str:
         return livv().spara_bildbrief(objekt_id, innehall)
 
-    @server.tool(description="Flytta ett objekts fil vid statusbyte. Servern väljer mapp efter status och varumärke.")
+    @verktyg("Flytta ett objekts fil vid statusbyte. Servern väljer mapp efter status och varumärke.")
     def flytta_objekt(filnamn: str, varumarke: str, fran_status: str, till_status: str) -> str:
         return livv().flytta_objekt(filnamn, varumarke, fran_status, till_status)
 
-    @server.tool(description="Läs Innehallsregister, hela eller en rad.")
+    @verktyg("Läs Innehallsregister, hela eller en rad.")
     def register_las(objekt_id: str | None = None) -> list[dict]:
         return livv().register_las(objekt_id)
 
-    @server.tool(description="Lägg till en ny rad i Innehallsregister. Bara A0.")
+    @verktyg("Lägg till en ny rad i Innehallsregister. Bara A0.")
     def register_ny_rad(objekt_id: str, falt: dict) -> dict:
         return livv().register_ny_rad(objekt_id, falt)
 
-    @server.tool(description="Uppdatera fält på en befintlig rad i Innehallsregister.")
+    @verktyg("Uppdatera fält på en befintlig rad i Innehallsregister.")
     def register_uppdatera(objekt_id: str, falt: dict) -> dict:
         return livv().register_uppdatera(objekt_id, falt)
 
-    @server.tool(description="Logga en åtgärd i 09_Loggar/Logg_YYYY-MM.xlsx.")
+    @verktyg("Logga en åtgärd i 09_Loggar/Logg_YYYY-MM.xlsx.")
     def logga(agent: str, objekt_id: str, atgard: str, fil_eller_mapp: str, kommentar: str = "") -> str:
         return livv().logga(agent, objekt_id, atgard, fil_eller_mapp, kommentar)
 

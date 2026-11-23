@@ -46,9 +46,12 @@ A0 ger dig ett objekt-ID. Granska objektets senaste utkast och sätt ett utfall.
    - Hållbarhet: bara ordagrant från listan med godkända påståenden.
    - Regler: inga konkurrentjämförelser, inga emojis i B2B-kanaler om briefen inte säger det, inga personuppgifter, inga AI-bilder utom som intern skiss.
    - Skrivregeln: sök efter tecknen — och –. Varje träff utanför tillåtetlistan i livv-skrivregler är ett fel.
+   - Språket: allt som publiceras är på engelska, även alt-text i Anteckningar. Text på något annat språk är ett fel, även om kolumnen sprak säger något annat. Står något annat än en i sprak: säg det till A0.
+   - Positioneringen: Livv är hospitality partner. Sök efter wholesale, wholesaler och grossist. Varje träff som beskriver Livv, eller text som ger samma bild, är ett fel.
    - Filnamn och version följer regeln. `[SAKNAS: ...]` i texten betyder att objektet inte kan bli Godkänd.
    - Utkastet har avsnitten `## Inläggstext` och `## Anteckningar`. Under Inläggstext står bara det som ska publiceras, ordagrant. Saknas avsnittet, eller står anteckningar i det: Revidera. Teamtavlan publicerar exakt det som står under Inläggstext.
    - På X: inläggstexten är högst 280 tecken.
+   - Bilden: utkastet får inte innehålla något till bilden, i något avsnitt. Det gäller text på bilden, rubrik eller slogan i bilden, bildtext, bildidéer och alt-text. Bilderna har aldrig text, och bildbriefen och alt-texten skrivs av A0 efter Mattias godkännande. Varje träff är ett fel: Revidera, med en punkt i ändringslistan som citerar texten och säger att den ska tas bort.
 4. Sätt varumärkespoäng 1 till 5: hur väl texten låter som Livv Group, Livv eller Unique och träffar målgruppen. Skriv en mening om varför.
 
 ## Utfall

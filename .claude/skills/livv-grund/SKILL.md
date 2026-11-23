@@ -65,6 +65,7 @@ Gör alltid alla fyra stegen, i den här ordningen:
 - Inget når 03_Granskning utan a3_utfall = Godkänd och varumärkespoäng minst 4.
 - A3 Revidera: filen stannar i 02_Utkast, revideringsvarv + 1. Efter 2 varv: Eskalera.
 - Inget når 04_Godkant utan att Mattias uttryckligen sagt godkänt för just det objektet. Fyll i godkand_av och godkand_datum.
+- När Mattias har godkänt en text, i chatten eller i teamtavlan, skriver A0 alltid en bildbrief i 12_Pictures/<objekt-ID>.
 - Publicerad och Arkiverad sätts bara när kraven i Statusflode är uppfyllda.
 
 ## Skriva i Excel-filerna
@@ -75,6 +76,13 @@ Kopplingen skriver alltid över hela filen. Därför:
 4. Läs tillbaka filen och kontrollera att ändringen finns. Om inte: stoppa och rapportera.
 
 Ändra aldrig kolumnnamnen i Matregister. De ska mappas mot Data Core.
+
+### Claude i Chrome
+Beslut av Mattias 23 november 2026: Claude i Chrome får ändra i Excel-filerna i SharePoint på Mattias uppdrag. Samma regler gäller som ovan, och dessutom:
+- Logga med agent "Claude i Chrome (på uppdrag av Mattias)", aldrig bara Mattias.
+- Lägg alltid till en ny rad i loggen. Skriv aldrig över eller töm en befintlig rad.
+- Läs tillbaka filen efter sparningen och kontrollera varje ändrad cell, särskilt å, ä och ö.
+- Publicera, schemalägg eller ändra aldrig budgetar, bud eller kampanjer. Det gör bara Mattias.
 
 ## Logga
 Varje åtgärd blir en rad i 09_Loggar/Logg_YYYY-MM.xlsx: Datum, Tid, Agent, Objekt-ID, Åtgärd, Fil eller mapp, Kommentar.

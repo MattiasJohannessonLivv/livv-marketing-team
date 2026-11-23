@@ -2,8 +2,9 @@
 
 Servern hämtar Innehallsregister och loggfilerna i 09_Loggar via samma
 app-registrering som MCP-servern. Den skriver bara när Mattias själv godkänner
-ett objekt eller skickar tillbaka det i tavlan (se beslut.py). Sidan kan aldrig
-publicera, schemalägga eller ändra något annat.
+ett objekt, skickar tillbaka det, väljer bild eller publicerar i tavlan (se beslut.py).
+Varje publicering kräver att Mattias bekräftar i en ruta från macOS som servern visar,
+så ett anrop direkt till servern räcker aldrig. Sidan kan aldrig schemalägga.
 
 Medan tavlan körs kontrollerar den registret var femte minut och skickar en
 notis på Macen när något nytt väntar på Mattias. Stäng av med TAVLA_NOTISER=0.
@@ -28,7 +29,7 @@ from datetime import date, datetime, time as klockslag
 from http.server import BaseHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
 from typing import Any, Iterable
-from urllib.parse import parse_qs, unquote
+from urllib.parse import parse_qs
 
 MAPP = Path(__file__).resolve().parent
 sys.path.insert(0, str(MAPP.parent / "mcp"))
@@ -168,30 +169,17 @@ def vantande(objekt: Iterable[dict[str, Any]]) -> list[dict[str, Any]]:
     return lista
 
 
-HTTP_FORKLARING = {
-    401: "inloggningen gick ut eller nekades. Kontrollera värdena i .env",
-    403: "appen saknar behörighet till filen eller mappen. Har behörigheten ändrats, till exempel vid delning?",
-    404: "filen eller mappen finns inte",
-    409: "filen är upptagen just nu",
-    423: "filen är låst, troligen öppen för redigering",
-    429: "för många anrop till SharePoint. Tavlan försöker igen om fem minuter",
-}
-
-
 def felbeskrivning(fel: Exception) -> str:
-    """Ett begripligt felmeddelande, utan hemligheter. Säger vilken fil det gäller när det går."""
-    if isinstance(fel, sp.Sparrfel):
+    """Ett begripligt felmeddelande, utan hemligheter. Säger vilken fil det gäller när det går.
+    Samma förklaringar som SharePoint-servern, men utan feltext som kan visas för andra sidor.
+    Fel från publiceringen skrivs av tavlan själv och visas som de är."""
+    if isinstance(fel, pub.Publiceringsfel):
         return str(fel)
-    svar = getattr(fel, "response", None)
-    kod = getattr(svar, "status_code", None)
-    if kod is None:
-        return type(fel).__name__
-    url = str(getattr(getattr(fel, "request", None), "url", "") or "")
-    m = re.search(r"/items/[^/:]+:/(.+?):(?:/|$)", url)
-    fil = unquote(m[1]) if m else "rotmappen" if "/children" in url else "SharePoint"
-    forklaring = HTTP_FORKLARING.get(kod, "tillfälligt fel hos Microsoft. Tavlan försöker igen om fem minuter"
-                                     if kod >= 500 else "oväntat svar")
-    return f"SharePoint svarade {kod} för {fil}: {forklaring}" + ("" if forklaring.endswith("?") else ".")
+    return sp.felbeskrivning(
+        fel, med_text=False,
+        forklaringar={429: "för många anrop till SharePoint. Tavlan försöker igen om fem minuter"},
+        vid_serverfel="tillfälligt fel hos Microsoft. Tavlan försöker igen om fem minuter",
+    )
 
 
 def logg_fran_bok(data: bytes) -> list[list[str]]:
@@ -290,6 +278,9 @@ def bygg_hanterare(cache: Cache, beslut: Any = None, nyckel: str | None = None):
     och bara med nyckeln som finns i sidan som servern själv levererade."""
     nyckel = nyckel or secrets.token_urlsafe(32)
     linkedin_state: dict[str, float] = {}  # engångskoder för LinkedIn-inloggningen, mot förfalskade svar
+    # Ett beslut i taget. Två snabba klick får aldrig läsa loggen samtidigt och båda skriva,
+    # och aldrig publicera två gånger.
+    beslutslas = threading.Lock()
 
     class Hanterare(BaseHTTPRequestHandler):
         def _svara(self, kod: int, typ: str, kropp: bytes) -> None:
@@ -434,14 +425,15 @@ def bygg_hanterare(cache: Cache, beslut: Any = None, nyckel: str | None = None):
                 langd = min(int(self.headers.get("Content-Length", "0")), 10_000)
                 data = json.loads(self.rfile.read(langd) or b"{}")
                 objekt_id = str(data.get("id", ""))
-                if sokvag == "/godkann":
-                    text = beslut.godkann(objekt_id)
-                elif sokvag == "/publicera":
-                    text = beslut.publicera(objekt_id, str(data.get("sida", "")))
-                elif sokvag == "/valjbild":
-                    text = beslut.valj_bild(objekt_id, str(data.get("namn", "")))
-                else:
-                    text = beslut.tillbaka(objekt_id, str(data.get("kommentar", "")))
+                with beslutslas:
+                    if sokvag == "/godkann":
+                        text = beslut.godkann(objekt_id)
+                    elif sokvag == "/publicera":
+                        text = beslut.publicera(objekt_id, str(data.get("sida", "")))
+                    elif sokvag == "/valjbild":
+                        text = beslut.valj_bild(objekt_id, str(data.get("namn", "")))
+                    else:
+                        text = beslut.tillbaka(objekt_id, str(data.get("kommentar", "")))
                 cache.rensa()
                 self._json(200, {"ok": True, "text": text})
             except Exception as fel:
