@@ -196,6 +196,11 @@ Beslut 18 november 2026: Mattias kan publicera godkända objekt med knappen Publ
 **X, kvar**
 - Mattias lägger in nycklarna för Livv Groups utvecklarapp, med behörigheten Read and write och Access Token skapad för Livv Groups konto.
 
+**Bildbrief till Brand Studio, 23 november 2026**
+- Mattias har byggt flödet Livv bildbrief till Brand Studio i Power Automate. Det reagerar när en fil med image-brief i namnet skapas i Livv Marketing Ops/12_Pictures och skickar en ping i Teams via Flow bot.
+- Kopplingarna går via Mattias Microsoft-konto. Under testet går pingen till Mattias.
+- Kvar: testping, redigeringsrätt för Anastasia i 12_Pictures, byte av mottagare till Anastasia. På sikt flyttar IT kopplingarna till ett tjänstekonto.
+
 **Arbetsregler för kopplingarna**
 - Agenter godkänner aldrig avtal eller villkor och skickar inga meddelanden för Mattias räkning.
 - Hemliga nycklar läggs in av Mattias själv, aldrig av en agent.

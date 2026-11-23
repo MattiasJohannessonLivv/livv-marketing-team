@@ -29,6 +29,7 @@ livv-marketing-team/
   tavla/
     server.py                   läser register och logg, serverar tavlan på 127.0.0.1
     beslut.py                   Mattias beslut i tavlan: godkänn och skicka tillbaka
+    a0.py                       startar A0 i bakgrunden efter godkännande, för bildbriefen
     publicera.py                publicering till LinkedIn och X, efter bekräftelse i en ruta från macOS
     tavla.html                  teamtavlan
     exempeldata.json            exempel för att visa tavlan utan SharePoint
@@ -65,6 +66,7 @@ livv-marketing-team/
     test_excel.py               rullistor och loggkolumner efter skrivning via servern
     test_excel_andringar.py     engångsverktyget för ändringslistan
     test_tavla.py               teamtavlan: omvandling, notiser och webbservern
+    test_a0.py                  A0 startas efter godkännande i tavlan, i driftläge och med få verktyg
     test_beslut.py              beslut i tavlan: godkänn, skicka tillbaka och skyddet mot andra sidor
     test_publicera.py           publicering: rutan från macOS, inläggstext, LinkedIn, X och spärrar mot dubbelpublicering
 ```
@@ -162,7 +164,7 @@ När Mattias har godkänt texten, i chatten eller i teamtavlan, skriver A0 allti
 Engångsinställning:
 1. Skapa mappen `12_Pictures` direkt i Livv Marketing Ops. Agenterna får inte skapa huvudmappar.
 2. Lägg `Bildstil_Please_Disturb.md` (finns i `docs/underlag/`) i 00_Underlag när Mattias har godkänt den.
-3. Skapa ett flöde i Power Automate som pingar Anastasia i Teams:
+3. Ett flöde i Power Automate pingar Anastasia i Teams. Mattias byggde det 23 november 2026 med namnet **Livv bildbrief till Brand Studio**. Kopplingarna till SharePoint och Teams går via Mattias Microsoft-konto. Under testet skickar flödet till Mattias själv. Mottagaren byts till Anastasia när testpingen har kommit fram, och hon behöver redigeringsrätt i 12_Pictures. Flödet är uppsatt så här:
    - Utlösare: SharePoint, *When a file is created (properties only)*, webbplatsen livv-group-data-it-ai, biblioteket Dokument.
    - Villkor: *Folder path* innehåller `Livv Marketing Ops/12_Pictures/` och *File name with extension* innehåller `image-brief`.
    - Åtgärd: Microsoft Teams, *Post message in a chat or channel*, som Flow bot i chatt med Anastasia Johannesson. Meddelande:
@@ -194,9 +196,9 @@ Publiceringen mot LinkedIn och X är testad mot attrapper, inte mot de riktiga t
 Medan tavlan körs får du en notis på Macen när något nytt väntar på ditt beslut, och listan Väntar på dig har en länk direkt till filen i SharePoint. Notiserna stängs av med `TAVLA_NOTISER=0 ./tavla.sh`.
 
 **Besluta i tavlan.** Under Väntar på dig öppnar du ett objekt med **Läs och godkänn**. Utkastet och briefen visas i tavlan. Du kan:
-- **Godkänna.** Knappen kräver en bekräftelse. Tavlan kontrollerar att A3 har godkänt och att objektet står i Granskning, flyttar filen till 04_Godkant, fyller i godkand_av och godkand_datum och loggar att Mattias godkände. Nästa gång teamet arbetar skriver A0 bildbriefen.
+- **Godkänna.** Knappen kräver en bekräftelse. Tavlan kontrollerar att A3 har godkänt och att objektet står i Granskning, flyttar filen till 04_Godkant, fyller i godkand_av och godkand_datum och loggar att Mattias godkände. Sedan startar tavlan A0 i bakgrunden, som skriver bildbriefen direkt (`tavla/a0.py`). Körningen är i driftläge och kan bara läsa, spara bildbriefen och logga. Utskriften sparas i `.arbetsyta/a0-bildbrief/`. Kan A0 inte startas skriver den bildbriefen nästa gång du startar teamet.
 - **Skicka tillbaka med kommentar.** Objektet går tillbaka till Utkast med a3_utfall Revidera, och kommentaren loggas. A0 ger den till A4 nästa gång teamet arbetar.
-- **Välja bild och publicera**, se Publicera från tavlan.
+- **Välja bild och publicera.** Varje godkänt objekt har knappen **Publicera** i listan Väntar på dig. Den öppnar objektet vid publiceringen, se Publicera från tavlan.
 - **Kopiera texten** när du hellre publicerar för hand.
 
 Typsnitten är Livvs egna: Crake i rubriker och Inter i text. Har datorn Crake installerat används det direkt. Annars hämtar tavlan Crake-filer från `00_Underlag` eller `00_Underlag/Fonter`, och utan dem visas ett liknande reservtypsnitt. Logotypen hämtas också från `00_Underlag`. Typsnitt och logotyp läggs aldrig i Git.
@@ -217,7 +219,8 @@ Nu:
 - **Testa rutan från macOS** första gången du publicerar från tavlan, gärna på ett objekt där det gör lite om något behöver rättas. Rutan är testad mot en attrapp, inte på en Mac, och den kan hamna bakom andra fönster.
 - **Integritetspolicyn på livv.se/se/integritetspolicy** är tom och blockerar LinkedIn. Webbansvarig tar fram texten och den som ansvarar för GDPR godkänner den. Begär sedan Community Management API i appen.
 - **Nycklarna för X**: lägg in dem för Livv Groups utvecklarapp, med Read and write, enligt Publicera från tavlan.
-- **Flödet i Power Automate** som pingar Anastasia, om det inte redan är uppsatt. Se Bilder från Brand Studio.
+- **Flödet Livv bildbrief till Brand Studio**: testa pingen till dig själv. Ge sedan Anastasia redigeringsrätt i 12_Pictures och byt mottagare till henne. Se Bilder från Brand Studio.
+- **Tjänstekonto för flödet**, på sikt: be IT flytta flödets kopplingar från ditt konto till ett tjänstekonto, så att flödet fortsätter fungera om ditt lösenord byts eller kontot stängs.
 
 Senare:
 - Starta API-ansökan hos Google Ads redan nu. Godkännandet kan ta flera veckor och behövs i fas 2.

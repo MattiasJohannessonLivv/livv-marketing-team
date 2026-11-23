@@ -27,7 +27,8 @@ class TestBildbrief(unittest.TestCase):
 
     def test_efter_godkannande_i_tavlan(self):
         rad = next(r for r in self.a0.splitlines() if '"Godkände i teamtavlan"' in r)
-        self.assertIn("Skriv bildbriefen", rad)
+        self.assertIn("skriva bildbriefen enligt 5b", rad)
+        self.assertIn("Finns ingen bildbrief", rad)
         self.assertNotIn("Gör ingenting mer", rad)
 
     def test_alltid_och_oavsett_var(self):
