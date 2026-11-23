@@ -208,6 +208,29 @@ def kontrollera_filnamn(filnamn: str, varumarke: str, ska_vara_brief: bool) -> r
     return m
 
 
+# Bilderna har aldrig text, och A4 skriver aldrig något till bilden. Rader som är
+# etiketter för text till bilden stoppas, till exempel "Text på bilden:" eller "**Image text**".
+BILDTEXT_RE = re.compile(
+    r"^[\s>#*_\-\d.)]*(?:förslag\s+(?:på|till)\s+|forslag\s+(?:pa|till)\s+|suggested\s+)?(?:"
+    r"(?:text|rubrik|copy|budskap|slogan|ord)\s+(?:på|pa|i|över|over|till)\s+(?:själva\s+)?bild(?:en)?"
+    r"|bild(?:text|rubrik|copy)|text\s*-?\s*overlay|overlay(?:\s*-?\s*text)?"
+    r"|(?:image|visual|picture|graphic)\s+(?:text|copy|headline|overlay|caption)"
+    r"|(?:text|copy|headline|caption|wording)\s+(?:on|in|over|for)\s+(?:the\s+)?(?:image|visual|picture|graphic)"
+    r")(?![\wåäö])",
+    re.I | re.M,
+)
+
+
+def kontrollera_ingen_bildtext(innehall: str) -> None:
+    m = BILDTEXT_RE.search(innehall or "")
+    if m:
+        rad = innehall[m.start():].split("\n", 1)[0].strip()
+        raise Sparrfel(
+            f"Utkastet innehåller text till bilden: \"{rad[:120]}\". Bilderna har aldrig text, och utkastet "
+            "skriver ingenting till bilden. Ta bort det och spara igen. Stoppat."
+        )
+
+
 def text_till_docx(innehall: str) -> bytes:
     from docx import Document
 
@@ -657,6 +680,7 @@ class Livv:
 
     def spara_utkast(self, varumarke: str, filnamn: str, innehall: str) -> str:
         kontrollera_filnamn(filnamn, varumarke, ska_vara_brief=False)
+        kontrollera_ingen_bildtext(innehall)
         return self._spara_dokument(mapp_for_status("Utkast", varumarke), filnamn, innehall)
 
     def spara_rapport(self, filnamn: str, innehall: str) -> str:

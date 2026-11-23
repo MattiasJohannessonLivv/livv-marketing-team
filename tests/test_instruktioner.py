@@ -42,5 +42,18 @@ class TestBildbrief(unittest.TestCase):
         self.assertIn("skriver A0 alltid en bildbrief", las(".claude/skills/livv-grund/SKILL.md"))
 
 
+class TestIngenTextPaBilden(unittest.TestCase):
+    """A4 föreslår aldrig text till bilden, och A3 stoppar det."""
+
+    def test_a4(self):
+        a4 = las(".claude/agents/a4-contentcreator.md")
+        self.assertIn("Skriv aldrig något till bilden", a4)
+        self.assertNotIn("förslag på alt-text", a4)
+
+    def test_a3(self):
+        a3 = las(".claude/agents/a3-granskare.md")
+        self.assertRegex(a3, r"Bilden: utkastet får inte innehålla något till bilden.*Revidera")
+
+
 if __name__ == "__main__":
     unittest.main()

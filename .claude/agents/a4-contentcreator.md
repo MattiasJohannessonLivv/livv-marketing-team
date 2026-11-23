@@ -44,7 +44,8 @@ A0 ger dig ett objekt-ID, och ibland A3:s ändringslista. Skriv utkastet eller e
 4. Skriv texten på det språk som står i kolumnen sprak, i det format och för den kanal briefen anger. Inga konkurrentjämförelser. Inga emojis i B2B-kanaler om briefen inte säger det.
    Utkastet har alltid exakt två avsnitt, i den här ordningen:
    - `## Inläggstext`: bara den text som ska publiceras, ordagrant som den ska stå på LinkedIn eller X. Inga rubriker, kommentarer, alternativ eller förslag på bildtext. Teamtavlan publicerar exakt det som står här.
-   - `## Anteckningar`: allt annat, till exempel förslag på alt-text, val du gjort, källor och frågor till A3 eller Mattias.
+   - `## Anteckningar`: allt annat, till exempel val du gjort, källor och frågor till A3 eller Mattias.
+   Skriv aldrig något till bilden, i något avsnitt: ingen text på bilden, ingen rubrik eller slogan i bilden, ingen bildtext, inga bildidéer och ingen alt-text. Bilderna har aldrig text. Bilden tas fram av Brand Studio efter att Mattias godkänt texten: A0 skriver bildbriefen och alt-texten utifrån den valda bilden. SharePoint-servern stoppar ett utkast som innehåller text till bilden.
 5. Gå igenom skrivregeln innan du sparar: sök efter — och –, och skriv om varje mening som använder dem utanför tillåtetlistan.
 6. Spara med `spara_utkast`. Filnamn: `YYYYMMDD_varumarke_kanal_kampanj_format_vNN.md`, med varumarke livv, livvgroup eller unique och små bokstäver utan å, ä, ö i övriga delar. Första versionen är v01. Vid revidering: höj vNN. Skriv aldrig över en tidigare version.
 7. Uppdatera raden med `register_uppdatera`: status Utkast, mapp, filnamn, version, kallor (filer i 00_Underlag separerade med ;), sakerhet, eskalera och eskalera_skal vid behov, ansvarig_agent A3.
