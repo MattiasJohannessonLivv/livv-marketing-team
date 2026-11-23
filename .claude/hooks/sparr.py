@@ -36,8 +36,11 @@ def fraga(skal):
 SHAREPOINT = {
     "lista_mapp", "las_fil", "skapa_brief", "spara_utkast", "spara_rapport",
     "flytta_objekt", "register_las", "register_ny_rad", "register_uppdatera", "logga",
-    "spara_bildbrief", "visa_bild",
+    "spara_bildbrief", "visa_bild", "spara_trendrapport",
 }
+# xAI-servern: bara trendsök, och bara för trendspaningen (A1, senare A8)
+XAI = {"trendsok"}
+TRENDROLLER = {"a1-trendspotter"}
 FARLIGA_ORD = re.compile(
     r"publish|post|schedul|send|share|tweet|reply|comment|boost|budget|bid|"
     r"campaign|adset|ad_set|ads_|_ad_|creative|delete|remove|trash|purge|"
@@ -46,6 +49,14 @@ FARLIGA_ORD = re.compile(
 )
 MANSKLIG_STATUS = {"Godkänd", "Schemalagd", "Publicerad"}
 MANSKLIGA_FALT = {"godkand_av", "godkand_datum", "publicerad_datum", "plattforms_id", "url"}
+
+if verktyg.startswith("mcp__xai__"):
+    namn = verktyg[len("mcp__xai__"):]
+    if namn not in XAI:
+        stoppa(f"{namn} är inget godkänt verktyg i xAI-servern.")
+    if agent not in TRENDROLLER:
+        stoppa("Trendsök med Grok görs bara av A1 Trendspotter. Delegera till a1-trendspotter.")
+    sys.exit(0)
 
 if verktyg.startswith("mcp__"):
     if not verktyg.startswith("mcp__sharepoint__"):
@@ -56,6 +67,10 @@ if verktyg.startswith("mcp__"):
         stoppa(f"{namn} är inget godkänt verktyg i SharePoint-servern.")
 
     # Rollspärrar, utöver verktygslistorna i .claude/agents/
+    if namn == "spara_trendrapport" and agent not in TRENDROLLER:
+        stoppa("Trendrapporter i 13_Insikter sparas bara av A1 Trendspotter.")
+    if agent in TRENDROLLER and namn not in {"lista_mapp", "las_fil", "spara_trendrapport", "logga"}:
+        stoppa("A1 läser, sparar trendrapporter i 13_Insikter och loggar. Inget annat.")
     if agent == "a3-granskare":
         if namn in {"skapa_brief", "register_ny_rad", "spara_utkast", "spara_rapport", "spara_bildbrief"}:
             stoppa("A3 skapar aldrig briefer, utkast, rapporter eller nya objekt.")

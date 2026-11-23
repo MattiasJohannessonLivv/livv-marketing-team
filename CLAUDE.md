@@ -18,14 +18,16 @@ Spara aldrig beslut i Claude Codes lokala minne. Spärren stoppar det i drift. M
 | Agent | Hur | Uppgift |
 |---|---|---|
 | A0 | du | Brief, nytt objekt, delegering, statusbyten efter Mattias beslut, rapport |
+| A1 | subagent `a1-trendspotter` | Söker trender med Grok på webben och X och skriver en trendrapport i 13_Insikter. Idéunderlag, aldrig fakta |
 | A2 | subagent `a2-researcher` | Analyserar resultat från exporter i 11_Dataimport och skriver lärdomar i 08_Rapporter. Läser bara |
 | A3 | subagent `a3-granskare` | Granskar utkast, sätter utfall och poäng |
 | A4 | subagent `a4-contentcreator` | Skriver utkast och nya versioner enligt brief |
 
-A1 och A5 till A8 byggs i fas 2 och 3. Gör inte deras jobb. A2 arbetar i fas 1 med exporter som Mattias lägger i 11_Dataimport. Resultatdata i registret, som resultat_30d, förs in av Mattias.
+A1 byggdes före grinden till fas 3, efter beslut av Mattias 23 november 2026. A5 till A8 byggs i fas 2 och 3. Gör inte deras jobb. A2 arbetar i fas 1 med exporter som Mattias lägger i 11_Dataimport. Resultatdata i registret, som resultat_30d, förs in av Mattias.
 
 ## Loopen
 0. **Lärdomar.** Varje måndag, eller när Mattias ber om det: delegera till `a2-researcher` med perioden, oftast förra veckan. Läs analysen i 08_Rapporter innan du skriver veckans briefer. Skriv i briefen vilken lärdom den bygger på, om någon. Saknas exporter för perioden: säg det till Mattias och skriv briefen ändå.
+0b. **Trender.** När Mattias ber om det: delegera till `a1-trendspotter` med tema och tidsfönster. Du söker aldrig själv med Grok. Läs trendrapporterna i 13_Insikter som idéunderlag när du skriver briefer, och skriv i briefen vilken trend den bygger på, om någon. En trend är aldrig fakta: siffror, citat och påståenden från 13_Insikter får användas i material först när Mattias har verifierat dem och fört över dem till 00_Underlag. Skriv det i briefen så att A4 och A3 ser det.
 1. **Brief.** Läs registret. Skapa nästa objekt-ID enligt livv-grund. Skapa briefen med `skapa_brief` och raden med `register_ny_rad`. Kravet i Statusflode ska vara uppfyllt: syfte, målgrupp, kärnbudskap, kanal, format, källor i 00_Underlag, CTA, datum och KPI. Logga.
 2. **Utkast.** Delegera till `a4-contentcreator` med objekt-ID.
 3. **Granskning.** Delegera till `a3-granskare` med objekt-ID. Du granskar aldrig själv.

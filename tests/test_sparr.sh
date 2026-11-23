@@ -67,6 +67,21 @@ kontrollera deny  "A3 kan inte spara bildbrief"             "$(mcp sharepoint__s
 kontrollera deny  "A4 kan inte spara bildbrief"             "$(mcp sharepoint__spara_bildbrief '{}' a4-contentcreator)"
 kontrollera tillat "A0 tittar på ett bildförslag"            "$(mcp sharepoint__visa_bild '{"objekt_id":"LIVV-2026-0002","namn":"LIVV-2026-0002_option-c.jpg"}')"
 
+echo "A1 Trendspotter och Grok"
+kontrollera tillat "A1 söker trender med Grok"               "$(mcp xai__trendsok '{"fraga":"hotel guest comfort trends"}' a1-trendspotter)"
+kontrollera deny  "A0 söker inte med Grok själv"            "$(mcp xai__trendsok '{"fraga":"x"}')"
+kontrollera deny  "A4 söker inte med Grok"                  "$(mcp xai__trendsok '{"fraga":"x"}' a4-contentcreator)"
+kontrollera deny  "Okänt verktyg i xAI-servern"             "$(mcp xai__chat '{}' a1-trendspotter)"
+kontrollera tillat "A1 sparar trendrapport"                  "$(mcp sharepoint__spara_trendrapport '{"filnamn":"20261124_trender_spa_v01.md"}' a1-trendspotter)"
+kontrollera tillat "A1 läser i 13_Insikter"                  "$(mcp sharepoint__las_fil '{"sokvag":"13_Insikter"}' a1-trendspotter)"
+kontrollera tillat "A1 loggar"                               "$(mcp sharepoint__logga '{"agent":"A1"}' a1-trendspotter)"
+kontrollera deny  "A0 sparar inte trendrapport"             "$(mcp sharepoint__spara_trendrapport '{}')"
+kontrollera deny  "A2 sparar inte trendrapport"             "$(mcp sharepoint__spara_trendrapport '{}' a2-researcher)"
+kontrollera deny  "A1 kan inte skapa brief"                 "$(mcp sharepoint__skapa_brief '{}' a1-trendspotter)"
+kontrollera deny  "A1 kan inte spara utkast"                "$(mcp sharepoint__spara_utkast '{}' a1-trendspotter)"
+kontrollera deny  "A1 kan inte ändra registret"             "$(mcp sharepoint__register_uppdatera '{"objekt_id":"LIVV-2026-0002","falt":{}}' a1-trendspotter)"
+kontrollera deny  "A1 kan inte spara rapport i 08"          "$(mcp sharepoint__spara_rapport '{}' a1-trendspotter)"
+
 echo "Radering och nätverk"
 kontrollera deny  "rm"                                       '{"tool_name":"Bash","tool_input":{"command":"rm -rf .arbetsyta"}}' 1
 kontrollera deny  "find -delete"                             '{"tool_name":"Bash","tool_input":{"command":"find . -name x -delete"}}' 1
