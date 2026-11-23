@@ -26,6 +26,7 @@ livv-marketing-team/
   .env.example                  mall för hemligheterna (.env ignoreras av Git)
   starta.sh                     startar teamet, i drift eller i utvecklingsläge
   tavla.sh                      startar teamtavlan lokalt
+  hamta.sh                      hämtar senaste main när teamet eller tavlan startar
   tavla/
     server.py                   läser register och logg, serverar tavlan på 127.0.0.1
     beslut.py                   Mattias beslut i tavlan: godkänn och skicka tillbaka
@@ -144,6 +145,7 @@ I Claude Code på webben är det två miljöer: **Default** för drift och **Liv
 ```bash
 ./starta.sh
 ```
+`./starta.sh` och `./tavla.sh` hämtar själva senaste versionen från main innan de startar. Du behöver alltså aldrig köra `git pull`. Det görs i skriptet, utanför Claude, så spärren kan fortsätta stoppa `git pull` i agenterna. Hämtningen kräver att projektet står på main (byt en gång med `git checkout main`). Bara det du slagit ihop i en pull request kommer med, och lokala ändringar skrivs aldrig över. I utvecklingsläge hämtas ingenting. Stäng av med `LIVV_HAMTA=0`.
 Du pratar med A0. Exempel: "Skapa en brief för ett LinkedIn-inlägg för Livv om vinterkollektionen", eller "Vad väntar på mig?". Första gången frågar Claude Code om du litar på projektmappen och SharePoint-servern: svara ja.
 
 ### Exporter till A2

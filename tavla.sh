@@ -13,6 +13,9 @@ set -a
 source .env
 set +a
 
+# Senaste godkända versionen från main, innan tavlan startar
+source ./hamta.sh
+
 PORT="${TAVLA_PORT:-8787}"
 if command -v open >/dev/null 2>&1; then
   (sleep 1 && open "http://127.0.0.1:$PORT") &
