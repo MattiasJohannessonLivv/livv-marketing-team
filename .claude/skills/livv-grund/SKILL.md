@@ -76,6 +76,13 @@ Kopplingen skriver alltid över hela filen. Därför:
 
 Ändra aldrig kolumnnamnen i Matregister. De ska mappas mot Data Core.
 
+### Claude i Chrome
+Beslut av Mattias 23 november 2026: Claude i Chrome får ändra i Excel-filerna i SharePoint på Mattias uppdrag. Samma regler gäller som ovan, och dessutom:
+- Logga med agent "Claude i Chrome (på uppdrag av Mattias)", aldrig bara Mattias.
+- Lägg alltid till en ny rad i loggen. Skriv aldrig över eller töm en befintlig rad.
+- Läs tillbaka filen efter sparningen och kontrollera varje ändrad cell, särskilt å, ä och ö.
+- Publicera, schemalägg eller ändra aldrig budgetar, bud eller kampanjer. Det gör bara Mattias.
+
 ## Logga
 Varje åtgärd blir en rad i 09_Loggar/Logg_YYYY-MM.xlsx: Datum, Tid, Agent, Objekt-ID, Åtgärd, Fil eller mapp, Kommentar.
 Finns ingen fil för månaden: skapa den med samma kolumner och logga det.

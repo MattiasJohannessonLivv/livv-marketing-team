@@ -324,6 +324,8 @@ class Beslut:
             raise sp.Sparrfel("Bild väljs först när texten är godkänd.")
         if namn not in self.bilder(objekt_id):
             raise sp.Sparrfel("Bilden finns inte bland förslagen.")
+        if self._senast(self._logg(objekt_id, livv.g), "Valde bild i teamtavlan") == namn:
+            return f"Bilden {namn} är redan vald för {objekt_id}. Inget nytt loggades."
         livv.logga("Mattias", objekt_id, "Valde bild i teamtavlan", f"{sp.BILDMAPP}/{objekt_id}/{namn}", namn)
         return f"Bilden {namn} är vald för {objekt_id}."
 
