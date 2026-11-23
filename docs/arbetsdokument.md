@@ -215,9 +215,9 @@ Beslutat 23 november 2026: Claude i Chrome får ändra i Excel-filerna i SharePo
 
 - [ ] Stämmer föreslagen numrering A0 till A8 med hur A1, A2 och A4 till A7 redan är definierade i livv-grund?
 - [x] Var körs teamet: på en dator som alltid är igång, en server eller i molnet? Beslut 17 november 2026: på Mattias dator, och schemalagda körningar på en liten Linux-server hos IT. Se Var det körs.
-- [ ] Vilken mapp blir insiktsmapp för trendrapporter, och vem verifierar innehållet innan det når 00_Underlag?
+- [ ] Vilken mapp blir insiktsmapp för trendrapporter, och vem verifierar innehållet innan det når 00_Underlag? Beslut 23 november 2026: en ny huvudmapp, 13_Insikter, i Livv Marketing Ops. Mattias skapar den. Kvar: vem som verifierar.
 - [ ] Vem ansöker om API-åtkomst hos Google Ads, Meta och LinkedIn, och när?
 - [ ] Vilken API-nivå hos X behövs, eller räcker Groks inbyggda X-sökning?
-- [ ] Godkänner IT och dataskydd att sökfrågor skickas till xAI, efter granskning av villkoren?
+- [x] Godkänner IT och dataskydd att sökfrågor skickas till xAI, efter granskning av villkoren? Beslut 23 november 2026: Grok är godkänt internt, enligt Mattias. Till Grok skickas fortfarande bara sökfrågor, aldrig internt material.
 - [ ] Hur ser Data Core ut tekniskt, och hur läser A2 från den?
 - [ ] Vem är ersättare för godkännanden när Mattias är borta?

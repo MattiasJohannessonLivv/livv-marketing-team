@@ -33,6 +33,7 @@ A0 är huvudsessionen. A1 till A8 är subagenter. Den som skapar en brief godkä
 Övriga mappar: läs rotmappens innehåll och hämta itemId därifrån. Gissa aldrig ett id.
 Varumärkesmappar: Livv Group = LivvGroup, Livv = Livv, Unique = Unique.
 12_Pictures: en mapp per objekt-ID med bildbriefen till Brand Studio och bildförslagen tillbaka. Bildbriefer skrivs på engelska.
+13_Insikter: trendrapporter från A1 och A8. De är idéunderlag, inte fakta. Inget därifrån används i material förrän en människa har verifierat det och fört över det till 00_Underlag.
 
 ## Regler som alltid gäller
 1. Använd bara fakta, priser, kundnamn och påståenden från 00_Underlag. Saknas något: skriv [SAKNAS: vad], sätt eskalera = Ja.

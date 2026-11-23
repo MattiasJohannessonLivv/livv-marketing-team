@@ -45,7 +45,7 @@ LOGG_KOLUMNER = ["Datum", "Tid", "Agent", "Objekt-ID", "Åtgärd", "Fil eller ma
 TILLATNA_TOPPNIVAER = {
     "00_Underlag", "01_Briefer", "02_Utkast", "03_Granskning", "04_Godkant",
     "05_Publicerat", "06_Arkiv", "07_Avvisat", "08_Rapporter", "09_Loggar",
-    "10_Prompter", "11_Dataimport", "12_Pictures", "Innehallsregister.xlsx", "Matregister.xlsx",
+    "10_Prompter", "11_Dataimport", "12_Pictures", "13_Insikter", "Innehallsregister.xlsx", "Matregister.xlsx",
 }
 
 VARUMARKESMAPPAR = {"Livv Group": "LivvGroup", "Livv": "Livv", "Unique": "Unique"}
