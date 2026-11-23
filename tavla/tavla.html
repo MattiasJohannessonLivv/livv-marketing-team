@@ -828,7 +828,7 @@ function visaSvar(text, fel) {
 }
 
 function skickaBeslut(vad, data, vantetext) {
-  document.querySelectorAll("#b-atgard button").forEach(function (b) { b.disabled = true; });
+  document.querySelectorAll("#beslut-innehall button:not(#b-stang)").forEach(function (b) { b.disabled = true; });
   visaSvar(vantetext || "Sparar i SharePoint.");
   fetch(vad, { method: "POST", headers: { "Content-Type": "application/json", "X-Tavla-Nyckel": NYCKEL }, body: JSON.stringify(data) })
     .then(function (r) { return r.json().then(function (j) { if (!r.ok) throw new Error(j.fel || "svar " + r.status); return j; }); })
@@ -839,7 +839,7 @@ function skickaBeslut(vad, data, vantetext) {
     })
     .catch(function (e) {
       visaSvar("Inget sparades: " + e.message, true);
-      document.querySelectorAll("#b-atgard button").forEach(function (b) { b.disabled = false; });
+      document.querySelectorAll("#beslut-innehall button:not(#b-stang)").forEach(function (b) { b.disabled = false; });
     });
 }
 

@@ -202,6 +202,21 @@ class TestBilder(unittest.TestCase):
         rader = [list(r) for r in load_workbook(io.BytesIO(g.filer[logg])).active.iter_rows(values_only=True)]
         self.assertTrue(any(r[4] == "Valde bild i teamtavlan" and r[6] == "forslag-b.jpg" for r in rader))
 
+    def test_samma_bild_tva_ganger_loggas_en_gang(self):
+        g = self.godkand()
+        g.filer["12_Pictures/LIVV-2026-0002/a.png"] = PNG
+        g.filer["12_Pictures/LIVV-2026-0002/b.png"] = PNG
+        beslut = b.Beslut(LasVy(g), g, NU)
+        beslut.valj_bild("LIVV-2026-0002", "a.png")
+        self.assertIn("redan vald", beslut.valj_bild("LIVV-2026-0002", "a.png"))
+        beslut.valj_bild("LIVV-2026-0002", "b.png")
+        beslut.valj_bild("LIVV-2026-0002", "a.png")
+        from openpyxl import load_workbook
+        logg = next(p for p in g.filer if p.startswith("09_Loggar/"))
+        valda = [r[6] for r in load_workbook(io.BytesIO(g.filer[logg])).active.iter_rows(values_only=True)
+                 if r[4] == "Valde bild i teamtavlan"]
+        self.assertEqual(valda, ["a.png", "b.png", "a.png"])
+
     def test_bild_valjs_inte_fore_godkand_text(self):
         g = grund()
         g.filer["12_Pictures/LIVV-2026-0002/a.png"] = PNG
@@ -356,6 +371,50 @@ class TestSkydd(unittest.TestCase):
         kod, svar = self.post("/godkann", {"id": "LIVV-2026-0002"})
         self.assertEqual(kod, 502)
         self.assertIn("Granskning", svar["fel"])
+
+
+class TestEttBeslutITaget(unittest.TestCase):
+    def test_samtidiga_klick_kors_efter_varandra(self):
+        class Langsam:
+            def __init__(self):
+                self.pagar, self.mest, self.las = 0, 0, threading.Lock()
+
+            def valj_bild(self, objekt_id, namn):
+                import time
+                with self.las:
+                    self.pagar += 1
+                    self.mest = max(self.mest, self.pagar)
+                time.sleep(0.2)
+                with self.las:
+                    self.pagar -= 1
+                return "ok"
+
+        langsam = Langsam()
+        server = ThreadingHTTPServer(("127.0.0.1", 0),
+                                     tavla.bygg_hanterare(tavla.Cache(lambda: {"objekt": [], "logg": []}), langsam, "hemlig"))
+        threading.Thread(target=server.serve_forever, daemon=True).start()
+        try:
+            url = f"http://127.0.0.1:{server.server_address[1]}/valjbild"
+
+            def klick():
+                req = urllib.request.Request(url, data=b'{"id":"LIVV-2026-0002","namn":"a.png"}', method="POST",
+                                             headers={"Content-Type": "application/json", "X-Tavla-Nyckel": "hemlig"})
+                urllib.request.urlopen(req, timeout=5).read()
+
+            tradar = [threading.Thread(target=klick) for _ in range(3)]
+            for t_ in tradar:
+                t_.start()
+            for t_ in tradar:
+                t_.join()
+        finally:
+            server.shutdown()
+            server.server_close()
+        self.assertEqual(langsam.mest, 1)
+
+    def test_sidan_laser_alla_knappar_under_sparning(self):
+        html = (ROT / "tavla" / "tavla.html").read_text()
+        self.assertIn('#beslut-innehall button:not(#b-stang)").forEach(function (b) { b.disabled = true; })', html)
+        self.assertNotIn('#b-atgard button").forEach(function (b) { b.disabled = true; })', html)
 
 
 if __name__ == "__main__":

@@ -278,6 +278,9 @@ def bygg_hanterare(cache: Cache, beslut: Any = None, nyckel: str | None = None):
     och bara med nyckeln som finns i sidan som servern själv levererade."""
     nyckel = nyckel or secrets.token_urlsafe(32)
     linkedin_state: dict[str, float] = {}  # engångskoder för LinkedIn-inloggningen, mot förfalskade svar
+    # Ett beslut i taget. Två snabba klick får aldrig läsa loggen samtidigt och båda skriva,
+    # och aldrig publicera två gånger.
+    beslutslas = threading.Lock()
 
     class Hanterare(BaseHTTPRequestHandler):
         def _svara(self, kod: int, typ: str, kropp: bytes) -> None:
@@ -422,14 +425,15 @@ def bygg_hanterare(cache: Cache, beslut: Any = None, nyckel: str | None = None):
                 langd = min(int(self.headers.get("Content-Length", "0")), 10_000)
                 data = json.loads(self.rfile.read(langd) or b"{}")
                 objekt_id = str(data.get("id", ""))
-                if sokvag == "/godkann":
-                    text = beslut.godkann(objekt_id)
-                elif sokvag == "/publicera":
-                    text = beslut.publicera(objekt_id, str(data.get("sida", "")))
-                elif sokvag == "/valjbild":
-                    text = beslut.valj_bild(objekt_id, str(data.get("namn", "")))
-                else:
-                    text = beslut.tillbaka(objekt_id, str(data.get("kommentar", "")))
+                with beslutslas:
+                    if sokvag == "/godkann":
+                        text = beslut.godkann(objekt_id)
+                    elif sokvag == "/publicera":
+                        text = beslut.publicera(objekt_id, str(data.get("sida", "")))
+                    elif sokvag == "/valjbild":
+                        text = beslut.valj_bild(objekt_id, str(data.get("namn", "")))
+                    else:
+                        text = beslut.tillbaka(objekt_id, str(data.get("kommentar", "")))
                 cache.rensa()
                 self._json(200, {"ok": True, "text": text})
             except Exception as fel:
