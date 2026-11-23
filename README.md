@@ -166,7 +166,7 @@ När Mattias har godkänt texten, i chatten eller i teamtavlan, skriver A0 allti
 Engångsinställning:
 1. Skapa mappen `12_Pictures` direkt i Livv Marketing Ops. Agenterna får inte skapa huvudmappar.
 2. Lägg `Bildstil_Please_Disturb.md` (finns i `docs/underlag/`) i 00_Underlag när Mattias har godkänt den.
-3. Ett flöde i Power Automate pingar Anastasia i Teams. Mattias byggde det 23 november 2026 med namnet **Livv bildbrief till Brand Studio**. Kopplingarna till SharePoint och Teams går via Mattias Microsoft-konto. Under testet skickar flödet till Mattias själv. Mottagaren byts till Anastasia när testpingen har kommit fram, och hon behöver redigeringsrätt i 12_Pictures. Flödet är uppsatt så här:
+3. Ett flöde i Power Automate pingar Anastasia i Teams. Mattias byggde det 23 november 2026 med namnet **Livv bildbrief till Brand Studio**. Testpingen kom fram samma dag, Anastasia har redigeringsrätt i 12_Pictures, och pingen går nu till henne. Kopplingarna till SharePoint och Teams går via Mattias Microsoft-konto tills IT har flyttat dem till ett tjänstekonto. Flödet är uppsatt så här:
    - Utlösare: SharePoint, *When a file is created (properties only)*, webbplatsen livv-group-data-it-ai, biblioteket Dokument.
    - Villkor: *Folder path* innehåller `Livv Marketing Ops/12_Pictures/` och *File name with extension* innehåller `image-brief`.
    - Åtgärd: Microsoft Teams, *Post message in a chat or channel*, som Flow bot i chatt med Anastasia Johannesson. Meddelande:
@@ -221,8 +221,7 @@ Nu:
 - **Testa rutan från macOS** första gången du publicerar från tavlan, gärna på ett objekt där det gör lite om något behöver rättas. Rutan är testad mot en attrapp, inte på en Mac, och den kan hamna bakom andra fönster.
 - **Integritetspolicyn på livv.se/se/integritetspolicy** är tom och blockerar LinkedIn. Webbansvarig tar fram texten och den som ansvarar för GDPR godkänner den. Begär sedan Community Management API i appen.
 - **Nycklarna för X**: lägg in dem för Livv Groups utvecklarapp, med Read and write, enligt Publicera från tavlan.
-- **Flödet Livv bildbrief till Brand Studio**: testa pingen till dig själv. Ge sedan Anastasia redigeringsrätt i 12_Pictures och byt mottagare till henne. Se Bilder från Brand Studio.
-- **Tjänstekonto för flödet**, på sikt: be IT flytta flödets kopplingar från ditt konto till ett tjänstekonto, så att flödet fortsätter fungera om ditt lösenord byts eller kontot stängs.
+- **Tjänstekonto för flödet** Livv bildbrief till Brand Studio: Jesper på IT har fått frågan 23 november 2026. Tills det är klart går flödet via ditt konto.
 
 Senare:
 - Starta API-ansökan hos Google Ads redan nu. Godkännandet kan ta flera veckor och behövs i fas 2.
