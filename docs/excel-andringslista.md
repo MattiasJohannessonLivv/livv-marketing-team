@@ -48,7 +48,7 @@ Verktyget ändrar en cell bara om exakt en cell matchar. Finns ingen eller flera
 
 ---
 
-# Förslag 2: språk (inte genomfört)
+# Förslag 2: språk (genomfört)
 
 Status: **godkänt och genomfört 23 november 2026, kontrollerat av A0.** Första försöket, av Claude i Chrome kl. 17:21, sparades aldrig i registret. Mattias gjorde ändringen i SharePoint och filen sparades 17:57. A0 har jämfört kopian cell för cell med kopian från 16:16: exakt fem celler är ändrade (Listor E2 till E4, Kolumner C8 och D8), rullistan G2:G2000 pekar på Listor!$E$2:$E$2 och alla 13 rullistor finns kvar. Testerna går igenom.
 
