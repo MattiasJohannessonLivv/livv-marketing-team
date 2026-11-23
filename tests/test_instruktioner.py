@@ -80,6 +80,11 @@ class TestA1(unittest.TestCase):
         self.assertIn("LIVV_ROLL=a1-trendspotter", a1)
         self.assertIn("Idéunderlag. Inte verifierat.", a1)
 
+    def test_a1_foretagens_egna_kallor_ar_inte_oberoende(self):
+        a1 = las(".claude/agents/a1-trendspotter.md")
+        self.assertIn("räknas aldrig som oberoende", a1)
+        self.assertIn("får högst Medel", a1)
+
     def test_xai_ar_kopplad(self):
         import json
 

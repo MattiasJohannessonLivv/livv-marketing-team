@@ -205,7 +205,7 @@ Beslut 18 november 2026: Mattias kan publicera godkända objekt med knappen Publ
 - Beslut: A1 byggs nu, före grinden till fas 3, medan teamet väntar på LinkedIns ansökan. Grok är godkänt internt.
 - Byggt: MCP-servern mot xAI med verktyget trendsok, verktyget spara_trendrapport för 13_Insikter, subagenten a1-trendspotter och spärrar så att bara A1 söker och sparar trendrapporter.
 - A1 körs när Mattias eller A0 ber om det. Den dagliga spaningen klockan 06.00 kommer i fas 4.
-- Testat mot en attrapp, inte mot xAI. Första riktiga körningen visar om modellnamnet och svarsformatet stämmer.
+- Första riktiga körningen 23 november 2026: trender inom spa och wellness, 9 till 23 november. Rapporten 13_Insikter/20261123_trender_spa_v01.md sparades och loggades. Modellen grok-4-1-fast och svarsformatet fungerade.
 
 **Arbetsregler för kopplingarna**
 - Agenter godkänner aldrig avtal eller villkor och skickar inga meddelanden för Mattias räkning.
