@@ -50,7 +50,7 @@ Verktyget ändrar en cell bara om exakt en cell matchar. Finns ingen eller flera
 
 # Förslag 2: språk (inte genomfört)
 
-Status: **godkänt av Mattias 23 november 2026. Genomförandet är inte bekräftat.** Claude i Chrome uppgav att ändringen gjordes i SharePoint kl. 17:21 och loggade den på rad 65 med agent Mattias. Kopian av registret som Mattias laddade ned efteråt är byte för byte samma som kopian från 16:16: sprak har fortfarande sv, en och da, Kolumner är oförändrad och rullistan G2:G2000 pekar på Listor!$E$2:$E$4. A0 kontrollerar igen med en ny kopia.
+Status: **godkänt och genomfört 23 november 2026, kontrollerat av A0.** Första försöket, av Claude i Chrome kl. 17:21, sparades aldrig i registret. Mattias gjorde ändringen i SharePoint och filen sparades 17:57. A0 har jämfört kopian cell för cell med kopian från 16:16: exakt fem celler är ändrade (Listor E2 till E4, Kolumner C8 och D8), rullistan G2:G2000 pekar på Listor!$E$2:$E$2 och alla 13 rullistor finns kvar. Testerna går igenom.
 
 | Blad | Var | Nu | Föreslaget |
 |---|---|---|---|
