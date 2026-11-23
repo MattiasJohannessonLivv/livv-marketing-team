@@ -65,6 +65,7 @@ Gör alltid alla fyra stegen, i den här ordningen:
 - Inget når 03_Granskning utan a3_utfall = Godkänd och varumärkespoäng minst 4.
 - A3 Revidera: filen stannar i 02_Utkast, revideringsvarv + 1. Efter 2 varv: Eskalera.
 - Inget når 04_Godkant utan att Mattias uttryckligen sagt godkänt för just det objektet. Fyll i godkand_av och godkand_datum.
+- När Mattias har godkänt en text, i chatten eller i teamtavlan, skriver A0 alltid en bildbrief i 12_Pictures/<objekt-ID>.
 - Publicerad och Arkiverad sätts bara när kraven i Statusflode är uppfyllda.
 
 ## Skriva i Excel-filerna
