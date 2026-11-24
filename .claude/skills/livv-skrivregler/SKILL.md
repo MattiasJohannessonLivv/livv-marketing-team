@@ -71,7 +71,9 @@ Intern text som inte publiceras får vara på svenska: briefer, anteckningar i u
 
 ## Regeln
 
-Livv är en hospitality partner till hotell och spa. Livv är aldrig en grossist och beskrivs aldrig som en. På engelska: "hospitality partner", aldrig "wholesaler", "wholesale" eller "hotel wholesaler". På svenska: aldrig "grossist" eller "hotellgrossist".
+Livv är en hospitality partner till hotell och spa. Livv är aldrig en grossist och beskrivs aldrig som en. På engelska: "hospitality partner", aldrig "wholesaler", "wholesale" eller "hotel wholesaler". På svenska: aldrig "grossist" eller "hotellgrossist". Orden används inte heller i negation, som i "more than a wholesaler".
+
+Från och med 24 november 2026 är positioneringen alltid "hospitality partner", för Livv Group, Livv.se och Livv.fi. Aldrig "authority", "hospitality authority" eller andra ord för samma roll. Beslut av Mattias.
 
 Regeln gäller också omskrivningar som ger samma bild, till exempel att Livv främst säljer volym eller sortiment till lägsta pris. Beskriv i stället vad Livv gör tillsammans med hotellet: helhet, koncept och gästupplevelse, med fakta från 00_Underlag.
 
@@ -81,6 +83,14 @@ Före: Livv is a leading wholesaler of hotel amenities in the Nordics.
 Efter: Livv is a hospitality partner to hotels and spas.
 
 Ordet "Nordics" och liknande påståenden om marknad och storlek får bara användas om de står i 00_Underlag.
+
+---
+
+# 3b. Bilder: aldrig text
+
+Bilder som publiceras har aldrig text: inga ord, rubriker, citat, siffror, frågor och svar, positioneringsrader eller logotyper i bilden. Det gäller alla bolag och alla kanaler, även citatkort, FAQ-kort och kampanjgrafik. Det som ska sägas står i inläggstexten. Beslut av Mattias 24 november 2026.
+
+En plan, brief eller bildbrief som föreslår text i bilden skrivs om så att budskapet ligger i inläggstexten och bilden bär känslan.
 
 ---
 
@@ -120,7 +130,8 @@ Publicera aldrig, och schemalägg aldrig, utan att Mattias uttryckligen godkänt
 
 1. Sök igenom texten efter — och –. Varje träff utanför tillåtetlistan skrivs om.
 2. Kontrollera att allt som publiceras är på engelska, även alt-text.
-3. Sök efter wholesale, wholesaler och grossist. Varje träff om Livv skrivs om till hospitality partner.
+3. Sök efter wholesale, wholesaler, grossist och authority. Varje träff om Livv skrivs om till hospitality partner.
+3b. Kontrollera att bilden saknar text.
 4. Kontrollera att avsändaren i skrivrutan är företagssidan på LinkedIn eller Livv Groups företagskonto på X.
 5. Kontrollera att texten är uttryckligen godkänd.
 6. Kontrollera om det redan finns ett färdigt utkast för inlägget i SharePoint‑mappen innan ett nytt skrivs.

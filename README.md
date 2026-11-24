@@ -62,9 +62,11 @@ livv-marketing-team/
     excel-andringslista.md      ändringarna i Innehallsregister, genomförda 17 november 2026
     underlag/
       Bildstil_Please_Disturb.md  bildstilen, originalet ligger i 00_Underlag
+      A1_Bevakningsprofil.md    vad A1 bevakar, originalet ligger i 10_Prompter
   tests/
     test_sparr.sh               tester för spärren
     test_sokvagar.py            tester för servern, utan nätverk
+    test_samtidighet.py         två skrivare samtidigt skriver aldrig över varandra i registret eller loggen
     test_xai.py                 xAI-servern: sökfrågan, stopp för internt material och svaret
     test_felmeddelanden.py      verktygen visar alltid den verkliga orsaken till ett fel
     test_instruktioner.py       regler som måste stå kvar i CLAUDE.md, A3, A4 och livv-grund
@@ -110,7 +112,7 @@ Går ett verktyg fel visar det alltid orsaken: spärrens skäl, eller SharePoint
 - Bara A1 får använda `trendsok` och `spara_trendrapport`. A1 får inget annat skrivande.
 - A1, A2, A3 och A4 har egna rollspärrar utöver sina verktygslistor.
 
-Servern sparar aldrig om Excel-filerna med ett bibliotek som tolkar hela arbetsboken. Den ändrar bara de berörda cellerna i bladets XML och kopierar resten av filen oförändrad. Annars försvinner rullistor som Excel lagrar som tillägg, till exempel listorna som pekar på det dolda bladet Listor. `tests/test_excel.py` kontrollerar detta och kan köras mot riktiga kopior, se nedan.
+Registret och loggen skrivs om som hela filer. Därför skriver servern bara om filen har samma version som när den lästes. Har en annan agent eller tavlan hunnit skriva emellan, görs ändringen om på den nya versionen, så att ingen ändring skrivs över. Servern sparar aldrig om Excel-filerna med ett bibliotek som tolkar hela arbetsboken. Den ändrar bara de berörda cellerna i bladets XML och kopierar resten av filen oförändrad. Annars försvinner rullistor som Excel lagrar som tillägg, till exempel listorna som pekar på det dolda bladet Listor. `tests/test_excel.py` kontrollerar detta och kan köras mot riktiga kopior, se nedan.
 
 **3. Verktygslistor per agent** i `.claude/agents/`. A1, A2, A3 och A4 har varken skal eller lokala skrivverktyg.
 
@@ -191,7 +193,7 @@ Engångsinställning:
      > New image brief from the Livv marketing team: *File name*. Please create three options in Atelier and upload them to the same folder. The brief has the deadline. Open it here: *Link to item*
 
 ### Publicera från tavlan
-När texten är godkänd, bilden vald och alt-texten godkänd visar tavlan knappen **Publicera** för objektet. Mattias väljer avsändare (Livv.se är förvalt, fler sidor läggs till i `LINKEDIN_SIDOR`), ser exakt vad som går ut och bekräftar i tavlan. Sedan visar tavlans server en ruta från macOS med objekt, kanal, avsändare, text och bild. Först när Mattias klickar **Publicera** i rutan går inlägget ut. Avbryt, ingen reaktion inom två minuter eller en dator utan macOS ger ingen publicering. Tavlan publicerar bara texten under `## Inläggstext` i utkastet, laddar upp bilden med alt-texten, flyttar filen till 05_Publicerat, fyller i publicerad_datum, plattforms_id och url och loggar "Publicerade i teamtavlan". Ett objekt kan bara publiceras en gång från tavlan.
+När texten är godkänd, bilden vald och alt-texten godkänd visar tavlan knappen **Publish** för objektet. Mattias väljer avsändare (Livv.se är förvalt, fler sidor läggs till i `LINKEDIN_SIDOR`), ser exakt vad som går ut och bekräftar i tavlan. Sedan visar tavlans server en ruta från macOS med objekt, kanal, avsändare, text och bild. Först när Mattias klickar **Publish** i rutan går inlägget ut. Avbryt, ingen reaktion inom två minuter eller en dator utan macOS ger ingen publicering. Tavlan publicerar bara texten under `## Inläggstext` i utkastet, laddar upp bilden med alt-texten, flyttar filen till 05_Publicerat, fyller i publicerad_datum, plattforms_id och url och loggar "Publicerade i teamtavlan". Ett objekt kan bara publiceras en gång från tavlan.
 
 Ingen agent kan publicera. Publiceringen finns bara i tavlans server (`tavla/publicera.py`), och spärren stoppar alla agentanrop till LinkedIn och X. Tavlans nyckel finns i sidan som servern levererar, så ett program på datorn som anropar 127.0.0.1:8787 direkt kommer förbi kontrollen av nyckeln. Därför krävs rutan från macOS: den visas av servern och måste besvaras av en människa vid datorn. Utan nycklar i `.env` är knappen avstängd och tavlan säger vad som saknas.
 
@@ -200,7 +202,7 @@ Ingen agent kan publicera. Publiceringen finns bara i tavlans server (`tavla/pub
 2. Under **Settings**, välj **Verify** vid företagssidan. En admin för Livv.se godkänner via länken som skapas.
 3. Under **Products**, begär **Community Management API** och fyll i ansökan. LinkedIn granskar den, och det kan ta flera veckor. Appen bör bara ha den här produkten.
 4. Under **Auth**, lägg till Redirect URL `http://localhost:8787/linkedin/svar` och kopiera **Client ID** och **Client Secret** till `.env` (`LINKEDIN_CLIENT_ID`, `LINKEDIN_CLIENT_SECRET`).
-5. När ansökan är godkänd: starta om tavlan, öppna ett godkänt objekt och klicka **Logga in med LinkedIn**. Logga in med kontot som är admin för sidorna. Inloggningen sparas i `.env.linkedin` och gäller i 60 dagar, sedan ber tavlan dig logga in igen.
+5. När ansökan är godkänd: starta om tavlan, öppna ett godkänt objekt och klicka **Sign in with LinkedIn**. Logga in med kontot som är admin för sidorna. Inloggningen sparas i `.env.linkedin` och gäller i 60 dagar, sedan ber tavlan dig logga in igen.
 
 **Koppla X:** lägg in nycklarna för Livv Groups utvecklarapp i `.env` (`X_API_KEY`, `X_API_SECRET`, `X_ACCESS_TOKEN`, `X_ACCESS_TOKEN_SECRET`). Appen behöver behörigheten *Read and write*, och nycklarna ska skapas för Livv Groups konto.
 
@@ -212,13 +214,13 @@ Publiceringen mot LinkedIn och X är testad mot attrapper, inte mot de riktiga t
 ```
 Öppnar http://127.0.0.1:8787 i webbläsaren. Tavlan visar teamet runt A0, flödet av objekt, vad som väntar på dig och vad agenterna har gjort. Den läser Innehallsregister och loggfilerna för den här och förra månaden i 09_Loggar, med samma app-registrering som SharePoint-servern, och hämtar nytt var femte minut.
 
-Medan tavlan körs får du en notis på Macen när något nytt väntar på ditt beslut, och listan Väntar på dig har en länk direkt till filen i SharePoint. Notiserna stängs av med `TAVLA_NOTISER=0 ./tavla.sh`.
+Medan tavlan körs får du en notis på Macen när något nytt väntar på ditt beslut, och listan Waiting for you har en länk direkt till filen i SharePoint. Notiserna stängs av med `TAVLA_NOTISER=0 ./tavla.sh`.
 
-**Besluta i tavlan.** Under Väntar på dig öppnar du ett objekt med **Läs och godkänn**. Utkastet och briefen visas i tavlan. Du kan:
-- **Godkänna.** Knappen kräver en bekräftelse. Tavlan kontrollerar att A3 har godkänt och att objektet står i Granskning, flyttar filen till 04_Godkant, fyller i godkand_av och godkand_datum och loggar att Mattias godkände. Sedan startar tavlan A0 i bakgrunden, som skriver bildbriefen direkt (`tavla/a0.py`). Körningen är i driftläge och kan bara läsa, spara bildbriefen och logga. Utskriften sparas i `.arbetsyta/a0-bildbrief/`. Kan A0 inte startas skriver den bildbriefen nästa gång du startar teamet.
-- **Skicka tillbaka med kommentar.** Objektet går tillbaka till Utkast med a3_utfall Revidera, och kommentaren loggas. A0 ger den till A4 nästa gång teamet arbetar.
-- **Välja bild och publicera.** Varje godkänt objekt har knappen **Publicera** i listan Väntar på dig. Den öppnar objektet vid publiceringen, se Publicera från tavlan.
-- **Kopiera texten** när du hellre publicerar för hand.
+**Besluta i tavlan.** Tavlan är på engelska. Data från registret och loggen, som titlar och loggrader, visas som de står där. Under Waiting for you öppnar du ett objekt med **Read and approve**. Utkastet och briefen visas i tavlan. Du kan:
+- **Godkänna** med **Approve**. Knappen kräver en bekräftelse. Tavlan kontrollerar att A3 har godkänt och att objektet står i Granskning, flyttar filen till 04_Godkant, fyller i godkand_av och godkand_datum och loggar att Mattias godkände. Sedan startar tavlan A0 i bakgrunden, som skriver bildbriefen direkt (`tavla/a0.py`). Körningen är i driftläge och kan bara läsa, spara bildbriefen och logga. Utskriften sparas i `.arbetsyta/a0-bildbrief/`. Kan A0 inte startas skriver den bildbriefen nästa gång du startar teamet.
+- **Skicka tillbaka** med **Send back with a comment**. Objektet går tillbaka till Utkast med a3_utfall Revidera, och kommentaren loggas. A0 ger den till A4 nästa gång teamet arbetar.
+- **Välja bild och publicera.** Varje godkänt objekt har knappen **Publish** i listan Waiting for you. Den öppnar objektet vid publiceringen, se Publicera från tavlan.
+- **Kopiera texten** med **Copy the text** när du hellre publicerar för hand.
 
 Typsnitten är Livvs egna: Crake i rubriker och Inter i text. Har datorn Crake installerat används det direkt. Annars hämtar tavlan Crake-filer från `00_Underlag` eller `00_Underlag/Fonter`, och utan dem visas ett liknande reservtypsnitt. Logotypen hämtas också från `00_Underlag`. Typsnitt och logotyp läggs aldrig i Git.
 

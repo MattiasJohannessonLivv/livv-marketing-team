@@ -82,7 +82,7 @@ class TestKanaler(unittest.TestCase):
         k = pub.kanaler({}, None)
         self.assertFalse(k["LinkedIn"]["redo"])
         self.assertFalse(k["X"]["redo"])
-        self.assertIn("inte kopplad", k["LinkedIn"]["skal"])
+        self.assertIn("not connected", k["LinkedIn"]["skal"])
 
     def test_linkedin_kraver_inloggning(self):
         k = pub.kanaler(ENV, None)["LinkedIn"]
@@ -98,7 +98,7 @@ class TestKanaler(unittest.TestCase):
     def test_utgangen_inloggning(self):
         k = pub.kanaler(ENV, {"access_token": "t", "gar_ut": time.time() - 10})["LinkedIn"]
         self.assertFalse(k["redo"])
-        self.assertIn("gått ut", k["skal"])
+        self.assertIn("expired", k["skal"])
 
     def test_sidor_blir_urn(self):
         self.assertEqual(pub.linkedin_sidor(ENV)["Livv.se"], "urn:li:organization:42934065")
@@ -180,7 +180,7 @@ class TestPubliceraFranTavlan(unittest.TestCase):
         fore = dict(g.filer)
         with self.assertRaises(sp.Sparrfel) as fel:
             beslut.publicera("LIVV-2026-0002", "Livv.se")
-        self.assertIn("bekräftades inte", str(fel.exception))
+        self.assertIn("was not confirmed", str(fel.exception))
         self.assertEqual(http.anrop, [])
         self.assertEqual(g.filer, fore, "Inget får flyttas, ändras eller loggas")
 
@@ -216,7 +216,7 @@ class TestPubliceraFranTavlan(unittest.TestCase):
             with self.assertRaises(urllib.error.HTTPError) as fel:
                 urllib.request.urlopen(anrop, timeout=5)
             self.assertEqual(fel.exception.code, 502)
-            self.assertIn("bekräftades inte", json.loads(fel.exception.read())["fel"])
+            self.assertIn("was not confirmed", json.loads(fel.exception.read())["fel"])
         finally:
             server.shutdown()
             server.server_close()
@@ -258,7 +258,7 @@ class TestPubliceraFranTavlan(unittest.TestCase):
         self.assertEqual(post["author"], "urn:li:organization:99")
 
     def test_hinder(self):
-        for kw, ord_ in (({"alt": False}, "Alt-texten"), ({"vald": False}, "Välj bild"),
+        for kw, ord_ in (({"alt": False}, "alt text"), ({"vald": False}, "Choose an image"),
                          ({"text": "Utan avsnitt"}, "Inläggstext")):
             g, http, beslut = self.forbered(**kw)
             with self.assertRaises(sp.Sparrfel) as fel:
@@ -283,7 +283,7 @@ class TestRutanFranMacos(unittest.TestCase):
     """Själva rutan. osascript ersätts av en attrapp."""
 
     class Kor:
-        def __init__(self, kod=0, ut="Publicera|false"):
+        def __init__(self, kod=0, ut="Publish|false"):
             self.kod, self.ut, self.argument = kod, ut, None
 
         def __call__(self, argument, **kw):
@@ -302,10 +302,10 @@ class TestRutanFranMacos(unittest.TestCase):
         self.assertIn('Hej "du"\nend run', kor.argument[-1])
         self.assertIn("Livv.se", kor.argument[-1])
         self.assertNotIn("Hej", " ".join(kor.argument[:-1]))
-        self.assertIn('default button "Avbryt"', " ".join(kor.argument))
+        self.assertIn('default button "Cancel"', " ".join(kor.argument))
 
     def test_avbryt_tidsgrans_och_fel(self):
-        for kor in (self.Kor(kod=1, ut=""), self.Kor(ut="|true"), self.Kor(ut="Avbryt|false"), self.Kor(ut="Publicera|true")):
+        for kor in (self.Kor(kod=1, ut=""), self.Kor(ut="|true"), self.Kor(ut="Cancel|false"), self.Kor(ut="Publish|true")):
             with self.subTest(ut=kor.ut, kod=kor.kod):
                 self.assertFalse(self.visa(kor))
 

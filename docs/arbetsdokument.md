@@ -218,6 +218,12 @@ Beslutat: A3 behålls som egen granskare, teamet består av nio roller.
 
 Beslutat: spärren tillåter `git ls-remote` och `git fetch` i drift och `gh` i utvecklingsläge. Radering via `gh` är alltid spärrad.
 
+Beslutat 24 november 2026:
+- Bilder som publiceras har aldrig text. Gäller även citatkort, FAQ-kort och kampanjgrafik. Står i livv-skrivregler.
+- Positioneringen är alltid "hospitality partner", för Livv Group, Livv.se och Livv.fi. Aldrig "authority". Står i livv-skrivregler.
+- Unique har certifieringar. Vilka standarder och certifikat det gäller ska läggas i 00_Underlag innan de nämns i material.
+- En innehållsplan för januari till mars 2027 tas fram för Livv Group, Livv och Unique.
+
 Beslutat 23 november 2026: Claude i Chrome får ändra i Excel-filerna i SharePoint på Mattias uppdrag, enligt avsnittet Skriva i Excel-filerna i livv-grund. Publicering ingår inte.
 
 - [ ] Stämmer föreslagen numrering A0 till A8 med hur A1, A2 och A4 till A7 redan är definierade i livv-grund?

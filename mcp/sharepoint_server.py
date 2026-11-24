@@ -98,6 +98,10 @@ class Sparrfel(Exception):
     """Ett anrop som bryter mot reglerna. Inget har ändrats."""
 
 
+class Skrivkrock(Sparrfel):
+    """Filen ändrades av någon annan mellan läsning och skrivning. Inget skrevs."""
+
+
 # Förklaringar till svar från SharePoint. Används av verktygen och av teamtavlan.
 HTTP_FORKLARING = {
     400: "SharePoint godtog inte anropet",
@@ -123,6 +127,16 @@ def _graph_fel(svar: Any) -> str:
         return ""
     delar = [str(fel.get("code") or "").strip(), str(fel.get("message") or "").strip()]
     return ": ".join(d for d in delar if d)[:300]
+
+
+def http_detaljer(fel: BaseException) -> tuple[int, str | None] | None:
+    """HTTP-koden och filen (sökväg i Livv Marketing Ops, "" för rotmappen, None om okänd). None om felet inte är ett HTTP-svar."""
+    kod = getattr(getattr(fel, "response", None), "status_code", None)
+    if not isinstance(kod, int):
+        return None
+    url = str(getattr(getattr(fel, "request", None), "url", "") or "")
+    m = re.search(r"/items/[^/:]+:/(.+?):(?:/|$)", url)
+    return kod, unquote(m[1]) if m else "" if "/children" in url else None
 
 
 def felbeskrivning(fel: BaseException, med_text: bool = True,
@@ -602,7 +616,14 @@ class Graph:
         svar.raise_for_status()
         return svar.content
 
-    def skriv(self, sokvag: str, data: bytes, ersatt: bool) -> dict:
+    def las_med_version(self, sokvag: str) -> tuple[bytes, str | None]:
+        """Innehållet och filens eTag. Versionen läses före innehållet, så att en ändring
+        däremellan alltid upptäcks vid skrivningen."""
+        version = self.objekt(sokvag).get("eTag")
+        return self.las(sokvag), version
+
+    def skriv(self, sokvag: str, data: bytes, ersatt: bool, om_version: str | None = None) -> dict:
+        """om_version: skriv bara om filen fortfarande har den här eTag. Annars Skrivkrock."""
         if len(data) > MAX_FILSTORLEK:
             raise Sparrfel("Filen är större än 4 MB. Stoppat.")
         beteende = "replace" if ersatt else "fail"
@@ -610,9 +631,12 @@ class Graph:
             "PUT",
             self._adress(sokvag) + f"/content?@microsoft.graph.conflictBehavior={beteende}",
             content=data,
+            headers={"If-Match": om_version} if om_version else {},
         )
         if svar.status_code == 409:
-            raise Sparrfel(f"{sokvag} finns redan. Skriv aldrig över: höj vNN.")
+            raise Skrivkrock(f"{sokvag} finns redan. Skriv aldrig över: höj vNN.")
+        if svar.status_code == 412:
+            raise Skrivkrock(f"{sokvag} ändrades av någon annan samtidigt. Inget skrevs.")
         svar.raise_for_status()
         return svar.json()
 
@@ -754,10 +778,46 @@ class Livv:
     def register_las(self, objekt_id: str | None = None) -> list[dict]:
         return register_rader(self.g.las(REGISTER_FIL), objekt_id)
 
+    # Registret och loggen skrivs om som hela filer. Två skrivare samtidigt (agenter, tavlan)
+    # får därför aldrig skriva över varandra: varje skrivning kräver att filen har samma
+    # version som när den lästes. Har någon annan hunnit skriva görs ändringen om på den
+    # nya versionen, högst FORSOK gånger.
+    FORSOK = 5
+
+    def _las_med_version(self, sokvag: str) -> tuple[bytes, str | None]:
+        las = getattr(self.g, "las_med_version", None)
+        return las(sokvag) if las else (self.g.las(sokvag), None)
+
+    def _skriv_om(self, sokvag: str, andra) -> None:
+        """Läser filen, gör ändringen och skriver bara om ingen annan har skrivit emellan."""
+        import random
+        import time
+
+        for forsok in range(self.FORSOK):
+            if self.g.finns(sokvag):
+                data, version = self._las_med_version(sokvag)
+                nytt = andra(data)
+                try:
+                    if version is None:
+                        self.g.skriv(sokvag, nytt, ersatt=True)
+                    else:
+                        self.g.skriv(sokvag, nytt, ersatt=True, om_version=version)
+                    return
+                except Skrivkrock:
+                    pass
+            else:
+                try:
+                    self.g.skriv(sokvag, andra(None), ersatt=False)  # ny fil: misslyckas om någon hann före
+                    return
+                except Skrivkrock:
+                    pass
+            time.sleep(random.uniform(0.2, 0.6) * (forsok + 1))
+        raise Sparrfel(f"{sokvag} ändrades av andra hela tiden och kunde inte skrivas efter {self.FORSOK} försök. "
+                       "Inget av din ändring sparades. Försök igen om en stund.")
+
     def _register_skriv(self, objekt_id: str, falt: dict, ny: bool) -> dict:
-        data = self.g.las(REGISTER_FIL)  # läs direkt före ändringen, aldrig från en tidigare läsning
-        nytt = register_andra(data, objekt_id, falt, ny)
-        self.g.skriv(REGISTER_FIL, nytt, ersatt=True)
+        # Läs alltid direkt före ändringen, aldrig från en tidigare läsning
+        self._skriv_om(REGISTER_FIL, lambda data: register_andra(data, objekt_id, falt, ny))
         kontroll = register_rader(self.g.las(REGISTER_FIL), objekt_id)  # läs tillbaka
         if len(kontroll) != 1 or any(str(kontroll[0].get(k, "")) != str(v) for k, v in falt.items()):
             raise Sparrfel(f"Ändringen av {objekt_id} syns inte när registret läses tillbaka. Stoppa och rapportera.")
@@ -774,16 +834,15 @@ class Livv:
             raise Sparrfel("Agent ska vara A0 till A8 eller Mattias.")
         nu = datetime.now(TIDSZON)
         sokvag = f"09_Loggar/Logg_{nu:%Y-%m}.xlsx"
-        rader = []
-        if self.g.finns(sokvag):
-            data = self.g.las(sokvag)
-        else:
-            data = logg_ny_bok()
-            rader.append([nu.strftime("%Y-%m-%d"), nu.strftime("%H:%M"), agent, "", "Skapade loggfil", sokvag, "Ny månad"])
-        rader.append([nu.strftime("%Y-%m-%d"), nu.strftime("%H:%M"), agent, objekt_id, atgard, fil_eller_mapp, kommentar])
-        for rad in rader:
-            data = logg_lagg_till(data, rad)
-        self.g.skriv(sokvag, data, ersatt=True)
+        rad = [nu.strftime("%Y-%m-%d"), nu.strftime("%H:%M"), agent, objekt_id, atgard, fil_eller_mapp, kommentar]
+
+        def lagg_till(data: bytes | None) -> bytes:
+            if data is None:  # första raden för månaden
+                data = logg_lagg_till(logg_ny_bok(), [nu.strftime("%Y-%m-%d"), nu.strftime("%H:%M"), agent, "",
+                                                      "Skapade loggfil", sokvag, "Ny månad"])
+            return logg_lagg_till(data, rad)
+
+        self._skriv_om(sokvag, lagg_till)
         return f"Loggat i {sokvag}"
 
 

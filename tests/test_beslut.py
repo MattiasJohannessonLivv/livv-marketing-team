@@ -113,7 +113,7 @@ class TestBeslut(unittest.TestCase):
     def test_godkann_flyttar_uppdaterar_och_loggar(self):
         g = grund()
         text = b.Beslut(LasVy(g), g, NU).godkann("LIVV-2026-0002")
-        self.assertIn("godkänd", text)
+        self.assertIn("is approved", text)
         self.assertIn(f"04_Godkant/Livv/{UTKAST}", g.filer)
         rad = sp.register_rader(g.filer[sp.REGISTER_FIL], "LIVV-2026-0002")[0]
         self.assertEqual((rad["status"], rad["mapp"], rad["godkand_av"], rad["godkand_datum"]),
@@ -196,7 +196,7 @@ class TestBilder(unittest.TestCase):
         for fel_namn in ("../../Innehallsregister.xlsx", "LIVV-2026-0002_image-brief_v01.md", "saknas.png"):
             with self.assertRaises(sp.Sparrfel):
                 beslut.bild("LIVV-2026-0002", fel_namn)
-        self.assertIn("vald", beslut.valj_bild("LIVV-2026-0002", "forslag-b.jpg"))
+        self.assertIn("is chosen", beslut.valj_bild("LIVV-2026-0002", "forslag-b.jpg"))
         from openpyxl import load_workbook
         logg = next(p for p in g.filer if p.startswith("09_Loggar/"))
         rader = [list(r) for r in load_workbook(io.BytesIO(g.filer[logg])).active.iter_rows(values_only=True)]
@@ -208,7 +208,7 @@ class TestBilder(unittest.TestCase):
         g.filer["12_Pictures/LIVV-2026-0002/b.png"] = PNG
         beslut = b.Beslut(LasVy(g), g, NU)
         beslut.valj_bild("LIVV-2026-0002", "a.png")
-        self.assertIn("redan vald", beslut.valj_bild("LIVV-2026-0002", "a.png"))
+        self.assertIn("already chosen", beslut.valj_bild("LIVV-2026-0002", "a.png"))
         beslut.valj_bild("LIVV-2026-0002", "b.png")
         beslut.valj_bild("LIVV-2026-0002", "a.png")
         from openpyxl import load_workbook
@@ -370,7 +370,7 @@ class TestSkydd(unittest.TestCase):
         self.assertEqual((kod, svar.get("ok")), (200, True))
         kod, svar = self.post("/godkann", {"id": "LIVV-2026-0002"})
         self.assertEqual(kod, 502)
-        self.assertIn("Granskning", svar["fel"])
+        self.assertIn("in review", svar["fel"])
 
 
 class TestEttBeslutITaget(unittest.TestCase):

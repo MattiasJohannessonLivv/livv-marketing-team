@@ -57,7 +57,7 @@ def hitta_brief(las: Any, rad: dict[str, Any]) -> dict[str, str] | None:
     try:
         return {"namn": vald, "text": sp.fil_till_text(vald, las.las(f"{mapp}/{vald}"))}
     except Exception:
-        return {"namn": vald, "text": "", "fel": "Briefen kunde inte läsas."}
+        return {"namn": vald, "text": "", "fel": "The brief could not be read."}
 
 
 class Beslut:
@@ -99,9 +99,9 @@ class Beslut:
             try:
                 utkast["text"] = sp.fil_till_text(filnamn, self.las.las(f"{mapp}/{filnamn}"))
             except Exception:
-                utkast["fel"] = f"Utkastet kunde inte läsas från {mapp}/{filnamn}."
+                utkast["fel"] = f"The draft could not be read from {mapp}/{filnamn}."
         else:
-            utkast["fel"] = "Registret saknar mapp eller filnamn för utkastet."
+            utkast["fel"] = "The register has no folder or file name for the draft."
         return {
             "id": objekt_id,
             "titel": _text(r.get("titel")) or _text(r.get("kampanj")) or objekt_id,
@@ -135,9 +135,9 @@ class Beslut:
         r = self._rad(objekt_id, livv.g)  # läs direkt före ändringen
         # 1. Kravet
         if _text(r.get("status")) != "Granskning" or _text(r.get("a3_utfall")) != "Godkänd":
-            raise sp.Sparrfel("Bara objekt som A3 har godkänt och som står i Granskning kan godkännas här.")
+            raise sp.Sparrfel("Only items that A3 has approved and that are in review can be approved here.")
         if _text(r.get("eskalera")).lower() in JA:
-            raise sp.Sparrfel("Objektet är eskalerat. Besluta om det med A0 i stället.")
+            raise sp.Sparrfel("The item is escalated. Decide on it with A0 instead.")
         varumarke, filnamn = _text(r.get("varumarke")), _text(r.get("filnamn"))
         # 2. Flytta filen
         livv.flytta_objekt(filnamn, varumarke, "Granskning", "Godkänd")
@@ -149,17 +149,17 @@ class Beslut:
                 "godkand_datum": self._nu().strftime("%Y-%m-%d"),
             })
         except Exception as fel:
-            raise sp.Sparrfel(f"Filen är flyttad till {mapp}, men registret kunde inte uppdateras ({fel}). "
-                              "Be A0 rätta raden.") from fel
+            raise sp.Sparrfel(f"The file was moved to {mapp}, but the register could not be updated ({fel}). "
+                              "Ask A0 to correct the row.") from fel
         # 4. Logga
         livv.logga("Mattias", objekt_id, "Godkände i teamtavlan", f"{mapp}/{filnamn}")
-        svar = f"{objekt_id} är godkänd och ligger i {mapp}."
+        svar = f"{objekt_id} is approved and is in {mapp}."
         # 5. Bildbriefen: A0 får besked direkt. Godkännandet gäller även om A0 inte kan startas.
         if self._efter_godkannande is not None:
             try:
                 svar += " " + self._efter_godkannande(objekt_id)
             except Exception:
-                svar += " A0 kunde inte startas. A0 skriver bildbriefen nästa gång du startar teamet."
+                svar += " A0 could not be started. A0 writes the image brief the next time you start the team."
         return svar
 
     # ---------------- Publicering när Mattias klickar Publicera ----------------
@@ -197,7 +197,7 @@ class Beslut:
         kanal = self._kanal(_text(r.get("kanal")))
         alla = pub.kanaler(self._env, self._nyckel())
         lage: dict[str, Any] = dict(alla.get(kanal, {"redo": False, "sidor": [],
-                                                      "skal": f"Publicering i kanalen {kanal or 'okänd'} finns inte i tavlan."}))
+                                                      "skal": f"Publishing on {kanal or 'this channel'} is not available on the board."}))
         lage["kanal"] = kanal
         sidor = lage.get("sidor", [])
         standard = self._env.get("LINKEDIN_STANDARD_SIDA", "Livv.se") if kanal == "LinkedIn" else (sidor[0] if sidor else "")
@@ -205,19 +205,19 @@ class Beslut:
         hinder = []
         text = pub.inlaggstext(utkast_text)
         if not text:
-            hinder.append("Utkastet saknar avsnittet ## Inläggstext. Be A4 göra en ny version med det, eller publicera för hand.")
+            hinder.append("The draft has no ## Inläggstext section. Ask A4 for a new version with it, or publish by hand.")
         elif "[SAKNAS" in text:
-            hinder.append("Inläggstexten innehåller [SAKNAS].")
+            hinder.append("The post text contains [SAKNAS].")
         bilder = self.bilder(_text(r.get("objekt_id")))
         vald = self._senast(logg, "Valde bild i teamtavlan")
         if bilder and vald not in bilder:
-            hinder.append("Välj bild först.")
+            hinder.append("Choose an image first.")
         if vald in bilder and not self._senast(logg, "Alt-text godkänd"):
-            hinder.append("Alt-texten är inte godkänd än. Be A0 föreslå en.")
+            hinder.append("The alt text is not approved yet. Ask A0 to suggest one.")
         if self._senast(logg, "Publicerade i teamtavlan"):
-            hinder.append("Inlägget är redan publicerat från tavlan.")
+            hinder.append("The post has already been published from the board.")
         if _text(r.get("status")) != "Godkänd":
-            hinder.append("Bara objekt med status Godkänd kan publiceras.")
+            hinder.append("Only approved items can be published.")
         lage["hinder"] = hinder
         return lage
 
@@ -226,7 +226,7 @@ class Beslut:
 
     def publicera(self, objekt_id: str, sida: str) -> str:
         if not self._publicerar.acquire(blocking=False):
-            raise sp.Sparrfel("En publicering väntar redan på bekräftelse i rutan från macOS.")
+            raise sp.Sparrfel("A publication is already waiting for confirmation in the macOS dialog.")
         try:
             return self._publicera(objekt_id, sida)
         finally:
@@ -242,9 +242,9 @@ class Beslut:
         if lage["hinder"]:
             raise sp.Sparrfel(" ".join(lage["hinder"]))
         if not lage.get("redo"):
-            raise sp.Sparrfel(lage.get("skal", "Kanalen är inte kopplad."))
+            raise sp.Sparrfel(lage.get("skal", "The channel is not connected."))
         if sida not in lage["sidor"]:
-            raise sp.Sparrfel(f"{sida} är inte en kopplad avsändare för {lage['kanal']}.")
+            raise sp.Sparrfel(f"{sida} is not a connected sender for {lage['kanal']}.")
         text = pub.inlaggstext(utkast_text)
         bildnamn = self._senast(logg, "Valde bild i teamtavlan")
         bild = self.bild(objekt_id, bildnamn) if bildnamn else None
@@ -253,7 +253,7 @@ class Beslut:
         # Mattias bekräftar i en ruta från macOS som tavlans server visar. Ett anrop till
         # servern räcker alltså inte för att publicera: en människa vid datorn måste svara.
         if not self._bekrafta(objekt_id=objekt_id, kanal=lage["kanal"], sida=sida, text=text, bildnamn=bildnamn):
-            raise sp.Sparrfel("Publiceringen bekräftades inte i rutan från macOS. Inget publicerades.")
+            raise sp.Sparrfel("The publication was not confirmed in the macOS dialog. Nothing was published.")
         http = self._http_fabrik()
 
         # Publicera
@@ -272,9 +272,9 @@ class Beslut:
                 "publicerad_datum": self._nu().strftime("%Y-%m-%d"), "plattforms_id": post_id, "url": url,
             })
         except Exception as fel:
-            raise sp.Sparrfel(f"Inlägget ÄR publicerat: {url}. Men flytten eller registret blev inte klart ({fel}). "
-                              "Be A0 rätta raden. Publicera inte igen.") from fel
-        return f"{objekt_id} är publicerat på {lage['kanal']} som {sida}: {url}"
+            raise sp.Sparrfel(f"The post IS published: {url}. But the move or the register update did not finish ({fel}). "
+                              "Ask A0 to correct the row. Do not publish again.") from fel
+        return f"{objekt_id} is published on {lage['kanal']} as {sida}: {url}"
 
     # ---------------- Logotypen i 00_Underlag ----------------
 
@@ -348,18 +348,18 @@ class Beslut:
         livv = self._livv()
         r = self._rad(objekt_id, livv.g)
         if _text(r.get("status")) not in sp.TEXT_GODKAND:
-            raise sp.Sparrfel("Bild väljs först när texten är godkänd.")
+            raise sp.Sparrfel("An image can be chosen once the text is approved.")
         if namn not in self.bilder(objekt_id):
             raise sp.Sparrfel("Bilden finns inte bland förslagen.")
         if self._senast(self._logg(objekt_id, livv.g), "Valde bild i teamtavlan") == namn:
-            return f"Bilden {namn} är redan vald för {objekt_id}. Inget nytt loggades."
+            return f"The image {namn} is already chosen for {objekt_id}. Nothing new was logged."
         livv.logga("Mattias", objekt_id, "Valde bild i teamtavlan", f"{sp.BILDMAPP}/{objekt_id}/{namn}", namn)
-        return f"Bilden {namn} är vald för {objekt_id}."
+        return f"The image {namn} is chosen for {objekt_id}."
 
     def tillbaka(self, objekt_id: str, kommentar: str) -> str:
         kommentar = " ".join(_text(kommentar).split())[:MAX_KOMMENTAR]
         if not kommentar:
-            raise sp.Sparrfel("Skriv vad som ska ändras.")
+            raise sp.Sparrfel("Write what should change.")
         livv = self._livv()
         r = self._rad(objekt_id, livv.g)
         status, varumarke, filnamn = _text(r.get("status")), _text(r.get("varumarke")), _text(r.get("filnamn"))
@@ -370,7 +370,7 @@ class Beslut:
         elif status == "Utkast" and eskalerad:
             falt = {"eskalera": "Nej", "a3_utfall": "Revidera"}
         else:
-            raise sp.Sparrfel("Bara objekt som väntar på ditt beslut kan skickas tillbaka härifrån.")
+            raise sp.Sparrfel("Only items waiting for your decision can be sent back from here.")
         livv.register_uppdatera(objekt_id, falt)
         livv.logga("Mattias", objekt_id, "Begärde ändring i teamtavlan", sp.mapp_for_status("Utkast", varumarke), kommentar)
-        return f"{objekt_id} är tillbaka hos A4. A0 ger din kommentar till A4 nästa gång teamet arbetar."
+        return f"{objekt_id} is back with A4. A0 gives your comment to A4 the next time the team works."

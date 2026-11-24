@@ -81,6 +81,15 @@ class TestA1(unittest.TestCase):
         self.assertIn("LIVV_ROLL=a1-trendspotter", a1)
         self.assertIn("Idéunderlag. Inte verifierat.", a1)
 
+    def test_a1_laser_bevakningsprofil_och_contentplaner(self):
+        a1 = las(".claude/agents/a1-trendspotter.md")
+        self.assertIn("10_Prompter/A1_Bevakningsprofil.md", a1)
+        self.assertIn("10_Prompter/Contentplaner", a1)
+        self.assertIn("senaste innehållsplanen i 08_Rapporter", a1)
+        self.assertIn("Inget ur planerna skickas till Grok", a1)
+        self.assertIn("site:linkedin.com", a1)
+        self.assertIn("Mattias granskar det och lägger den godkända versionen i 10_Prompter själv", las("CLAUDE.md"))
+
     def test_a1_foretagens_egna_kallor_ar_inte_oberoende(self):
         a1 = las(".claude/agents/a1-trendspotter.md")
         self.assertIn("räknas aldrig som oberoende", a1)

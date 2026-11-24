@@ -49,7 +49,7 @@ class TestStartaren(unittest.TestCase):
     def test_startar_a0_i_drift_med_fa_verktyg(self):
         starta = Starta()
         svar = startare(starta, miljo={"LIVV_UTVECKLING": "1", "AZURE_CLIENT_ID": "x"})("LIVV-2026-0003")
-        self.assertIn("A0 skriver bildbriefen nu", svar)
+        self.assertIn("A0 is writing the image brief now", svar)
         argument, kw = starta.anrop[0]
         self.assertEqual(argument[:2], ["/usr/local/bin/claude", "-p"])
         self.assertIn("LIVV-2026-0003", argument[2])
@@ -69,17 +69,17 @@ class TestStartaren(unittest.TestCase):
         starta = Starta()
         s = startare(starta)
         s("LIVV-2026-0003")
-        self.assertIn("redan", s("LIVV-2026-0003"))
+        self.assertIn("already", s("LIVV-2026-0003"))
         s("LIVV-2026-0004")
         self.assertEqual(len(starta.anrop), 2)
 
     def test_utan_claude_eller_vid_fel(self):
-        self.assertIn("nästa gång du startar teamet", startare(Starta(), hitta=lambda n: None)("LIVV-2026-0003"))
-        self.assertIn("nästa gång du startar teamet", startare(Starta(fel=OSError("nej")))("LIVV-2026-0003"))
+        self.assertIn("the next time you start the team", startare(Starta(), hitta=lambda n: None)("LIVV-2026-0003"))
+        self.assertIn("the next time you start the team", startare(Starta(fel=OSError("nej")))("LIVV-2026-0003"))
 
     def test_ogiltigt_id(self):
         starta = Starta()
-        self.assertIn("ogiltigt", startare(starta)("LIVV-2026-0003; rm -rf /"))
+        self.assertIn("invalid", startare(starta)("LIVV-2026-0003; rm -rf /"))
         self.assertEqual(starta.anrop, [])
 
 
@@ -87,11 +87,11 @@ class TestGodkannStartarA0(unittest.TestCase):
     def test_godkannande_startar_a0(self):
         g = grund()
         startade = []
-        beslut = b.Beslut(LasVy(g), g, efter_godkannande=lambda i: startade.append(i) or "A0 skriver bildbriefen nu.")
+        beslut = b.Beslut(LasVy(g), g, efter_godkannande=lambda i: startade.append(i) or "A0 is writing the image brief now.")
         svar = beslut.godkann("LIVV-2026-0002")
         self.assertEqual(startade, ["LIVV-2026-0002"])
-        self.assertIn("är godkänd", svar)
-        self.assertIn("A0 skriver bildbriefen nu.", svar)
+        self.assertIn("is approved", svar)
+        self.assertIn("A0 is writing the image brief now.", svar)
 
     def test_godkannandet_galler_aven_om_a0_inte_startar(self):
         g = grund()
@@ -100,8 +100,8 @@ class TestGodkannStartarA0(unittest.TestCase):
             raise RuntimeError("x")
 
         svar = b.Beslut(LasVy(g), g, efter_godkannande=trasig).godkann("LIVV-2026-0002")
-        self.assertIn("är godkänd", svar)
-        self.assertIn("nästa gång du startar teamet", svar)
+        self.assertIn("is approved", svar)
+        self.assertIn("the next time you start the team", svar)
         self.assertEqual(sp.register_rader(g.filer[sp.REGISTER_FIL], "LIVV-2026-0002")[0]["status"], "Godkänd")
 
     def test_inget_startas_nar_godkannandet_stoppas(self):
