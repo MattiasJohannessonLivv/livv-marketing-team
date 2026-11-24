@@ -62,6 +62,7 @@ livv-marketing-team/
     excel-andringslista.md      ändringarna i Innehallsregister, genomförda 17 november 2026
     underlag/
       Bildstil_Please_Disturb.md  bildstilen, originalet ligger i 00_Underlag
+      A1_Bevakningsprofil.md    vad A1 bevakar, originalet ligger i 10_Prompter
   tests/
     test_sparr.sh               tester för spärren
     test_sokvagar.py            tester för servern, utan nätverk
