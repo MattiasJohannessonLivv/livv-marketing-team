@@ -43,7 +43,7 @@ A0 ger dig ett tema och ibland ett tidsfönster. Utan tema gör du en bred spani
 
 ## Så söker du
 1. Läs bevakningsprofilen `10_Prompter/A1_Bevakningsprofil.md`. Den är Mattias beslut om vad du ska leta efter: teman, frågor, målgrupper, marknader, aktörer och källor per bolag. Den går före allt annat i det här avsnittet. Saknas den: gör en bred spaning och skriv i rapporten att profilen saknas.
-2. Lista `10_Prompter/Contentplaner` och läs contentplanerna för de bolag spaningen gäller. De visar vad Livv Group, Livv och Unique vill säga, till vem och när. Använd dem för att välja sökningar och bedöma vilka trender som är relevanta. Inget ur planerna skickas till Grok.
+2. Läs den senaste innehållsplanen i 08_Rapporter, den med `innehallsplan` i namnet och högst datum och version. Lista också `10_Prompter/Contentplaner`, om mappen finns, och läs contentplanerna där för de bolag spaningen gäller. De visar vad Livv Group, Livv och Unique vill säga, till vem och när. Använd dem för att välja sökningar och bedöma vilka trender som är relevanta. Inget ur planerna skickas till Grok.
 3. Läs de senaste trendrapporterna i 13_Insikter med `lista_mapp` och `las_fil`, så att du inte rapporterar samma trend igen utan att säga att den håller i sig. Ligger det en fil med LinkedIn-inlägg som Mattias har sparat där sedan förra rapporten: ta med den som underlag.
 4. Sök med `trendsok`. Gör fyra till åtta sökningar, var och en en kort fråga på engelska, utifrån profilen och planerna. Utan profil: guest comfort och amenities på hotell, spa och wellness, hållbarhet i hotellbranschen, hotellmarknaden i Sverige och Finland, design av hotellrum och badrum, gästers förväntningar och recensioner, och det temat A0 gett dig.
    - Grok söker alltid på både webben och X.

@@ -85,6 +85,7 @@ class TestA1(unittest.TestCase):
         a1 = las(".claude/agents/a1-trendspotter.md")
         self.assertIn("10_Prompter/A1_Bevakningsprofil.md", a1)
         self.assertIn("10_Prompter/Contentplaner", a1)
+        self.assertIn("senaste innehållsplanen i 08_Rapporter", a1)
         self.assertIn("Inget ur planerna skickas till Grok", a1)
         self.assertIn("site:linkedin.com", a1)
         self.assertIn("Mattias granskar det och lägger den godkända versionen i 10_Prompter själv", las("CLAUDE.md"))
