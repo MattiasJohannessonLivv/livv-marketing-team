@@ -132,6 +132,8 @@ def objekt_fran_register(rader: Iterable[dict[str, Any]]) -> list[dict[str, Any]
         objekt.append({
             "id": objekt_id,
             "bolag": sp.VARUMARKESMAPPAR.get(_text(r.get("varumarke")), "Okand"),
+            "sida": sp.foretagssida(r)[0],
+            "sida_harledd": sp.foretagssida(r)[1],
             "kanal": _text(r.get("kanal")),
             "titel": _text(r.get("titel")) or _text(r.get("kampanj")) or objekt_id,
             "status": _text(r.get("status")),
@@ -161,6 +163,8 @@ def vantande(objekt: Iterable[dict[str, Any]]) -> list[dict[str, Any]]:
             etikett = "Godkänn"
         elif o["status"] == "Godkänd" and o.get("bilder") and not o.get("bild_vald"):
             etikett = "Välj bild"
+        elif o["status"] == "Godkänd" and o.get("bilder") == []:
+            continue  # väntar på bilder från Brand Studio, inte på Mattias
         elif o["status"] == "Godkänd":
             etikett = "Publicera"
         elif o["status"] == "Schemalagd":

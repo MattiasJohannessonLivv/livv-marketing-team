@@ -67,6 +67,13 @@ class TestHamtning(unittest.TestCase):
         self.assertIn("source ./hamta.sh", las("tavla.sh"))
 
 
+class TestForetagssida(unittest.TestCase):
+    def test_a0_fyller_i_foretagssida(self):
+        a0 = las("CLAUDE.md")
+        self.assertIn("Fyll i `foretagssida`", a0)
+        self.assertIn("finns kolumnen `foretagssida` i registret och är den tom", a0)
+
+
 class TestA1(unittest.TestCase):
     def test_a0_vet_om_a1_och_regeln_om_fakta(self):
         a0 = las("CLAUDE.md")

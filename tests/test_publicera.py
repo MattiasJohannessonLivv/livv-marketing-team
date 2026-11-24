@@ -146,8 +146,8 @@ class TestX(unittest.TestCase):
 
 
 class TestPubliceraFranTavlan(unittest.TestCase):
-    def forbered(self, alt=True, vald=True, text=UTKASTTEXT, svar_i_rutan=True):
-        g = grund(status="Godkänd", mapp="04_Godkant/Livv")
+    def forbered(self, alt=True, vald=True, text=UTKASTTEXT, svar_i_rutan=True, sida=""):
+        g = grund(status="Godkänd", mapp="04_Godkant/Livv", foretagssida=sida)
         g.filer[f"04_Godkant/Livv/{UTKAST}"] = text.encode()
         g.filer["12_Pictures/LIVV-2026-0002/LIVV-2026-0002_option-c.jpg"] = PNG
         livv = sp.Livv(g)
@@ -167,7 +167,7 @@ class TestPubliceraFranTavlan(unittest.TestCase):
         return g, http, beslut
 
     def test_rutan_visas_med_det_som_gar_ut(self):
-        g, http, beslut = self.forbered()
+        g, http, beslut = self.forbered(sida="Livv.fi")
         beslut.publicera("LIVV-2026-0002", "Livv.fi")
         self.assertEqual(len(self.rutor), 1)
         ruta = self.rutor[0]
@@ -233,7 +233,7 @@ class TestPubliceraFranTavlan(unittest.TestCase):
         self.assertEqual(d["alt_text"], "A gloved hand holds a brass ring.")
         p = d["publicering"]
         self.assertEqual((p["kanal"], p["standard"], p["redo"], p["hinder"]), ("LinkedIn", "Livv.se", True, []))
-        self.assertEqual(p["sidor"], ["Livv.se", "Livv.fi"])
+        self.assertEqual(p["sidor"], ["Livv.se"])  # tom foretagssida för Livv ger Livv.se
 
     def test_publicera_uppdaterar_register_och_logg(self):
         g, http, beslut = self.forbered()
@@ -251,11 +251,32 @@ class TestPubliceraFranTavlan(unittest.TestCase):
             beslut.publicera("LIVV-2026-0002", "Livv.se")
         self.assertEqual(len([a for a in http.anrop if a[1].endswith("/posts")]), 1)
 
-    def test_valbar_sida(self):
-        g, http, beslut = self.forbered()
+    def test_avsandaren_foljer_foretagssidan(self):
+        g, http, beslut = self.forbered(sida="Livv.fi")
+        self.assertEqual((beslut.detalj("LIVV-2026-0002")["publicering"]["sidor"]), ["Livv.fi"])
         beslut.publicera("LIVV-2026-0002", "Livv.fi")
         post = [a for a in http.anrop if a[1].endswith("/posts")][0][2]["json"]
         self.assertEqual(post["author"], "urn:li:organization:99")
+
+    def test_fel_sida_stoppas(self):
+        g, http, beslut = self.forbered(sida="Livv.fi")
+        with self.assertRaises(sp.Sparrfel):
+            beslut.publicera("LIVV-2026-0002", "Livv.se")
+        self.assertEqual(http.anrop, [])
+
+    def test_tom_kolumn_ger_livv_se(self):
+        g, http, beslut = self.forbered()
+        p = beslut.detalj("LIVV-2026-0002")["publicering"]
+        self.assertEqual((p["sidor"], p["standard"]), (["Livv.se"], "Livv.se"))
+
+    def test_sida_som_inte_ar_kopplad(self):
+        g, http, beslut = self.forbered(sida="Unique")
+        p = beslut.detalj("LIVV-2026-0002")["publicering"]
+        self.assertEqual(p["sidor"], [])
+        self.assertTrue(any("Unique is not a connected sender" in h for h in p["hinder"]))
+        with self.assertRaises(sp.Sparrfel):
+            beslut.publicera("LIVV-2026-0002", "Unique")
+        self.assertEqual(http.anrop, [])
 
     def test_hinder(self):
         for kw, ord_ in (({"alt": False}, "alt text"), ({"vald": False}, "Choose an image"),
