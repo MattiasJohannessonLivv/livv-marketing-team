@@ -19,7 +19,7 @@ KOLUMNER = (
     "ansvarig_agent filnamn mapp version briefdatum kallor granskad_a3_datum a3_utfall "
     "revideringsvarv eskalera eskalera_skal sakerhet godkand_av godkand_datum "
     "planerad_publicering publicerad_datum plattforms_id url resultat_30d "
-    "avvisningsmotivering senast_andrad"
+    "avvisningsmotivering senast_andrad foretagssida"
 ).split()
 
 
@@ -158,6 +158,11 @@ class TestLoopen(unittest.TestCase):
             self.livv.register_uppdatera("LIVV-2026-0099", {"status": "Utkast"})
         with self.assertRaises(s.Sparrfel):
             self.livv.register_ny_rad("livv-1", {})
+
+    def test_foretagssida_kontrolleras(self):
+        self.livv.register_uppdatera("LIVV-2026-0001", {"foretagssida": "Livv.fi"})
+        with self.assertRaises(s.Sparrfel):
+            self.livv.register_uppdatera("LIVV-2026-0001", {"foretagssida": "Mattias profil"})
 
     def test_logg_skapar_manadsfil(self):
         self.livv.logga("A3", "LIVV-2026-0001", "Granskad", "02_Utkast/Livv")

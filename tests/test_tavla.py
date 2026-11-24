@@ -163,6 +163,19 @@ class TestVantarOchNotiser(unittest.TestCase):
         ])
         self.assertEqual([(o["id"], o["etikett"]) for o in lista], [("B", "Godkänn"), ("C", "Beslut"), ("D", "Publicera")])
 
+    def test_vantar_pa_bilder_ar_inte_ditt_beslut(self):
+        lista = tavla.vantande([obj("D", "Godkänd", "Godkänd", bilder=[]), obj("E", "Godkänd", "Godkänd", bilder=["a.png"])])
+        self.assertEqual([(o["id"], o["etikett"]) for o in lista], [("E", "Välj bild")])
+
+    def test_foretagssida_harleds_nar_kolumnen_ar_tom(self):
+        rader = [{"objekt_id": "LIVV-2026-0001", "varumarke": "Livv", "kanal": "LinkedIn"},
+                 {"objekt_id": "LIVV-2026-0002", "varumarke": "Livv", "kanal": "LinkedIn", "foretagssida": "Livv.fi"},
+                 {"objekt_id": "UNIQ-2026-0001", "varumarke": "Unique", "kanal": "LinkedIn"},
+                 {"objekt_id": "LIVV-2026-0003", "varumarke": "Livv Group", "kanal": "X"}]
+        o = tavla.objekt_fran_register(rader)
+        self.assertEqual([(x["sida"], x["sida_harledd"]) for x in o],
+                         [("Livv.se", True), ("Livv.fi", False), ("Unique", True), ("X Livv Group", True)])
+
     def test_notis_vid_start_och_bara_for_nya(self):
         skickat = []
         p = tavla.Pingare(lambda titel, text: skickat.append(text))

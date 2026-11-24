@@ -107,6 +107,7 @@ class Beslut:
             "titel": _text(r.get("titel")) or _text(r.get("kampanj")) or objekt_id,
             "status": _text(r.get("status")),
             "kanal": _text(r.get("kanal")),
+            "sida": sp.foretagssida(r)[0],
             "a3": _text(r.get("a3_utfall")),
             "sakerhet": _text(r.get("sakerhet")),
             "granskad": _text(r.get("granskad_a3_datum"))[:10],
@@ -203,6 +204,16 @@ class Beslut:
         standard = self._env.get("LINKEDIN_STANDARD_SIDA", "Livv.se") if kanal == "LinkedIn" else (sidor[0] if sidor else "")
         lage["standard"] = standard if standard in sidor else (sidor[0] if sidor else "")
         hinder = []
+        # Avsändaren följer kolumnen foretagssida, så att ett inlägg aldrig går ut från fel sida.
+        if kanal == "LinkedIn":
+            sida, _ = sp.foretagssida(r)
+            if sida in sidor:
+                lage["sidor"], lage["standard"] = [sida], sida
+            else:
+                lage["sidor"], lage["standard"] = [], sida
+                if lage.get("redo"):
+                    hinder.append(f"{sida} is not a connected sender on LinkedIn. Add it to LINKEDIN_SIDOR in .env, "
+                                  f"or publish by hand from the {sida} page.")
         text = pub.inlaggstext(utkast_text)
         if not text:
             hinder.append("The draft has no ## Inläggstext section. Ask A4 for a new version with it, or publish by hand.")

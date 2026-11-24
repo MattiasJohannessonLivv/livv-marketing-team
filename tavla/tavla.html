@@ -99,6 +99,9 @@ button { font: inherit; color: inherit; }
 .chip { border: 1px solid var(--line); background: var(--surface); border-radius: 999px; padding: 5px 12px; cursor: pointer; font-size: 0.82rem; font-weight: 600; display: inline-flex; align-items: center; gap: 6px; }
 .chip[aria-pressed="true"] { background: var(--ink); color: var(--bg); border-color: var(--ink); }
 .dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; flex: none; }
+.sida { display: inline-flex; align-items: center; gap: 5px; font-size: 0.72rem; font-weight: 700; padding: 2px 8px; border-radius: 999px; border: 1.5px solid var(--s); color: var(--ink); white-space: nowrap; letter-spacing: 0.02em; vertical-align: middle; }
+.sida::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--s); }
+.sida.harledd { border-style: dashed; }
 
 .kpis { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 0; background: var(--door); border-radius: var(--radius); overflow: hidden; }
 .kpi { background: transparent; padding: 18px 20px; display: grid; gap: 2px; border-left: 1px solid var(--door-line); }
@@ -474,7 +477,7 @@ a.b-knapp { text-decoration: none; display: inline-block; }
       <div class="sub" id="asof"></div>
     </div>
     <div class="top-right">
-      <div class="filters" role="group" aria-label="Filter by company" id="filters"></div>
+      <div class="filters" role="group" aria-label="Filter by company page" id="filters"></div>
     </div>
   </header>
 
@@ -565,7 +568,10 @@ var KOLUMNER = [
 
 var filter = "Alla";
 try { filter = localStorage.getItem("livv-filter") || "Alla"; } catch (e) {}
-if (["Alla", "LivvGroup", "Livv", "Unique"].indexOf(filter) < 0) filter = "Alla";
+var SIDOR = {
+  "Livv.se": "var(--c-livv)", "Livv.fi": "var(--c-livv)", "Unique": "var(--c-unique)", "X Livv Group": "var(--c-livvgroup)"
+};
+if (["Alla"].concat(Object.keys(SIDOR)).indexOf(filter) < 0) filter = "Alla";
 
 // Registret och loggen är på svenska. Tavlan visar värdena på engelska.
 var ENGELSKA = {
@@ -599,9 +605,17 @@ function iStatus(s) {
   return "Changed " + sedan(new Date(s + ":00"));
 }
 function datumKort(s) { return new Date(s + "T12:00:00").toLocaleDateString(DATUMSPRAK, { day: "numeric", month: "short" }).replace(/\.$/, ""); }
-function syns(o) { return filter === "Alla" || o.bolag === filter; }
-function bolagFor(id) { var o = OBJEKT.find(function (x) { return x.id === id; }); return o ? o.bolag : null; }
-function radSyns(r) { return filter === "Alla" || !r[3] || bolagFor(r[3]) === filter; }
+// Företagssidan inlägget publiceras från. Saknas kolumnen foretagssida härleds den som i servern.
+function sidaAv(o) { return o.sida || (String(o.kanal).toLowerCase() === "x" ? "X Livv Group" : o.bolag === "Unique" ? "Unique" : "Livv.se"); }
+function sidaBadge(o) {
+  var s = sidaAv(o), harledd = !o.sida || o.sida_harledd;
+  return '<span class="sida' + (harledd ? " harledd" : "") + '" style="--s:' + (SIDOR[s] || "var(--faint)") + '" title="' +
+    (harledd ? "Assumed from the company. The column foretagssida is empty in the register." : "Company page from the register") + '">' + esc(s) + "</span>";
+}
+function syns(o) { return filter === "Alla" || sidaAv(o) === filter; }
+function sidaFor(id) { var o = OBJEKT.find(function (x) { return x.id === id; }); return o ? sidaAv(o) : null; }
+function radSyns(r) { return filter === "Alla" || !r[3] || sidaFor(r[3]) === filter; }
+function vantarPaBilder(o) { return o.status === "Godkänd" && Array.isArray(o.bilder) && o.bilder.length === 0; }
 function dot(b) { return '<span class="dot" style="background:' + BOLAG[b].farg + '" title="' + BOLAG[b].namn + '"></span>'; }
 
 function vantar() {
@@ -617,6 +631,8 @@ function vantar() {
     }
     if (o.status === "Godkänd" && o.bilder && o.bilder.length && !o.bild_vald) {
       lista.push({ o: o, typ: "ok", etikett: "Välj bild", text: "Brand Studio has uploaded " + o.bilder.length + (o.bilder.length === 1 ? " image option" : " image options") + ". Choose the image for the post." });
+    } else if (vantarPaBilder(o)) {
+      // Brand Studio arbetar med bilderna. Inget väntar på dig, så objektet syns bara i flödet.
     } else if (o.status === "Godkänd") {
       lista.push({ o: o, typ: "wait", etikett: "Publicera", text: (o.plan ? "Planned for " + datumKort(o.plan) + ". " : "No publishing date set. ") + (o.bild_vald ? "Image chosen. " : "") + "Click Publish, check the text and image, and confirm. Or publish by hand and give A0 the date, platform ID and URL." });
     }
@@ -630,10 +646,10 @@ function vantar() {
 function renderFilters() {
   var f = document.getElementById("filters");
   f.innerHTML = "";
-  ["Alla", "LivvGroup", "Livv", "Unique"].forEach(function (k) {
-    var b = el("button", "chip", k === "Alla" ? "All companies" : dot(k) + BOLAG[k].namn);
+  ["Alla"].concat(Object.keys(SIDOR)).forEach(function (k) {
+    var b = el("button", "chip", k === "Alla" ? "All pages" : '<span class="dot" style="background:' + SIDOR[k] + '"></span>' + esc(k));
     b.type = "button";
-    b.id = "filter-" + k;
+    b.id = "filter-" + k.replace(/[^A-Za-z]/g, "");
     b.setAttribute("aria-pressed", filter === k ? "true" : "false");
     b.addEventListener("click", function () { filter = k; try { localStorage.setItem("livv-filter", k); } catch (e) {} renderAll(); });
     f.appendChild(b);
@@ -680,7 +696,7 @@ function renderWaiting() {
   lista.forEach(function (x) {
     w.appendChild(el("div", "witem",
       dot(x.o.bolag) +
-      '<div class="t"><b>' + esc(x.o.titel) + '</b> <span class="mono muted" style="font-size:0.74rem">' + x.o.id + " · " + x.o.kanal + "</span><div>" + esc(x.text) + (x.o.lank ? ' <a class="wlink" href="' + esc(x.o.lank) + '" target="_blank" rel="noopener">Open in SharePoint</a>' : "") + "</div></div>" +
+      '<div class="t"><b>' + esc(x.o.titel) + '</b> <span class="mono muted" style="font-size:0.74rem">' + x.o.id + " · " + x.o.kanal + "</span> " + sidaBadge(x.o) + "<div>" + esc(x.text) + (x.o.lank ? ' <a class="wlink" href="' + esc(x.o.lank) + '" target="_blank" rel="noopener">Open in SharePoint</a>' : "") + "</div></div>" +
       (EXEMPEL || x.etikett === "Bekräfta" ? '<span class="pill ' + x.typ + '">' + (ETIKETT[x.etikett] || x.etikett) + "</span>"
         : '<button type="button" class="wbtn ' + x.typ + '" data-id="' + esc(x.o.id) + '" data-etikett="' + x.etikett + '">' + KNAPPTEXT[x.etikett] + "</button>")));
   });
@@ -762,7 +778,7 @@ function oppnaBeslut(id, etikett) {
 
 function visaBeslut(d, etikett) {
   var inn = document.getElementById("beslut-innehall");
-  var meta = [d.kanal, d.a3 ? "A3: " + en(d.a3) + (d.sakerhet ? ", confidence " + en(d.sakerhet) : "") : "", d.granskad ? "reviewed " + d.granskad : ""].filter(Boolean).join(" · ");
+  var meta = [d.sida ? d.kanal + " from " + d.sida : d.kanal, d.a3 ? "A3: " + en(d.a3) + (d.sakerhet ? ", confidence " + en(d.sakerhet) : "") : "", d.granskad ? "reviewed " + d.granskad : ""].filter(Boolean).join(" · ");
   var html = '<div class="b-head"><div><div class="eyebrow">' + esc(d.id) + "</div><h2 id=\"b-titel\">" + esc(d.titel) + '</h2><div class="muted b-meta">' + esc(meta) + '</div></div><button type="button" class="b-stang" id="b-stang" aria-label="Close">×</button></div>';
   if (d.eskalera && d.orsak) html += '<div class="b-varning"><b>Escalated by A3:</b> ' + esc(d.orsak) + "</div>";
   html += '<section class="b-sek"><div class="b-sek-head"><h3>The draft</h3>' + (d.utkast && d.utkast.namn ? '<span class="mono muted">' + esc(d.utkast.namn) + "</span>" : "") + "</div>" +
@@ -925,8 +941,9 @@ function renderBoard() {
       var badge = "";
       if (o.a3 === "Godkänd" && o.status === "Granskning") badge = '<span class="pill ok">Approved by A3</span>';
       if (o.eskalera) badge = '<span class="pill stop">Escalated</span>';
+      if (vantarPaBilder(o)) badge = '<span class="pill wait">Waiting for images</span>';
       col.appendChild(el("div", "card",
-        '<div class="id">' + dot(o.bolag) + o.id + "</div>" +
+        '<div class="id">' + dot(o.bolag) + o.id + " " + sidaBadge(o) + "</div>" +
         '<div class="ti">' + esc(o.titel) + "</div>" +
         '<div class="meta"><span>' + o.kanal + "</span>" + (o.varv ? "<span>· " + o.varv + " rev.</span>" : "") + (o.plan ? "<span>· out " + datumKort(o.plan) + "</span>" : "") + badge + "</div>" +
         '<div class="meta"><span>' + iStatus(o.sedan) + "</span></div>"));

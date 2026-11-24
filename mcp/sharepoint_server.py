@@ -50,6 +50,22 @@ TILLATNA_TOPPNIVAER = {
 
 VARUMARKESMAPPAR = {"Livv Group": "LivvGroup", "Livv": "Livv", "Unique": "Unique"}
 
+# Företagssidan ett inlägg publiceras från. Kolumnen foretagssida i Innehallsregister.
+FORETAGSSIDOR = ("Livv.se", "Livv.fi", "Unique", "X Livv Group")
+
+
+def foretagssida(rad: dict[str, Any]) -> tuple[str, bool]:
+    """Sidan för en rad i registret, och om den är härledd för att kolumnen är tom.
+    Härledning: X går till X Livv Group, Unique till Unique, Livv och Livv Group till Livv.se."""
+    sida = str(rad.get("foretagssida") or "").strip()
+    if sida:
+        return sida, False
+    if str(rad.get("kanal") or "").strip().lower() == "x":
+        return "X Livv Group", True
+    if str(rad.get("varumarke") or "").strip() == "Unique":
+        return "Unique", True
+    return "Livv.se", True
+
 # Status och mapp enligt bladet Statusflode
 STATUSMAPPAR = {
     "Brief": "01_Briefer",
@@ -494,6 +510,11 @@ def register_andra(data: bytes, objekt_id: str, falt: dict[str, Any], ny: bool) 
     blad = load_workbook(io.BytesIO(data))[REGISTER_BLAD]  # bara läsning
     rubriker = _rubriker(blad)
     okanda = [k for k in falt if k not in rubriker]
+    if "foretagssida" in okanda:
+        raise Sparrfel("Kolumnen foretagssida finns inte i registret än. Mattias lägger till den, se README.")
+    sida = str(falt.get("foretagssida") or "").strip()
+    if sida and sida not in FORETAGSSIDOR:
+        raise Sparrfel(f"Okänd företagssida: {sida}. Tillåtna: {', '.join(FORETAGSSIDOR)}.")
     if okanda:
         raise Sparrfel(f"Okända kolumner: {', '.join(okanda)}. Kolumnnamnen ändras aldrig.")
     if not ny and "objekt_id" in falt and falt["objekt_id"] != objekt_id:

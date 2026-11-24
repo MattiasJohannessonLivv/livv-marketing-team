@@ -193,7 +193,7 @@ Engångsinställning:
      > New image brief from the Livv marketing team: *File name*. Please create three options in Atelier and upload them to the same folder. The brief has the deadline. Open it here: *Link to item*
 
 ### Publicera från tavlan
-När texten är godkänd, bilden vald och alt-texten godkänd visar tavlan knappen **Publish** för objektet. Mattias väljer avsändare (Livv.se är förvalt, fler sidor läggs till i `LINKEDIN_SIDOR`), ser exakt vad som går ut och bekräftar i tavlan. Sedan visar tavlans server en ruta från macOS med objekt, kanal, avsändare, text och bild. Först när Mattias klickar **Publish** i rutan går inlägget ut. Avbryt, ingen reaktion inom två minuter eller en dator utan macOS ger ingen publicering. Tavlan publicerar bara texten under `## Inläggstext` i utkastet, laddar upp bilden med alt-texten, flyttar filen till 05_Publicerat, fyller i publicerad_datum, plattforms_id och url och loggar "Publicerade i teamtavlan". Ett objekt kan bara publiceras en gång från tavlan.
+När texten är godkänd, bilden vald och alt-texten godkänd visar tavlan knappen **Publish** för objektet. Avsändaren följer kolumnen foretagssida i registret, och sidan måste finnas i `LINKEDIN_SIDOR`. Mattias ser exakt vad som går ut och bekräftar i tavlan. Sedan visar tavlans server en ruta från macOS med objekt, kanal, avsändare, text och bild. Först när Mattias klickar **Publish** i rutan går inlägget ut. Avbryt, ingen reaktion inom två minuter eller en dator utan macOS ger ingen publicering. Tavlan publicerar bara texten under `## Inläggstext` i utkastet, laddar upp bilden med alt-texten, flyttar filen till 05_Publicerat, fyller i publicerad_datum, plattforms_id och url och loggar "Publicerade i teamtavlan". Ett objekt kan bara publiceras en gång från tavlan.
 
 Ingen agent kan publicera. Publiceringen finns bara i tavlans server (`tavla/publicera.py`), och spärren stoppar alla agentanrop till LinkedIn och X. Tavlans nyckel finns i sidan som servern levererar, så ett program på datorn som anropar 127.0.0.1:8787 direkt kommer förbi kontrollen av nyckeln. Därför krävs rutan från macOS: den visas av servern och måste besvaras av en människa vid datorn. Utan nycklar i `.env` är knappen avstängd och tavlan säger vad som saknas.
 
@@ -236,6 +236,15 @@ Bara i utvecklingsläge får agenter, skills, hooks och CLAUDE.md ändras. Gör 
 Klart: app-registreringen i Entra ID och kopplingen mot SharePoint (17 november 2026), ändringslistan för Innehallsregister (17 november), bildstilen Please Disturb (17 november) och LinkedIn-appen Livv Marketing Ops, verifierad mot Livv.se (18 november).
 
 Nu:
+- **Ny kolumn `foretagssida` i Innehallsregister.** Den talar om vilken företagssida varje inlägg publiceras från, och tavlan visar och filtrerar på den. Så här lägger du till den, en gång:
+  1. Öppna Innehallsregister.xlsx i Excel.
+  2. I bladet Register: skriv `foretagssida` i rad 1 i första tomma kolumnen till höger.
+  3. Gärna en rullista: markera kolumnen från rad 2, välj Data, Dataverifiering, Lista, och skriv `Livv.se;Livv.fi;Unique;X Livv Group`.
+  4. I bladet Kolumner: lägg till en rad för `foretagssida`, med A0 som ansvarig.
+  5. Spara och stäng filen överallt, även i webbläsaren, så att den inte är låst.
+  6. Starta teamet. A0 fyller i kolumnen för de objekt som redan finns.
+
+  Tills kolumnen finns härleder tavlan sidan från bolaget och visar den med streckad kant: Unique till Unique, X till X Livv Group och allt annat till Livv.se. Publicering från tavlan kräver att sidan är kopplad i `LINKEDIN_SIDOR`, och avsändaren följer alltid kolumnen.
 - **Kör `logga` igen** när ändringarna är sammanslagna och teamet startats om. Verktyget visar nu den verkliga orsaken. Står det 423 är loggfilen öppen i Excel: stäng den överallt, även i webbläsaren, och försök igen. Står det något annat: ge texten till utvecklingssessionen.
 - **Testa rutan från macOS** första gången du publicerar från tavlan, gärna på ett objekt där det gör lite om något behöver rättas. Rutan är testad mot en attrapp, inte på en Mac, och den kan hamna bakom andra fönster.
 - **Integritetspolicyn på livv.se/se/integritetspolicy** är tom och blockerar LinkedIn. Webbansvarig tar fram texten och den som ansvarar för GDPR godkänner den. Begär sedan Community Management API i appen.
