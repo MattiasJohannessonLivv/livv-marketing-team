@@ -66,6 +66,7 @@ livv-marketing-team/
   tests/
     test_sparr.sh               tester för spärren
     test_sokvagar.py            tester för servern, utan nätverk
+    test_samtidighet.py         två skrivare samtidigt skriver aldrig över varandra i registret eller loggen
     test_xai.py                 xAI-servern: sökfrågan, stopp för internt material och svaret
     test_felmeddelanden.py      verktygen visar alltid den verkliga orsaken till ett fel
     test_instruktioner.py       regler som måste stå kvar i CLAUDE.md, A3, A4 och livv-grund
@@ -111,7 +112,7 @@ Går ett verktyg fel visar det alltid orsaken: spärrens skäl, eller SharePoint
 - Bara A1 får använda `trendsok` och `spara_trendrapport`. A1 får inget annat skrivande.
 - A1, A2, A3 och A4 har egna rollspärrar utöver sina verktygslistor.
 
-Servern sparar aldrig om Excel-filerna med ett bibliotek som tolkar hela arbetsboken. Den ändrar bara de berörda cellerna i bladets XML och kopierar resten av filen oförändrad. Annars försvinner rullistor som Excel lagrar som tillägg, till exempel listorna som pekar på det dolda bladet Listor. `tests/test_excel.py` kontrollerar detta och kan köras mot riktiga kopior, se nedan.
+Registret och loggen skrivs om som hela filer. Därför skriver servern bara om filen har samma version som när den lästes. Har en annan agent eller tavlan hunnit skriva emellan, görs ändringen om på den nya versionen, så att ingen ändring skrivs över. Servern sparar aldrig om Excel-filerna med ett bibliotek som tolkar hela arbetsboken. Den ändrar bara de berörda cellerna i bladets XML och kopierar resten av filen oförändrad. Annars försvinner rullistor som Excel lagrar som tillägg, till exempel listorna som pekar på det dolda bladet Listor. `tests/test_excel.py` kontrollerar detta och kan köras mot riktiga kopior, se nedan.
 
 **3. Verktygslistor per agent** i `.claude/agents/`. A1, A2, A3 och A4 har varken skal eller lokala skrivverktyg.
 
