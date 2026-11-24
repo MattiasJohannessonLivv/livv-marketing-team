@@ -167,7 +167,7 @@ class TestVantarOchNotiser(unittest.TestCase):
         skickat = []
         p = tavla.Pingare(lambda titel, text: skickat.append(text))
         p.kontrollera({"objekt": [obj("B", "Granskning", "Godkänd")]})
-        self.assertEqual(skickat, ["1 sak väntar på ditt beslut."])
+        self.assertEqual(skickat, ["1 item is waiting for your decision."])
         p.kontrollera({"objekt": [obj("B", "Granskning", "Godkänd")]})
         self.assertEqual(len(skickat), 1)
         p.kontrollera({"objekt": [obj("B", "Godkänd"), obj("C", "Granskning", "Godkänd")]})
@@ -211,11 +211,11 @@ class TestFelbeskrivning(unittest.TestCase):
         text = tavla.felbeskrivning(self.fel(403, bas + ":/09_Loggar/Logg_2026-11.xlsx:/content"))
         self.assertIn("403", text)
         self.assertIn("09_Loggar/Logg_2026-11.xlsx", text)
-        self.assertIn("behörighet", text)
+        self.assertIn("no access", text)
         text = tavla.felbeskrivning(self.fel(503, bas + ":/Innehallsregister.xlsx:/content"))
         self.assertIn("Innehallsregister.xlsx", text)
-        self.assertIn("tillfälligt", text)
-        self.assertIn("rotmappen", tavla.felbeskrivning(self.fel(429, bas + "/children")))
+        self.assertIn("temporary", text)
+        self.assertIn("the root folder", tavla.felbeskrivning(self.fel(429, bas + "/children")))
 
     def test_sparrfel_och_okant_fel(self):
         self.assertEqual(tavla.felbeskrivning(sp.Sparrfel("Stopp")), "Stopp")

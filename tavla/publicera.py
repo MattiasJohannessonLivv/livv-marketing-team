@@ -44,8 +44,8 @@ class Publiceringsfel(Exception):
 # klicket i webbläsaren. Rutan visas av tavlans egen server och måste besvaras av en
 # människa vid datorn. Utan svar, med Avbryt eller där rutan inte kan visas: ingen publicering.
 
-BEKRAFTA_KNAPP = "Publicera"
-AVBRYT_KNAPP = "Avbryt"
+BEKRAFTA_KNAPP = "Publish"
+AVBRYT_KNAPP = "Cancel"
 BEKRAFTA_SEKUNDER = 120
 FORHANDSVISNING = 700
 
@@ -60,9 +60,9 @@ BEKRAFTA_SKRIPT = [
 
 def bekraftelsetext(objekt_id: str, kanal: str, sida: str, text: str, bildnamn: str = "") -> str:
     visas = text if len(text) <= FORHANDSVISNING else text[:FORHANDSVISNING].rstrip() + " …"
-    return (f"Publicera {objekt_id} på {kanal} som {sida}?\n\n{visas}\n\n"
-            f"Bild: {bildnamn or 'ingen'}\n\n"
-            "Inlägget går ut direkt och kan inte tas tillbaka härifrån.")
+    return (f"Publish {objekt_id} on {kanal} as {sida}?\n\n{visas}\n\n"
+            f"Image: {bildnamn or 'none'}\n\n"
+            "The post goes out immediately and cannot be withdrawn from here.")
 
 
 def macos_bekraftelse(objekt_id: str, kanal: str, sida: str, text: str, bildnamn: str = "",
@@ -75,8 +75,8 @@ def macos_bekraftelse(objekt_id: str, kanal: str, sida: str, text: str, bildnamn
     kor = kor or subprocess.run
     hitta = hitta or shutil.which
     if (plattform or sys.platform) != "darwin" or not hitta("osascript"):
-        raise Publiceringsfel("Publicering kräver en bekräftelseruta från macOS, och den kan inte visas här. "
-                              "Inget publicerades. Publicera från tavlan på Macen eller för hand från företagssidan.")
+        raise Publiceringsfel("Publishing needs a confirmation dialog from macOS, and it cannot be shown here. "
+                              "Nothing was published. Publish from the board on the Mac, or by hand from the company page.")
     argument = ["osascript"]
     for rad in BEKRAFTA_SKRIPT:
         argument += ["-e", rad]
@@ -170,14 +170,14 @@ def kanaler(env=os.environ, nyckel: dict | None = None) -> dict[str, Any]:
     sidor = linkedin_sidor(env)
     li: dict[str, Any] = {"sidor": list(sidor), "redo": False}
     if not (env.get("LINKEDIN_CLIENT_ID") and env.get("LINKEDIN_CLIENT_SECRET")):
-        li["skal"] = "LinkedIn är inte kopplad än: appen hos LinkedIn saknas i .env."
+        li["skal"] = "LinkedIn is not connected yet: the LinkedIn app is missing in .env."
     elif not sidor:
-        li["skal"] = "LinkedIn är inte kopplad än: LINKEDIN_SIDOR saknas i .env."
+        li["skal"] = "LinkedIn is not connected yet: LINKEDIN_SIDOR is missing in .env."
     elif not nyckel:
-        li["skal"] = "Logga in med LinkedIn i tavlan för att koppla företagssidorna."
+        li["skal"] = "Sign in with LinkedIn on the board to connect the company pages."
         li["logga_in"] = True
     elif nyckel.get("gar_ut") and nyckel["gar_ut"] < time.time():
-        li["skal"] = "LinkedIn-inloggningen har gått ut. Logga in igen i tavlan."
+        li["skal"] = "The LinkedIn sign-in has expired. Sign in again on the board."
         li["logga_in"] = True
     else:
         li["redo"] = True
@@ -186,7 +186,7 @@ def kanaler(env=os.environ, nyckel: dict | None = None) -> dict[str, Any]:
     x_falt = ("X_API_KEY", "X_API_SECRET", "X_ACCESS_TOKEN", "X_ACCESS_TOKEN_SECRET")
     x: dict[str, Any] = {"sidor": [env.get("X_KONTO", "Livv Group")], "redo": all(env.get(f) for f in x_falt)}
     if not x["redo"]:
-        x["skal"] = "X är inte kopplad än: nycklarna för Livv Groups konto saknas i .env."
+        x["skal"] = "X is not connected yet: the keys for the Livv Group account are missing in .env."
     return {"LinkedIn": li, "X": x}
 
 
@@ -306,7 +306,7 @@ class X:
 
     def publicera(self, text: str, bild: bytes | None = None, filnamn: str = "", alt: str = "") -> tuple[str, str]:
         if len(text) > X_MAXTECKEN:
-            raise Publiceringsfel(f"Texten är {len(text)} tecken. X tillåter högst {X_MAXTECKEN}.")
+            raise Publiceringsfel(f"The text is {len(text)} characters. X allows at most {X_MAXTECKEN}.")
         kropp: dict[str, Any] = {"text": text}
         if bild:
             kropp["media"] = {"media_ids": [self.ladda_upp_bild(bild, filnamn, alt)]}

@@ -171,17 +171,34 @@ def vantande(objekt: Iterable[dict[str, Any]]) -> list[dict[str, Any]]:
     return lista
 
 
+HTTP_ENGELSKA = {
+    400: "SharePoint did not accept the request",
+    401: "the sign-in expired or was refused. Check the values in .env",
+    403: "the app has no access to the file or folder. Has the permission changed, for example when sharing?",
+    404: "the file or folder does not exist",
+    409: "the file is busy right now. Try again in a moment",
+    412: "someone else changed the file at the same time. Try again",
+    413: "the file is too large to upload",
+    423: "the file is locked, probably open in Excel. Close it everywhere, including the browser, and try again",
+    429: "too many requests to SharePoint. The board tries again in five minutes",
+    507: "the SharePoint storage is full",
+}
+
+
 def felbeskrivning(fel: Exception) -> str:
     """Ett begripligt felmeddelande, utan hemligheter. Säger vilken fil det gäller när det går.
     Samma förklaringar som SharePoint-servern, men utan feltext som kan visas för andra sidor.
     Fel från publiceringen skrivs av tavlan själv och visas som de är."""
     if isinstance(fel, pub.Publiceringsfel):
         return str(fel)
-    return sp.felbeskrivning(
-        fel, med_text=False,
-        forklaringar={429: "för många anrop till SharePoint. Tavlan försöker igen om fem minuter"},
-        vid_serverfel="tillfälligt fel hos Microsoft. Tavlan försöker igen om fem minuter",
-    )
+    detaljer = sp.http_detaljer(fel)
+    if detaljer is None:
+        return sp.felbeskrivning(fel, med_text=False)
+    kod, fil = detaljer
+    fil = "the root folder" if fil == "" else fil or "SharePoint"
+    forklaring = HTTP_ENGELSKA.get(kod, "temporary error at Microsoft. The board tries again in five minutes"
+                                   if kod >= 500 else "unexpected response")
+    return f"SharePoint answered {kod} for {fil}: {forklaring}" + ("" if forklaring.endswith("?") else ".")
 
 
 def logg_fran_bok(data: bytes) -> list[list[str]]:
@@ -218,7 +235,7 @@ def hamta(graph: Any, nu: datetime | None = None) -> dict[str, Any]:
         try:
             logg += logg_fran_bok(graph.las(sokvag))
         except Exception as fel:  # en loggfil som inte går att läsa stoppar inte tavlan
-            varningar.append(f"Loggen {sokvag} kunde inte läsas: {felbeskrivning(fel)}")
+            varningar.append(f"The log {sokvag} could not be read: {felbeskrivning(fel)}")
     logg.sort(key=lambda rad: (rad[0], rad[1]))
     # Bildförslag från Brand Studio och Mattias val, för objekt med godkänd text
     for o in objekt:
@@ -309,7 +326,7 @@ def bygg_hanterare(cache: Cache, beslut: Any = None, nyckel: str | None = None):
 
         def do_GET(self) -> None:  # noqa: N802
             if not self._ratt_vard():
-                self._svara(403, "text/plain; charset=utf-8", "Fel värd".encode("utf-8"))
+                self._svara(403, "text/plain; charset=utf-8", "Wrong host".encode("utf-8"))
                 return
             sokvag, _, fraga = self.path.partition("?")
             if sokvag == "/data.json":
@@ -374,7 +391,7 @@ def bygg_hanterare(cache: Cache, beslut: Any = None, nyckel: str | None = None):
             redirect = f"http://localhost:{port}/linkedin/svar"
             client_id = os.environ.get("LINKEDIN_CLIENT_ID", "")
             if not client_id:
-                self._sida("LinkedIn är inte kopplad", "Appen hos LinkedIn saknas i .env. Se README.")
+                self._sida("LinkedIn is not connected", "The LinkedIn app is missing in .env. See the README.")
                 return
             if sokvag == "/linkedin/logga-in":
                 state = secrets.token_urlsafe(24)
@@ -385,10 +402,10 @@ def bygg_hanterare(cache: Cache, beslut: Any = None, nyckel: str | None = None):
                 return
             state = q.get("state", [""])[0]
             if not state or time.time() - linkedin_state.pop(state, 0) > 600:
-                self._sida("Inloggningen gick inte igenom", "Svaret från LinkedIn kunde inte kontrolleras. Försök igen från tavlan.")
+                self._sida("The sign-in did not go through", "The answer from LinkedIn could not be verified. Try again from the board.")
                 return
             if q.get("error"):
-                self._sida("Inloggningen avbröts", "LinkedIn svarade: " + q.get("error_description", q["error"])[0])
+                self._sida("The sign-in was cancelled", "LinkedIn answered: " + q.get("error_description", q["error"])[0])
                 return
             try:
                 import httpx
@@ -397,9 +414,9 @@ def bygg_hanterare(cache: Cache, beslut: Any = None, nyckel: str | None = None):
                     svar = pub.linkedin_byt_kod(http, q.get("code", [""])[0], redirect)
                 pub.spara_linkedin_nyckel(svar)
             except Exception as fel:
-                self._sida("Inloggningen gick inte igenom", str(fel))
+                self._sida("The sign-in did not go through", str(fel))
                 return
-            self._sida("LinkedIn är kopplad", "Du kan stänga den här fliken och gå tillbaka till tavlan.")
+            self._sida("LinkedIn is connected", "You can close this tab and go back to the board.")
 
         def _sida(self, rubrik: str, text: str) -> None:
             from html import escape
@@ -407,7 +424,7 @@ def bygg_hanterare(cache: Cache, beslut: Any = None, nyckel: str | None = None):
             kropp = (f'<!doctype html><meta charset="utf-8"><title>{escape(rubrik)}</title>'
                      f'<body style="font-family: Inter, Arial, sans-serif; padding: 40px; max-width: 560px">'
                      f'<h1 style="font-weight: 400">{escape(rubrik)}</h1><p>{escape(text)}</p>'
-                     f'<p><a href="/#tavla">Till tavlan</a></p></body>')
+                     f'<p><a href="/#tavla">Back to the board</a></p></body>')
             self._svara(200, "text/html; charset=utf-8", kropp.encode("utf-8"))
 
         def do_POST(self) -> None:  # noqa: N802
@@ -421,7 +438,7 @@ def bygg_hanterare(cache: Cache, beslut: Any = None, nyckel: str | None = None):
                     or (ursprung and ursprung not in {f"http://127.0.0.1:{port}", f"http://localhost:{port}"})
                     or not self.headers.get("Content-Type", "").startswith("application/json")
                     or not secrets.compare_digest(self.headers.get("X-Tavla-Nyckel", ""), nyckel)):
-                self._json(403, {"fel": "Beslut kan bara göras från teamtavlan på den här datorn."})
+                self._json(403, {"fel": "Decisions can only be made from the team board on this computer."})
                 return
             try:
                 langd = min(int(self.headers.get("Content-Length", "0")), 10_000)
@@ -463,6 +480,9 @@ def macnotis(titel: str, text: str) -> None:
         subprocess.run(["osascript", "-e", notis_skript(titel, text)], check=False, timeout=10)
 
 
+ETIKETT_ENGELSKA = {"Beslut": "Decide", "Godkänn": "Approve", "Välj bild": "Choose image", "Publicera": "Publish", "Bekräfta": "Confirm"}
+
+
 class Pingare:
     """Skickar en notis för varje nytt objekt som väntar på Mattias, och en sammanfattning vid start."""
 
@@ -476,11 +496,11 @@ class Pingare:
         if self._sett is None:
             if lista:
                 antal = len(lista)
-                self._skicka("Livv Marketing Ops", f"{antal} {'sak väntar' if antal == 1 else 'saker väntar'} på ditt beslut.")
+                self._skicka("Livv Marketing Ops", f"{antal} {'item is' if antal == 1 else 'items are'} waiting for your decision.")
         else:
             for o in lista:
                 if (o["id"], o["etikett"]) not in self._sett:
-                    self._skicka(f"Livv: {o['etikett']}", f"{o['id']} {o['titel']}")
+                    self._skicka(f"Livv: {ETIKETT_ENGELSKA.get(o['etikett'], o['etikett'])}", f"{o['id']} {o['titel']}")
         self._sett = nycklar
 
 
@@ -499,14 +519,14 @@ def main() -> None:
     cache = Cache(lambda: hamta(graph))
     beslut = Beslut(graph, efter_godkannande=Bildbriefstartare())  # A0 skriver bildbriefen direkt efter godkännande
     server = ThreadingHTTPServer((VARD, port), bygg_hanterare(cache, beslut))
-    print(f"Teamtavlan körs på http://{VARD}:{port}  (avsluta med Ctrl+C)")
+    print(f"The team board is running at http://{VARD}:{port}  (stop with Ctrl+C)")
     if os.environ.get("TAVLA_NOTISER", "1") != "0":
         threading.Thread(target=bevaka, args=(cache, Pingare()), daemon=True).start()
-        print("Notiser är på: du får en notis när något nytt väntar på dig.")
+        print("Notifications are on: you get a notification when something new is waiting for you.")
     try:
         server.serve_forever()
     except KeyboardInterrupt:
-        print("\nTeamtavlan stängd.")
+        print("\nThe team board is closed.")
 
 
 if __name__ == "__main__":

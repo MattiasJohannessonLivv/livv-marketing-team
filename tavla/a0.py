@@ -79,15 +79,15 @@ class Bildbriefstartare:
     def __call__(self, objekt_id: str) -> str:
         """Startar körningen och returnerar ett besked till Mattias. Kastar aldrig fel."""
         if not OBJEKT_ID_RE.match(objekt_id or ""):
-            return "A0 startades inte: ogiltigt objekt-ID."
+            return "A0 was not started: invalid item ID."
         claude = self._hitta("claude")
         if not claude:
-            return ("A0 kunde inte startas eftersom Claude Code inte hittades på datorn. "
-                    "A0 skriver bildbriefen nästa gång du startar teamet.")
+            return ("A0 could not be started because Claude Code was not found on this computer. "
+                    "A0 writes the image brief the next time you start the team.")
         with self._las:
             tidigare = self._pagar.get(objekt_id)
             if tidigare is not None and tidigare.poll() is None:
-                return "A0 skriver redan bildbriefen."
+                return "A0 is already writing the image brief."
             miljo = dict(os.environ if self._miljo is None else self._miljo)
             miljo["LIVV_UTVECKLING"] = "0"  # alltid driftläge, oavsett hur tavlan startades
             try:
@@ -100,7 +100,7 @@ class Bildbriefstartare:
                         start_new_session=True,
                     )
             except Exception as fel:
-                return (f"A0 kunde inte startas ({type(fel).__name__}: {fel}). "
-                        "A0 skriver bildbriefen nästa gång du startar teamet.")
-        return ("A0 skriver bildbriefen nu. När den är sparad får Brand Studio en ping i Teams, "
-                "och Bildbrief sparad syns i loggen.")
+                return (f"A0 could not be started ({type(fel).__name__}: {fel}). "
+                        "A0 writes the image brief the next time you start the team.")
+        return ("A0 is writing the image brief now. When it is saved, Brand Studio gets a ping in Teams "
+                "and Bildbrief sparad shows in the log.")

@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="sv">
+<html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -423,11 +423,11 @@ a.b-knapp { text-decoration: none; display: inline-block; }
   </defs>
 </svg>
 
-<nav class="bar" aria-label="Vyer">
-  <div class="brand"><img class="logo" src="logo" alt="Livv" hidden onload="this.hidden=false" onerror="this.remove()"><span>Livv Marketing Ops</span> <span class="sample" id="kalla">Hämtar data</span></div>
+<nav class="bar" aria-label="Views">
+  <div class="brand"><img class="logo" src="logo" alt="Livv" hidden onload="this.hidden=false" onerror="this.remove()"><span>Livv Marketing Ops</span> <span class="sample" id="kalla">Loading data</span></div>
   <div class="tabs">
-    <a href="#teamet" id="tab-teamet">Teamet</a>
-    <a href="#tavla" id="tab-tavla">Driftstavlan</a>
+    <a href="#teamet" id="tab-teamet">The team</a>
+    <a href="#tavla" id="tab-tavla">Operations board</a>
   </div>
 </nav>
 <div class="felrad" id="fel" role="alert" hidden></div>
@@ -437,31 +437,31 @@ a.b-knapp { text-decoration: none; display: inline-block; }
 <div class="wrap" id="view-teamet">
   <header class="tagrow">
     <div>
-      <div class="eyebrow">AI-marknadsteamet för Livv Group, Livv och Unique</div>
-      <h1 class="h-big">En hjärna, ett jobb per agent</h1>
-      <p class="lead">A0 leder teamet och fördelar jobben. Varje agent har ett tydligt uppdrag, och inget når ut utan ditt godkännande. Klicka på en agent för att se vad den gör och vad den aldrig gör.</p>
-      <div class="tags"><span class="tag">1 hjärna</span><span class="tag">9 agenter, 1 jobb var</span><span class="tag">2 mänskliga grindar</span></div>
+      <div class="eyebrow">The AI marketing team for Livv Group, Livv and Unique</div>
+      <h1 class="h-big">One brain, one job per agent</h1>
+      <p class="lead">A0 leads the team and assigns the work. Every agent has one clear job, and nothing goes out without your approval. Click an agent to see what it does and what it never does.</p>
+      <div class="tags"><span class="tag">1 brain</span><span class="tag">9 agents, 1 job each</span><span class="tag">2 human gates</span></div>
     </div>
     <span class="online"><i></i><span id="online-n"></span></span>
   </header>
 
-  <section class="hub" id="hub" aria-label="Teamet runt A0"></section>
+  <section class="hub" id="hub" aria-label="The team around A0"></section>
 
   <section class="section" aria-labelledby="s-h">
-    <div class="section-head"><h2 id="s-h">Så går ett objekt varvet runt</h2><span class="note">Heldragen kant är i drift nu. Streckat kommer i fas 2 och 3.</span></div>
+    <div class="section-head"><h2 id="s-h">How an item goes round the loop</h2><span class="note">Solid border is live now. Dashed comes in phase 2 and 3.</span></div>
     <div class="steps-scroll"><div class="steps" id="steps"></div></div>
   </section>
 
   <section class="below">
     <aside class="detail" id="detail" aria-live="polite"></aside>
     <div class="panel">
-      <div class="section-head"><h2>Teamloggen</h2><span class="note">Från 09_Loggar</span></div>
+      <div class="section-head"><h2>Team log</h2><span class="note">From 09_Loggar</span></div>
       <div class="log" id="log2"></div>
     </div>
   </section>
 
   <section class="section" aria-labelledby="v-h">
-    <div class="section-head"><h2 id="v-h">Veckorytmen</h2><span class="note">Förslag från arbetsdokumentet. Streckat betyder att det kommer i en senare fas.</span></div>
+    <div class="section-head"><h2 id="v-h">The weekly rhythm</h2><span class="note">From the working document. Dashed means it comes in a later phase.</span></div>
     <div class="week" id="week"></div>
   </section>
 </div>
@@ -469,61 +469,61 @@ a.b-knapp { text-decoration: none; display: inline-block; }
 <div class="wrap" id="view-tavla" hidden>
   <header class="top">
     <div>
-      <div class="eyebrow">Driftstavlan</div>
-      <h1>Läget just nu</h1>
+      <div class="eyebrow">Operations board</div>
+      <h1>Where things stand</h1>
       <div class="sub" id="asof"></div>
     </div>
     <div class="top-right">
-      <div class="filters" role="group" aria-label="Filtrera på bolag" id="filters"></div>
+      <div class="filters" role="group" aria-label="Filter by company" id="filters"></div>
     </div>
   </header>
 
-  <section class="kpis" id="kpis" aria-label="Nyckeltal"></section>
+  <section class="kpis" id="kpis" aria-label="Key figures"></section>
 
   <section class="waiting" aria-labelledby="w-h">
     <div class="waiting-head">
-      <h2 id="w-h">Väntar på dig</h2>
-      <span class="note">Inget går vidare förrän du har tagit ställning</span>
+      <h2 id="w-h">Waiting for you</h2>
+      <span class="note">Nothing moves on until you have decided</span>
     </div>
     <div class="wlist" id="waiting"></div>
   </section>
 
   <section class="section" aria-labelledby="t-h">
     <div class="section-head">
-      <h2 id="t-h">Teamet</h2>
-      <span class="note">Staplarna visar åtgärder per dag de senaste 14 dagarna</span>
+      <h2 id="t-h">The team</h2>
+      <span class="note">Bars show actions per day over the last 14 days</span>
     </div>
     <div class="team" id="team"></div>
   </section>
 
   <section class="section" aria-labelledby="f-h">
     <div class="section-head">
-      <h2 id="f-h">Flödet</h2>
+      <h2 id="f-h">The flow</h2>
       <span class="note" id="board-note"></span>
     </div>
     <div class="board-scroll"><div class="board" id="board"></div></div>
   </section>
 
-  <section class="activity" aria-label="Aktivitet">
+  <section class="activity" aria-label="Activity">
     <div class="panel">
       <div class="section-head">
-        <h2>När teamet arbetar</h2>
-        <div class="legend" aria-hidden="true">färre <i style="background:var(--heat-1)"></i><i style="background:var(--heat-2)"></i><i style="background:var(--heat-3)"></i><i style="background:var(--heat-4)"></i> fler</div>
+        <h2>When the team works</h2>
+        <div class="legend" aria-hidden="true">fewer <i style="background:var(--heat-1)"></i><i style="background:var(--heat-2)"></i><i style="background:var(--heat-3)"></i><i style="background:var(--heat-4)"></i> more</div>
       </div>
       <div class="heat-scroll"><table class="heat" id="heat"></table></div>
-      <div class="note">Varje ruta är en dag. Färgen visar hur många rader agenten skrev i loggen den dagen.</div>
+      <div class="note">Each square is a day. The colour shows how many log entries the agent wrote that day.</div>
     </div>
     <div class="panel">
       <div class="section-head">
-        <h2>Senaste åtgärderna</h2>
-        <span class="note">Från 09_Loggar</span>
+        <h2>Latest actions</h2>
+        <span class="note">From 09_Loggar</span>
       </div>
       <div class="log" id="log"></div>
     </div>
   </section>
 
   <footer>
-    Tavlan hämtar Innehallsregister och loggen från SharePoint var femte minut. Den skriver bara när du själv beslutar i tavlan: godkänner, skickar tillbaka, väljer bild eller publicerar. Varje publicering kräver dessutom att du bekräftar i en ruta från macOS.
+    The board reads Innehallsregister and the log from SharePoint every five minutes. It only writes when you decide on the board: approve, send back, choose an image or publish. Every publication also needs your confirmation in a macOS dialog.
   </footer>
 </div>
 
@@ -535,19 +535,19 @@ var BOLAG = {
   LivvGroup: { namn: "Livv Group", farg: "var(--c-livvgroup)" },
   Livv: { namn: "Livv", farg: "var(--c-livv)" },
   Unique: { namn: "Unique", farg: "var(--c-unique)" },
-  Okand: { namn: "Bolag saknas i registret", farg: "var(--faint)" }
+  Okand: { namn: "No company in the register", farg: "var(--faint)" }
 };
 
 var AGENTER = [
-  { id: "A0", namn: "Marketing Director", roll: "Prioriterar, skriver briefer, rapporterar", motor: "Claude", fas: 1 },
-  { id: "A1", namn: "Trendspotter", roll: "Bevakar trender inom hotell och spa", motor: "Grok", fas: 1 },
-  { id: "A2", namn: "Researcher", roll: "Analyserar resultat och lärdomar", motor: "Claude", fas: 1 },
-  { id: "A3", namn: "Granskare", roll: "Varumärkesgrind, poäng och faktakontroll", motor: "Claude", fas: 1 },
-  { id: "A4", namn: "Contentcreator", roll: "Skriver utkast enligt brief", motor: "Claude", fas: 1 },
-  { id: "A5", namn: "Googlespecialist", roll: "SEO, SEM och spårning", motor: "Claude", fas: 2 },
-  { id: "A6", namn: "Meta-expert", roll: "Kampanjstruktur och målgrupper", motor: "Claude", fas: 3 },
-  { id: "A7", namn: "LinkedIn-expert", roll: "Organisk plan för företagssidorna", motor: "Claude", fas: 3 },
-  { id: "A8", namn: "X-expert", roll: "Format, ton och samtal på X", motor: "Grok", fas: 3 }
+  { id: "A0", namn: "Marketing Director", roll: "Prioritises, writes briefs, reports", motor: "Claude", fas: 1 },
+  { id: "A1", namn: "Trendspotter", roll: "Watches trends in hotels and spas", motor: "Grok", fas: 1 },
+  { id: "A2", namn: "Researcher", roll: "Analyses results and learnings", motor: "Claude", fas: 1 },
+  { id: "A3", namn: "Reviewer", roll: "Brand gate, score and fact check", motor: "Claude", fas: 1 },
+  { id: "A4", namn: "Content creator", roll: "Writes drafts from the brief", motor: "Claude", fas: 1 },
+  { id: "A5", namn: "Google specialist", roll: "SEO, SEM and tracking", motor: "Claude", fas: 2 },
+  { id: "A6", namn: "Meta expert", roll: "Campaign structure and audiences", motor: "Claude", fas: 3 },
+  { id: "A7", namn: "LinkedIn expert", roll: "Organic plan for the company pages", motor: "Claude", fas: 3 },
+  { id: "A8", namn: "X expert", roll: "Format, tone and conversations on X", motor: "Grok", fas: 3 }
 ];
 
 // Fylls av ladda(). Objekt kommer från Innehallsregister, loggrader från 09_Loggar:
@@ -556,41 +556,49 @@ var OBJEKT = [];
 var LOGG = [];
 
 var KOLUMNER = [
-  { status: "Brief", who: "väntar på A4" },
-  { status: "Utkast", who: "väntar på A3" },
-  { status: "Granskning", who: "väntar på dig" },
-  { status: "Godkänd", who: "du publicerar" },
-  { status: "Publicerad", who: "mäts i 30 dagar" }
+  { status: "Brief", who: "waiting for A4" },
+  { status: "Utkast", who: "waiting for A3" },
+  { status: "Granskning", who: "waiting for you" },
+  { status: "Godkänd", who: "you publish" },
+  { status: "Publicerad", who: "measured for 30 days" }
 ];
 
 var filter = "Alla";
 try { filter = localStorage.getItem("livv-filter") || "Alla"; } catch (e) {}
 if (["Alla", "LivvGroup", "Livv", "Unique"].indexOf(filter) < 0) filter = "Alla";
 
+// Registret och loggen är på svenska. Tavlan visar värdena på engelska.
+var ENGELSKA = {
+  "Brief": "Brief", "Utkast": "Draft", "Granskning": "In review", "Godkänd": "Approved", "Schemalagd": "Scheduled",
+  "Publicerad": "Published", "Arkiverad": "Archived", "Avvisad": "Rejected", "Revidera": "Revise", "Eskalera": "Escalate",
+  "Hög": "High", "Medel": "Medium", "Låg": "Low"
+};
+function en(s) { return ENGELSKA[s] || s; }
+var DATUMSPRAK = "en-GB";
 function el(tag, cls, html) { var n = document.createElement(tag); if (cls) n.className = cls; if (html != null) n.innerHTML = html; return n; }
 function esc(s) { return String(s).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); }
 function tid(row) { return new Date(row[0] + "T" + (row[1] || "00:00") + ":00"); }
 function iso(d) { return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0"); }
 function sedan(d) {
-  if (!d || isNaN(d.getTime())) return "tid saknas";
+  if (!d || isNaN(d.getTime())) return "time unknown";
   var min = Math.round((NOW - d) / 60000);
-  if (min < 60) return min + " min sedan";
+  if (min < 60) return min + " min ago";
   var h = Math.round(min / 60);
-  if (h < 24) return h + " h sedan";
+  if (h < 24) return h + " h ago";
   var dag = Math.round(h / 24);
-  return dag === 1 ? "i går" : dag + " dagar sedan";
+  return dag === 1 ? "yesterday" : dag + " days ago";
 }
 // senast_andrad har ibland bara datum. Då räknas hela dagar i stället för timmar.
 function iStatus(s) {
-  if (!s) return "Senast ändrad okänt";
+  if (!s) return "Last change unknown";
   if (/T00:00$/.test(s)) {
     var dag = new Date(s.slice(0, 10) + "T12:00:00"), idag = new Date(iso(NOW) + "T12:00:00");
     var n = Math.round((idag - dag) / 86400000);
-    return n <= 0 ? "Ändrad i dag" : n === 1 ? "Ändrad i går" : "I status sedan " + n + " dagar";
+    return n <= 0 ? "Changed today" : n === 1 ? "Changed yesterday" : "In this status for " + n + " days";
   }
-  return "I status sedan " + sedan(new Date(s + ":00")).replace(" sedan", "");
+  return "Changed " + sedan(new Date(s + ":00"));
 }
-function datumKort(s) { return new Date(s + "T12:00:00").toLocaleDateString("sv-SE", { day: "numeric", month: "short" }).replace(/\.$/, ""); }
+function datumKort(s) { return new Date(s + "T12:00:00").toLocaleDateString(DATUMSPRAK, { day: "numeric", month: "short" }).replace(/\.$/, ""); }
 function syns(o) { return filter === "Alla" || o.bolag === filter; }
 function bolagFor(id) { var o = OBJEKT.find(function (x) { return x.id === id; }); return o ? o.bolag : null; }
 function radSyns(r) { return filter === "Alla" || !r[3] || bolagFor(r[3]) === filter; }
@@ -601,19 +609,19 @@ function vantar() {
   OBJEKT.filter(syns).forEach(function (o) {
     if (["Avvisad", "Arkiverad", "Publicerad"].indexOf(o.status) >= 0) return;
     if (o.eskalera) {
-      lista.push({ o: o, typ: "stop", etikett: "Beslut", text: "Eskalerat. " + (o.orsak ? o.orsak.replace(/\.?$/, ".") : "Läs motiveringen i registret.") });
+      lista.push({ o: o, typ: "stop", etikett: "Beslut", text: "Escalated. " + (o.orsak ? o.orsak.replace(/\.?$/, ".") : "Read the reason in the register.") });
       return;
     }
     if (o.status === "Granskning" && o.a3 === "Godkänd") {
-      lista.push({ o: o, typ: "ok", etikett: "Godkänn", text: "A3 har godkänt " + (o.varv ? "efter " + o.varv + (o.varv === 1 ? " revidering" : " revideringar") : "på första försöket") + ". Läs och skriv godkänt om du håller med." });
+      lista.push({ o: o, typ: "ok", etikett: "Godkänn", text: "A3 approved it " + (o.varv ? "after " + o.varv + (o.varv === 1 ? " revision" : " revisions") : "on the first attempt") + ". Read it and approve if you agree." });
     }
     if (o.status === "Godkänd" && o.bilder && o.bilder.length && !o.bild_vald) {
-      lista.push({ o: o, typ: "ok", etikett: "Välj bild", text: "Brand Studio har lagt " + o.bilder.length + (o.bilder.length === 1 ? " bildförslag" : " bildförslag") + ". Välj den bild som ska följa med inlägget." });
+      lista.push({ o: o, typ: "ok", etikett: "Välj bild", text: "Brand Studio has uploaded " + o.bilder.length + (o.bilder.length === 1 ? " image option" : " image options") + ". Choose the image for the post." });
     } else if (o.status === "Godkänd") {
-      lista.push({ o: o, typ: "wait", etikett: "Publicera", text: (o.plan ? "Planerad " + datumKort(o.plan) + ". " : "Inget publiceringsdatum satt. ") + (o.bild_vald ? "Bild vald. " : "") + "Klicka Publicera, kontrollera text och bild och bekräfta. Eller publicera för hand och ge A0 datum, plattforms_id och url." });
+      lista.push({ o: o, typ: "wait", etikett: "Publicera", text: (o.plan ? "Planned for " + datumKort(o.plan) + ". " : "No publishing date set. ") + (o.bild_vald ? "Image chosen. " : "") + "Click Publish, check the text and image, and confirm. Or publish by hand and give A0 the date, platform ID and URL." });
     }
     if (o.status === "Schemalagd") {
-      lista.push({ o: o, typ: "wait", etikett: "Bekräfta", text: "Schemalagd" + (o.plan ? " till " + datumKort(o.plan) : "") + ". Ge A0 datum, plattforms_id och url när inlägget är ute." });
+      lista.push({ o: o, typ: "wait", etikett: "Bekräfta", text: "Scheduled" + (o.plan ? " for " + datumKort(o.plan) : "") + ". Give A0 the date, platform ID and URL when the post is live." });
     }
   });
   return lista;
@@ -623,7 +631,7 @@ function renderFilters() {
   var f = document.getElementById("filters");
   f.innerHTML = "";
   ["Alla", "LivvGroup", "Livv", "Unique"].forEach(function (k) {
-    var b = el("button", "chip", k === "Alla" ? "Alla bolag" : dot(k) + BOLAG[k].namn);
+    var b = el("button", "chip", k === "Alla" ? "All companies" : dot(k) + BOLAG[k].namn);
     b.type = "button";
     b.id = "filter-" + k;
     b.setAttribute("aria-pressed", filter === k ? "true" : "false");
@@ -649,16 +657,16 @@ function renderKpis() {
   var median = n ? (n % 2 ? tider[(n - 1) / 2] : (tider[n / 2 - 1] + tider[n / 2]) / 2) : null;
   // Registret har ofta bara datum. Då visas medianen i dagar.
   var baraDatum = mina.some(function (o) { return /T00:00$/.test(o.briefdatum) && /T00:00$/.test(o.godkand_datum); });
-  var medianText = median == null ? "Inga än"
-    : baraDatum ? (median < 24 ? "Samma dag" : Math.round(median / 24) + " dagar")
-    : median > 48 ? Math.round(median / 24) + " dagar" : Math.round(median) + " h";
+  var medianText = median == null ? "None yet"
+    : baraDatum ? (median < 24 ? "Same day" : Math.round(median / 24) + " days")
+    : median > 48 ? Math.round(median / 24) + " days" : Math.round(median) + " h";
   var k = document.getElementById("kpis");
   k.innerHTML = "";
   [
-    { v: aktiva, l: "Objekt i arbete" },
-    { v: v, l: "Väntar på dig", attn: v > 0 },
-    { v: granskade.length ? direkt + " av " + granskade.length : "Inga än", l: "Godkända av A3 utan revidering" },
-    { v: medianText, l: "Median från brief till ditt godkännande" }
+    { v: aktiva, l: "Items in progress" },
+    { v: v, l: "Waiting for you", attn: v > 0 },
+    { v: granskade.length ? direkt + " of " + granskade.length : "None yet", l: "Approved by A3 without revision" },
+    { v: medianText, l: "Median from brief to your approval" }
   ].forEach(function (x) {
     k.appendChild(el("div", "kpi" + (x.attn ? " attn" : ""), '<span class="v">' + x.v + '</span><span class="l">' + x.l + "</span>"));
   });
@@ -668,12 +676,12 @@ function renderWaiting() {
   var w = document.getElementById("waiting");
   w.innerHTML = "";
   var lista = vantar();
-  if (!lista.length) { w.appendChild(el("div", "empty", "Inget väntar på dig just nu.")); return; }
+  if (!lista.length) { w.appendChild(el("div", "empty", "Nothing is waiting for you right now.")); return; }
   lista.forEach(function (x) {
     w.appendChild(el("div", "witem",
       dot(x.o.bolag) +
-      '<div class="t"><b>' + esc(x.o.titel) + '</b> <span class="mono muted" style="font-size:0.74rem">' + x.o.id + " · " + x.o.kanal + "</span><div>" + esc(x.text) + (x.o.lank ? ' <a class="wlink" href="' + esc(x.o.lank) + '" target="_blank" rel="noopener">Öppna i SharePoint</a>' : "") + "</div></div>" +
-      (EXEMPEL || x.etikett === "Bekräfta" ? '<span class="pill ' + x.typ + '">' + x.etikett + "</span>"
+      '<div class="t"><b>' + esc(x.o.titel) + '</b> <span class="mono muted" style="font-size:0.74rem">' + x.o.id + " · " + x.o.kanal + "</span><div>" + esc(x.text) + (x.o.lank ? ' <a class="wlink" href="' + esc(x.o.lank) + '" target="_blank" rel="noopener">Open in SharePoint</a>' : "") + "</div></div>" +
+      (EXEMPEL || x.etikett === "Bekräfta" ? '<span class="pill ' + x.typ + '">' + (ETIKETT[x.etikett] || x.etikett) + "</span>"
         : '<button type="button" class="wbtn ' + x.typ + '" data-id="' + esc(x.o.id) + '" data-etikett="' + x.etikett + '">' + KNAPPTEXT[x.etikett] + "</button>")));
   });
   w.querySelectorAll(".wbtn").forEach(function (btn) {
@@ -682,31 +690,32 @@ function renderWaiting() {
 }
 
 // ---------- Mattias beslut i tavlan ----------
-var KNAPPTEXT = { "Godkänn": "Läs och godkänn", "Beslut": "Läs och besluta", "Publicera": "Publicera", "Välj bild": "Välj bild" };
+var KNAPPTEXT = { "Godkänn": "Read and approve", "Beslut": "Read and decide", "Publicera": "Publish", "Välj bild": "Choose image" };
+var ETIKETT = { "Godkänn": "Approve", "Beslut": "Decide", "Publicera": "Publish", "Välj bild": "Choose image", "Bekräfta": "Confirm" };
 
 // Publicering: bara när Mattias själv klickar och bekräftar. Ingen agent kan publicera.
 function publiceringHtml(d) {
   var p = d.publicering;
   if (!p) return "";
-  var html = '<section class="b-sek b-pub"><div class="b-sek-head"><h3>Publicera</h3><span class="muted">' + esc(p.kanal || "") + "</span></div>";
+  var html = '<section class="b-sek b-pub"><div class="b-sek-head"><h3>Publish</h3><span class="muted">' + esc(p.kanal || "") + "</span></div>";
   if (p.hinder && p.hinder.length) {
     html += '<ul class="b-hinder">' + p.hinder.map(function (h) { return "<li>" + esc(h) + "</li>"; }).join("") + "</ul>";
   }
   if (!p.redo) {
-    html += '<p class="muted">' + esc(p.skal || "Kanalen är inte kopplad än.") + "</p>";
-    if (p.logga_in) html += '<a class="b-knapp" href="linkedin/logga-in">Logga in med LinkedIn</a>';
+    html += '<p class="muted">' + esc(p.skal || "The channel is not connected yet.") + "</p>";
+    if (p.logga_in) html += '<a class="b-knapp" href="linkedin/logga-in">Sign in with LinkedIn</a>';
     return html + "</section>";
   }
   var sidor = p.sidor || [];
-  html += '<div class="b-forhand"><div class="b-forhand-head"><span class="eyebrow">Avsändare</span> <b id="b-avsandare">' + esc(p.standard) + "</b>" +
-    (sidor.length > 1 ? ' <label class="muted" for="b-sida">Byt:</label> <select id="b-sida">' + sidor.map(function (s) {
+  html += '<div class="b-forhand"><div class="b-forhand-head"><span class="eyebrow">Sender</span> <b id="b-avsandare">' + esc(p.standard) + "</b>" +
+    (sidor.length > 1 ? ' <label class="muted" for="b-sida">Change:</label> <select id="b-sida">' + sidor.map(function (s) {
       return '<option value="' + esc(s) + '"' + (s === p.standard ? " selected" : "") + ">" + esc(s) + "</option>";
     }).join("") + "</select>" : '<input type="hidden" id="b-sida" value="' + esc(p.standard) + '">') + "</div>" +
     textBlock(d.inlaggstext) +
-    (d.bild_vald ? '<div class="b-forhand-bild"><img src="' + bildUrl(d.id, d.bild_vald) + '" alt="' + esc(d.alt_text || "") + '"><div><span class="eyebrow">Alt-text</span><p>' + esc(d.alt_text || "Saknas") + "</p></div></div>" : "") +
+    (d.bild_vald ? '<div class="b-forhand-bild"><img src="' + bildUrl(d.id, d.bild_vald) + '" alt="' + esc(d.alt_text || "") + '"><div><span class="eyebrow">Alt-text</span><p>' + esc(d.alt_text || "Missing") + "</p></div></div>" : "") +
     "</div>";
-  if (p.dagar_kvar != null && p.dagar_kvar < 10) html += '<p class="muted">LinkedIn-inloggningen går ut om ' + p.dagar_kvar + ' dagar. <a href="linkedin/logga-in">Logga in igen</a></p>';
-  html += '<button type="button" class="b-knapp ok" id="b-publicera"' + (p.hinder && p.hinder.length ? " disabled" : "") + ">Publicera på " + esc(p.kanal) + " som " + esc(p.standard) + "</button>";
+  if (p.dagar_kvar != null && p.dagar_kvar < 10) html += '<p class="muted">The LinkedIn sign-in expires in ' + p.dagar_kvar + ' days. <a href="linkedin/logga-in">Sign in again</a></p>';
+  html += '<button type="button" class="b-knapp ok" id="b-publicera"' + (p.hinder && p.hinder.length ? " disabled" : "") + ">Publish on " + esc(p.kanal) + " as " + esc(p.standard) + "</button>";
   return html + "</section>";
 }
 
@@ -719,15 +728,15 @@ function bilderHtml(d, etikett) {
   if (etikett !== "Välj bild" && etikett !== "Publicera") return "";
   var vald = valdBild(d.id);
   if (!d.bilder || !d.bilder.length) {
-    return '<section class="b-sek"><h3>Bild</h3><p class="muted">Inga bildförslag än. A0 skickar en bildbrief till Brand Studio när texten är godkänd, och förslagen hamnar i 12_Pictures/' + esc(d.id) + ".</p></section>";
+    return '<section class="b-sek"><h3>Image</h3><p class="muted">No image options yet. A0 sends an image brief to Brand Studio when the text is approved, and the options land in 12_Pictures/' + esc(d.id) + ".</p></section>";
   }
-  return '<section class="b-sek"><div class="b-sek-head"><h3>Bildförslag från Brand Studio</h3><span class="muted">' + (vald ? "Vald: " + esc(vald) : "Välj en bild") + "</span></div>" +
+  return '<section class="b-sek"><div class="b-sek-head"><h3>Image options from Brand Studio</h3><span class="muted">' + (vald ? "Chosen: " + esc(vald) : "Choose an image") + "</span></div>" +
     '<div class="b-bilder">' + d.bilder.map(function (n) {
       var ar = n === vald;
-      return '<figure class="b-bild' + (ar ? " vald" : "") + '"><img src="' + bildUrl(d.id, n) + '" alt="Bildförslag ' + esc(n) + '" loading="lazy">' +
+      return '<figure class="b-bild' + (ar ? " vald" : "") + '"><img src="' + bildUrl(d.id, n) + '" alt="Image option ' + esc(n) + '" loading="lazy">' +
         '<figcaption><span class="mono">' + esc(n) + "</span>" +
-        '<span class="b-bild-knappar">' + (ar ? '<span class="pill ok">Vald</span>' : '<button type="button" class="b-knapp liten b-valj" data-namn="' + esc(n) + '">Välj den här</button>') +
-        '<a class="b-knapp liten" href="' + bildUrl(d.id, n) + '" download="' + esc(n) + '">Ladda ned</a></span></figcaption></figure>';
+        '<span class="b-bild-knappar">' + (ar ? '<span class="pill ok">Chosen</span>' : '<button type="button" class="b-knapp liten b-valj" data-namn="' + esc(n) + '">Choose this one</button>') +
+        '<a class="b-knapp liten" href="' + bildUrl(d.id, n) + '" download="' + esc(n) + '">Download</a></span></figcaption></figure>';
     }).join("") + "</div></section>";
 }
 var NYCKEL = "__TAVLA_NYCKEL__";
@@ -741,38 +750,38 @@ function oppnaBeslut(id, etikett) {
   beslutOppet = { id: id, etikett: etikett };
   var bg = document.getElementById("beslut");
   var inn = document.getElementById("beslut-innehall");
-  inn.innerHTML = '<div class="b-head"><h2 id="b-titel">' + esc(id) + '</h2><button type="button" class="b-stang" id="b-stang" aria-label="Stäng">×</button></div><p class="muted">Hämtar utkastet från SharePoint.</p>';
+  inn.innerHTML = '<div class="b-head"><h2 id="b-titel">' + esc(id) + '</h2><button type="button" class="b-stang" id="b-stang" aria-label="Close">×</button></div><p class="muted">Loading the draft from SharePoint.</p>';
   bg.hidden = false;
   document.body.style.overflow = "hidden";
   document.getElementById("b-stang").addEventListener("click", stangBeslut);
   fetch("objekt?id=" + encodeURIComponent(id), { cache: "no-store" })
-    .then(function (r) { return r.json().then(function (j) { if (!r.ok) throw new Error(j.fel || "svar " + r.status); return j; }); })
+    .then(function (r) { return r.json().then(function (j) { if (!r.ok) throw new Error(j.fel || "response " + r.status); return j; }); })
     .then(function (d) { if (beslutOppet && beslutOppet.id === id) visaBeslut(d, etikett); })
-    .catch(function (e) { inn.querySelector("p").textContent = "Kunde inte hämta objektet: " + e.message; });
+    .catch(function (e) { inn.querySelector("p").textContent = "Could not load the item: " + e.message; });
 }
 
 function visaBeslut(d, etikett) {
   var inn = document.getElementById("beslut-innehall");
-  var meta = [d.kanal, d.a3 ? "A3: " + d.a3 + (d.sakerhet ? ", säkerhet " + d.sakerhet : "") : "", d.granskad ? "granskad " + d.granskad : ""].filter(Boolean).join(" · ");
-  var html = '<div class="b-head"><div><div class="eyebrow">' + esc(d.id) + "</div><h2 id=\"b-titel\">" + esc(d.titel) + '</h2><div class="muted b-meta">' + esc(meta) + '</div></div><button type="button" class="b-stang" id="b-stang" aria-label="Stäng">×</button></div>';
-  if (d.eskalera && d.orsak) html += '<div class="b-varning"><b>Eskalerat av A3:</b> ' + esc(d.orsak) + "</div>";
-  html += '<section class="b-sek"><div class="b-sek-head"><h3>Utkastet</h3>' + (d.utkast && d.utkast.namn ? '<span class="mono muted">' + esc(d.utkast.namn) + "</span>" : "") + "</div>" +
+  var meta = [d.kanal, d.a3 ? "A3: " + en(d.a3) + (d.sakerhet ? ", confidence " + en(d.sakerhet) : "") : "", d.granskad ? "reviewed " + d.granskad : ""].filter(Boolean).join(" · ");
+  var html = '<div class="b-head"><div><div class="eyebrow">' + esc(d.id) + "</div><h2 id=\"b-titel\">" + esc(d.titel) + '</h2><div class="muted b-meta">' + esc(meta) + '</div></div><button type="button" class="b-stang" id="b-stang" aria-label="Close">×</button></div>';
+  if (d.eskalera && d.orsak) html += '<div class="b-varning"><b>Escalated by A3:</b> ' + esc(d.orsak) + "</div>";
+  html += '<section class="b-sek"><div class="b-sek-head"><h3>The draft</h3>' + (d.utkast && d.utkast.namn ? '<span class="mono muted">' + esc(d.utkast.namn) + "</span>" : "") + "</div>" +
     (d.utkast && d.utkast.fel ? '<div class="b-varning">' + esc(d.utkast.fel) + "</div>" : textBlock(d.utkast && d.utkast.text)) + "</section>";
-  if (d.brief) html += '<details class="b-sek"><summary>Briefen <span class="mono muted">' + esc(d.brief.namn) + "</span></summary>" + textBlock(d.brief.text || d.brief.fel) + "</details>";
+  if (d.brief) html += '<details class="b-sek"><summary>The brief <span class="mono muted">' + esc(d.brief.namn) + "</span></summary>" + textBlock(d.brief.text || d.brief.fel) + "</details>";
   html += bilderHtml(d, etikett);
 
   html += '<div class="b-atgard" id="b-atgard">';
   if (etikett === "Godkänn") {
-    html += '<button type="button" class="b-knapp ok" id="b-godkann">Godkänn ' + esc(d.id) + "</button>";
+    html += '<button type="button" class="b-knapp ok" id="b-godkann">Approve ' + esc(d.id) + "</button>";
   }
   if (etikett === "Godkänn" || etikett === "Beslut") {
-    html += '<details class="b-tillbaka" id="b-tillbaka-ruta"' + (etikett === "Beslut" ? " open" : "") + '><summary>Skicka tillbaka med kommentar</summary>' +
-      '<label for="b-kommentar" class="muted">Vad ska ändras? A0 ger kommentaren till A4, och A3 granskar igen.</label>' +
-      '<textarea id="b-kommentar" rows="4"></textarea><button type="button" class="b-knapp" id="b-skicka">Skicka tillbaka</button></details>';
+    html += '<details class="b-tillbaka" id="b-tillbaka-ruta"' + (etikett === "Beslut" ? " open" : "") + '><summary>Send back with a comment</summary>' +
+      '<label for="b-kommentar" class="muted">What should change? A0 gives your comment to A4, and A3 reviews again.</label>' +
+      '<textarea id="b-kommentar" rows="4"></textarea><button type="button" class="b-knapp" id="b-skicka">Send back</button></details>';
   }
   if (etikett === "Publicera" || etikett === "Välj bild") {
     html += publiceringHtml(d);
-    html += '<button type="button" class="b-knapp" id="b-kopiera">Kopiera texten</button><p class="muted">Eller publicera för hand från rätt företagssida och ge sedan A0 datum, plattforms_id och url.</p>';
+    html += '<button type="button" class="b-knapp" id="b-kopiera">Copy the text</button><p class="muted">Or publish by hand from the right company page, then give A0 the date, platform ID and URL.</p>';
   }
   html += '<p class="b-svar" id="b-svar" role="status"></p></div>';
   inn.innerHTML = html;
@@ -785,7 +794,7 @@ function visaBeslut(d, etikett) {
   if (g) g.addEventListener("click", function () {
     if (!g.classList.contains("bekrafta")) {
       g.classList.add("bekrafta");
-      g.textContent = "Bekräfta: godkänn " + d.id + " för publicering";
+      g.textContent = "Confirm: approve the text for " + d.id;
       return;
     }
     skickaBeslut("godkann", { id: d.id });
@@ -793,7 +802,7 @@ function visaBeslut(d, etikett) {
   var s = document.getElementById("b-skicka");
   if (s) s.addEventListener("click", function () {
     var k = document.getElementById("b-kommentar").value.trim();
-    if (!k) { visaSvar("Skriv vad som ska ändras.", true); return; }
+    if (!k) { visaSvar("Write what should change.", true); return; }
     skickaBeslut("tillbaka", { id: d.id, kommentar: k });
   });
   document.querySelectorAll(".b-valj").forEach(function (v) {
@@ -805,21 +814,21 @@ function visaBeslut(d, etikett) {
     var kanal = d.publicering.kanal;
     if (!pk.classList.contains("bekrafta")) {
       pk.classList.add("bekrafta");
-      pk.textContent = "Bekräfta: publicera nu på " + kanal + " som " + sida;
+      pk.textContent = "Confirm: publish now on " + kanal + " as " + sida;
       return;
     }
-    skickaBeslut("publicera", { id: d.id, sida: sida }, "Bekräfta publiceringen i rutan från macOS. Den kan ligga bakom andra fönster.");
+    skickaBeslut("publicera", { id: d.id, sida: sida }, "Confirm the publication in the macOS dialog. It may be behind other windows.");
   });
   var sv = document.getElementById("b-sida");
   if (sv) sv.addEventListener("change", function () {
     document.getElementById("b-avsandare").textContent = sv.value;
-    if (pk) { pk.classList.remove("bekrafta"); pk.textContent = "Publicera på " + d.publicering.kanal + " som " + sv.value; }
+    if (pk) { pk.classList.remove("bekrafta"); pk.textContent = "Publish on " + d.publicering.kanal + " as " + sv.value; }
   });
   var c = document.getElementById("b-kopiera");
   if (c) c.addEventListener("click", function () {
     var text = d.inlaggstext || (d.utkast && d.utkast.text) || "";
-    var klart = function () { c.textContent = "Kopierad"; };
-    if (navigator.clipboard) navigator.clipboard.writeText(text).then(klart, function () { visaSvar("Kopieringen gick inte. Markera texten och kopiera själv.", true); });
+    var klart = function () { c.textContent = "Copied"; };
+    if (navigator.clipboard) navigator.clipboard.writeText(text).then(klart, function () { visaSvar("Copying failed. Select the text and copy it yourself.", true); });
   });
 }
 
@@ -832,16 +841,16 @@ function visaSvar(text, fel) {
 
 function skickaBeslut(vad, data, vantetext) {
   document.querySelectorAll("#beslut-innehall button:not(#b-stang)").forEach(function (b) { b.disabled = true; });
-  visaSvar(vantetext || "Sparar i SharePoint.");
+  visaSvar(vantetext || "Saving to SharePoint.");
   fetch(vad, { method: "POST", headers: { "Content-Type": "application/json", "X-Tavla-Nyckel": NYCKEL }, body: JSON.stringify(data) })
-    .then(function (r) { return r.json().then(function (j) { if (!r.ok) throw new Error(j.fel || "svar " + r.status); return j; }); })
+    .then(function (r) { return r.json().then(function (j) { if (!r.ok) throw new Error(j.fel || "response " + r.status); return j; }); })
     .then(function (j) {
       visaSvar(j.text);
       ladda();
       setTimeout(stangBeslut, 2200);
     })
     .catch(function (e) {
-      visaSvar("Inget sparades: " + e.message, true);
+      visaSvar("Nothing was saved: " + e.message, true);
       document.querySelectorAll("#beslut-innehall button:not(#b-stang)").forEach(function (b) { b.disabled = false; });
     });
 }
@@ -884,22 +893,22 @@ function renderTeam() {
     var rader = LOGG.filter(function (r) { return r[2] === a.id && radSyns(r); });
     var sista = rader.length ? rader[rader.length - 1] : null;
     var status;
-    if (future) status = '<span class="pill plan">Fas ' + a.fas + "</span>";
-    else if (sista && (NOW - tid(sista)) < 15 * 60000) status = '<span class="pill ok"><span class="live"></span>Aktiv nyss</span>';
-    else if (ko[a.id]) status = '<span class="pill wait">' + ko[a.id] + " i kö</span>";
-    else status = '<span class="pill idle">Ledig</span>';
+    if (future) status = '<span class="pill plan">Phase ' + a.fas + "</span>";
+    else if (sista && (NOW - tid(sista)) < 15 * 60000) status = '<span class="pill ok"><span class="live"></span>Active just now</span>';
+    else if (ko[a.id]) status = '<span class="pill wait">' + ko[a.id] + " queued</span>";
+    else status = '<span class="pill idle">Idle</span>';
 
     var last = future
-      ? '<span class="muted">Byggs i fas ' + a.fas + ". " + esc(a.roll) + ".</span>"
+      ? '<span class="muted">Built in phase ' + a.fas + ". " + esc(a.roll) + ".</span>"
       : sista
         ? esc(sista[4]) + (sista[3] ? ' <span class="mono">' + sista[3] + "</span>" : "") + '<br><span class="mono">' + sedan(tid(sista)) + "</span>"
-        : '<span class="muted">Ingen aktivitet än</span>';
+        : '<span class="muted">No activity yet</span>';
 
     var card = el("article", "agent" + (future ? " future" : "") + (a.motor === "Grok" ? " grok" : ""));
     card.innerHTML =
       '<div class="agent-top"><span class="code">' + a.id + '</span><div style="min-width:0"><div class="name">' + a.namn + '</div><div class="role">' + (future ? a.motor : esc(a.roll)) + "</div></div>" + status + "</div>" +
       '<div class="last">' + last + "</div>" +
-      (future ? "" : '<div class="agent-foot"><span>' + a.motor + " · " + rader.length + " åtgärder</span>" + sparkline(antalPerDag(a.id)) + "</div>");
+      (future ? "" : '<div class="agent-foot"><span>' + a.motor + " · " + rader.length + " actions</span>" + sparkline(antalPerDag(a.id)) + "</div>");
     t.appendChild(card);
   });
 }
@@ -910,22 +919,22 @@ function renderBoard() {
   KOLUMNER.forEach(function (k) {
     var items = OBJEKT.filter(function (o) { return syns(o) && (o.status === k.status || (k.status === "Publicerad" && o.status === "Schemalagd")); });
     var col = el("div", "col");
-    col.appendChild(el("div", "col-head", "<div><h3>" + k.status + '</h3><div class="who">' + k.who + '</div></div><span class="count">' + items.length + "</span>"));
-    if (!items.length) col.appendChild(el("div", "empty", k.status === "Publicerad" ? "Inget publicerat än" : "Tomt"));
+    col.appendChild(el("div", "col-head", "<div><h3>" + en(k.status) + '</h3><div class="who">' + k.who + '</div></div><span class="count">' + items.length + "</span>"));
+    if (!items.length) col.appendChild(el("div", "empty", k.status === "Publicerad" ? "Nothing published yet" : "Empty"));
     items.forEach(function (o) {
       var badge = "";
-      if (o.a3 === "Godkänd" && o.status === "Granskning") badge = '<span class="pill ok">A3 godkänd</span>';
-      if (o.eskalera) badge = '<span class="pill stop">Eskalerad</span>';
+      if (o.a3 === "Godkänd" && o.status === "Granskning") badge = '<span class="pill ok">Approved by A3</span>';
+      if (o.eskalera) badge = '<span class="pill stop">Escalated</span>';
       col.appendChild(el("div", "card",
         '<div class="id">' + dot(o.bolag) + o.id + "</div>" +
         '<div class="ti">' + esc(o.titel) + "</div>" +
-        '<div class="meta"><span>' + o.kanal + "</span>" + (o.varv ? "<span>· " + o.varv + " rev.</span>" : "") + (o.plan ? "<span>· ut " + datumKort(o.plan) + "</span>" : "") + badge + "</div>" +
+        '<div class="meta"><span>' + o.kanal + "</span>" + (o.varv ? "<span>· " + o.varv + " rev.</span>" : "") + (o.plan ? "<span>· out " + datumKort(o.plan) + "</span>" : "") + badge + "</div>" +
         '<div class="meta"><span>' + iStatus(o.sedan) + "</span></div>"));
     });
     b.appendChild(col);
   });
   var avv = OBJEKT.filter(function (o) { return syns(o) && o.status === "Avvisad"; }).length;
-  document.getElementById("board-note").textContent = avv ? "Avvisade: " + avv + ", visas inte på tavlan" : "";
+  document.getElementById("board-note").textContent = avv ? "Rejected: " + avv + ", not shown on the board" : "";
 }
 
 function renderHeat() {
@@ -938,7 +947,7 @@ function renderHeat() {
     var vals = antalPerDag(a.id);
     html += '<tr class="' + (a.fas > 1 ? "future" : "") + '"><th class="r" scope="row">' + a.id + "</th>" + vals.map(function (v, i) {
       var lvl = v === 0 ? 0 : v === 1 ? 1 : v === 2 ? 2 : v <= 4 ? 3 : 4;
-      return '<td style="background:var(--heat-' + lvl + ')" title="' + a.id + ", " + dagar[i] + ": " + v + ' åtgärder"></td>';
+      return '<td style="background:var(--heat-' + lvl + ')" title="' + a.id + ", " + dagar[i] + ": " + v + ' actions"></td>';
     }).join("") + "</tr>";
   });
   document.getElementById("heat").innerHTML = html + "</tbody>";
@@ -951,7 +960,7 @@ function renderLog() {
   LOGG.filter(radSyns).slice().reverse().forEach(function (r) {
     if (r[0] !== dag) {
       dag = r[0];
-      l.appendChild(el("div", "day-sep", new Date(dag + "T12:00:00").toLocaleDateString("sv-SE", { weekday: "long", day: "numeric", month: "long" })));
+      l.appendChild(el("div", "day-sep", new Date(dag + "T12:00:00").toLocaleDateString(DATUMSPRAK, { weekday: "long", day: "numeric", month: "long" })));
     }
     l.appendChild(el("div", "row",
       '<span class="when">' + r[1] + '</span><span class="ag">' + r[2] + "</span>" +
@@ -960,59 +969,59 @@ function renderLog() {
 }
 
 function renderAll() {
-  document.getElementById("asof").textContent = "Läget " + NOW.toLocaleDateString("sv-SE", { weekday: "long", day: "numeric", month: "long" }) + " kl. " + NOW.toTimeString().slice(0, 5);
+  document.getElementById("asof").textContent = "As of " + NOW.toLocaleDateString(DATUMSPRAK, { weekday: "long", day: "numeric", month: "long" }) + ", " + NOW.toTimeString().slice(0, 5);
   renderFilters(); renderKpis(); renderWaiting(); renderTeam(); renderBoard(); renderHeat(); renderLog();
 }
 // ---------- Teamet: grafisk vy ----------
 var ROLL = {
   A0: { kort: "Director", ikon: "i-director", typ: "claude",
-    gor: ["Prioriterar och sätter veckoplanen", "Skriver briefer och skapar objekt i registret", "Delegerar till A4 och A3 och kontrollerar svaren", "Byter status efter ditt beslut och rapporterar till dig"],
-    aldrig: ["Granskar aldrig sitt eget material", "Publicerar eller schemalägger aldrig"],
-    verktyg: "Alla verktyg i SharePoint-servern: brief, utkast, rapport, flytt, register och logg", steg: [2] },
-  A1: { kort: "Trender", ikon: "i-radar", typ: "grok",
-    gor: ["Söker trender på nätet och X med Grok varje måndag och när du ber om det", "Skriver trendrapporter i 13_Insikter som idéunderlag"],
-    aldrig: ["En trend blir aldrig fakta förrän du verifierat den och lagt den i 00_Underlag", "Skickar aldrig internt material till Grok"],
-    verktyg: "Trendsök med Grok, läsning i SharePoint och trendrapporter i 13_Insikter", steg: [1] },
+    gor: ["Prioritises and sets the weekly plan", "Writes briefs and creates items in the register", "Delegates to A4 and A3 and checks their answers", "Changes status after your decision and reports to you"],
+    aldrig: ["Never reviews its own material", "Never publishes or schedules"],
+    verktyg: "The SharePoint server tools: brief, draft, report, move, register, image brief and log", steg: [2] },
+  A1: { kort: "Trends", ikon: "i-radar", typ: "grok",
+    gor: ["Searches the web and X with Grok every Monday and when you ask", "Writes trend reports in 13_Insikter as ideas"],
+    aldrig: ["A trend never becomes fact until you have verified it and put it in 00_Underlag", "Never sends internal material to Grok"],
+    verktyg: "Trend search with Grok, reading in SharePoint and trend reports in 13_Insikter", steg: [1] },
   A2: { kort: "Research", ikon: "i-chart", typ: "claude",
-    gor: ["Analyserar resultat per bolag, kanal och objekt varje vecka", "Skriver tre till fem lärdomar som A0 använder i nästa veckas briefer", "Följer upp om förra veckans lärdomar höll", "Föreslår resultat_30d, som du för in i registret"],
-    aldrig: ["Ändrar aldrig registret, briefer, utkast, kampanjer eller budgetar", "Använder aldrig siffror som inte finns i exporterna"],
-    verktyg: "Exporter i 11_Dataimport från LinkedIn, GA4, Search Console och X, Matregister och Innehallsregister. Läser bara och sparar analyser i 08_Rapporter", steg: [1, 8] },
-  A3: { kort: "Granskare", ikon: "i-shield", typ: "claude",
-    gor: ["Ger poäng och utfall: Godkänd, Revidera, Eskalera eller Avvisad", "Kontrollerar skrivregler och fakta mot 00_Underlag", "Skickar tillbaka till A4 högst två varv, sedan eskalerar"],
-    aldrig: ["Skapar aldrig briefer eller utkast", "Flyttar bara till Granskning eller Avvisad"],
-    verktyg: "Läsa, flytta objekt, läsa och uppdatera registret, logga", steg: [5] },
+    gor: ["Analyses results per company, channel and item every week", "Writes three to five learnings that A0 uses in next week's briefs", "Follows up whether last week's learnings held", "Suggests resultat_30d, which you enter in the register"],
+    aldrig: ["Never changes the register, briefs, drafts, campaigns or budgets", "Never uses figures that are not in the exports"],
+    verktyg: "Exports in 11_Dataimport from LinkedIn, GA4, Search Console and X, Matregister and Innehallsregister. Reads only and saves analyses in 08_Rapporter", steg: [1, 8] },
+  A3: { kort: "Reviewer", ikon: "i-shield", typ: "claude",
+    gor: ["Gives a score and an outcome: Approved, Revise, Escalate or Rejected", "Checks the writing rules and facts against 00_Underlag", "Sends back to A4 at most twice, then escalates"],
+    aldrig: ["Never creates briefs or drafts", "Only moves items to In review or Rejected"],
+    verktyg: "Read, move items, read and update the register, log", steg: [5] },
   A4: { kort: "Content", ikon: "i-pen", typ: "claude",
-    gor: ["Skriver utkast enligt briefen, organiskt och betalt", "Använder bara fakta från 00_Underlag", "Sparar nya versioner v01, v02 när A3 begär ändringar"],
-    aldrig: ["Flyttar aldrig filer", "Hittar aldrig på fakta, skriver [SAKNAS] och eskalerar i stället"],
-    verktyg: "Läsa, spara utkast, läsa och uppdatera registret, logga", steg: [3] },
+    gor: ["Writes drafts from the brief, organic and paid", "Uses only facts from 00_Underlag", "Saves new versions v01, v02 when A3 asks for changes"],
+    aldrig: ["Never moves files", "Never makes up facts: writes [SAKNAS] and escalates instead", "Never writes text for the image"],
+    verktyg: "Read, save drafts, read and update the register, log", steg: [3] },
   A5: { kort: "Google", ikon: "i-search", typ: "claude",
-    gor: ["SEO, sökord och annonstexter", "Spårningsplan och förslag på ändringar i Tag Manager"],
-    aldrig: ["Ändrar aldrig budget, bud eller kampanjer"],
-    verktyg: "GA4, Search Console, Google Ads och Tag Manager med läsrätt", steg: [4] },
+    gor: ["SEO, keywords and ad copy", "Tracking plan and suggested changes in Tag Manager"],
+    aldrig: ["Never changes budgets, bids or campaigns"],
+    verktyg: "GA4, Search Console, Google Ads and Tag Manager, read only", steg: [4] },
   A6: { kort: "Meta", ikon: "i-target", typ: "claude",
-    gor: ["Kampanjstruktur och målgrupper", "Kreativa varianter och optimeringsförslag"],
-    aldrig: ["Ändrar aldrig budget, bud eller kampanjer"],
-    verktyg: "Meta med läsrätt", steg: [4] },
+    gor: ["Campaign structure and audiences", "Creative variants and optimisation ideas"],
+    aldrig: ["Never changes budgets, bids or campaigns"],
+    verktyg: "Meta, read only", steg: [4] },
   A7: { kort: "LinkedIn", ikon: "i-network", typ: "claude",
-    gor: ["Organisk plan för företagssidorna", "Annonsupplägg och B2B-vinklar"],
-    aldrig: ["Publicerar aldrig, och aldrig från en privat profil"],
-    verktyg: "LinkedIn Community Management API och Advertising API med läsrätt", steg: [4] },
+    gor: ["Organic plan for the company pages", "Ad set-ups and B2B angles"],
+    aldrig: ["Never publishes, and never from a personal profile"],
+    verktyg: "LinkedIn Community Management API and Advertising API, read only", steg: [4] },
   A8: { kort: "X", ikon: "i-chat", typ: "grok",
-    gor: ["Format och ton för X", "Bevakar samtal och föreslår svar"],
-    aldrig: ["Postar eller svarar aldrig själv"],
-    verktyg: "xAI med X-sökning, X API med läsrätt", steg: [4] },
-  M: { id: "M", namn: "Mattias", kort: "Mattias", roll: "Godkänner och publicerar", motor: "Människa", fas: 1, ikon: "i-person", typ: "human",
-    gor: ["Godkänner varje objekt innan det når 04_Godkant", "Publicerar själv från rätt företagssida", "Ger A0 datum, plattforms_id och url efter publicering"],
-    aldrig: ["Ingen kan godkänna i ditt ställe än. Ersättare är en öppen fråga i arbetsdokumentet."],
-    verktyg: "Ditt uttryckliga godkännande till A0, företagssidorna på LinkedIn och X", steg: [6, 7] },
-  S: { id: "S", namn: "Nattlig import", kort: "Import", roll: "Hämtar resultat till Matregister", motor: "Skript, ingen agent", fas: 2, ikon: "i-import", typ: "script",
-    gor: ["Hämtar resultat från Google, Meta, LinkedIn och X varje natt", "Lägger nya rader i Matregister"],
-    aldrig: ["Fattar inga beslut och skriver inget innehåll"],
-    verktyg: "Plattformarnas API:er med läsrätt", steg: [8] }
+    gor: ["Format and tone for X", "Follows conversations and suggests replies"],
+    aldrig: ["Never posts or replies itself"],
+    verktyg: "xAI with X search, X API read only", steg: [4] },
+  M: { id: "M", namn: "Mattias", kort: "Mattias", roll: "Approves and publishes", motor: "Human", fas: 1, ikon: "i-person", typ: "human",
+    gor: ["Approves every item before it reaches 04_Godkant", "Publishes from the right company page, on the board or by hand", "Gives A0 the date, platform ID and URL after publishing by hand"],
+    aldrig: ["Nobody can approve on your behalf yet. A stand-in is an open question in the working document."],
+    verktyg: "Your explicit approval to A0 or on the board, the company pages on LinkedIn and X", steg: [6, 7] },
+  S: { id: "S", namn: "Nightly import", kort: "Import", roll: "Fetches results into Matregister", motor: "Script, not an agent", fas: 2, ikon: "i-import", typ: "script",
+    gor: ["Fetches results from Google, Meta, LinkedIn and X every night", "Adds new rows to Matregister"],
+    aldrig: ["Makes no decisions and writes no content"],
+    verktyg: "The platforms' APIs, read only", steg: [8] }
 };
 function info(id) {
   if (id === "Mattias") id = "M";
-  if (!ROLL[id]) return { id: id, namn: id, kort: id, roll: "Okänd avsändare i loggen", motor: "Okänd", fas: 1, ikon: "i-import", typ: "script", gor: [], aldrig: [], verktyg: "", steg: [] };
+  if (!ROLL[id]) return { id: id, namn: id, kort: id, roll: "Unknown sender in the log", motor: "Unknown", fas: 1, ikon: "i-import", typ: "script", gor: [], aldrig: [], verktyg: "", steg: [] };
   var base = AGENTER.find(function (a) { return a.id === id; }) || {};
   var r = ROLL[id];
   var o = {};
@@ -1025,74 +1034,74 @@ function info(id) {
 // Profilen som visas när man hovrar över en agent, och i detaljpanelen.
 var PROFIL = {
   A0: [
-    ["Läser", "Innehållsplanen och underlaget i 00_Underlag, registret och A2:s analyser"],
-    ["Gör", "Prioriterar, sätter veckoplanen och delegerar till A4, A3 och A2"],
-    ["Skriver", "Briefer i 01_Briefer, nya rader i registret och rapporter i 08_Rapporter"],
-    ["Feedback", "Rapporterar till dig och för vidare A3:s ändringslista till A4"],
-    ["Kan aldrig", "Granska sitt eget material, godkänna i ditt ställe eller publicera"]
+    ["Reads", "The content plan and sources in 00_Underlag, the register, A2's analyses and A1's trend reports"],
+    ["Does", "Prioritises, sets the weekly plan and delegates to A4, A3, A2 and A1"],
+    ["Writes", "Briefs in 01_Briefer, new rows in the register, image briefs in 12_Pictures and reports in 08_Rapporter"],
+    ["Feedback", "Reports to you and passes A3's change list on to A4"],
+    ["Never", "Reviews its own material, approves on your behalf or publishes"]
   ],
   A1: [
-    ["Läser", "Nätet och X via Grok, och tidigare trendrapporter i 13_Insikter"],
-    ["Gör", "Bevakar trender inom hotell, spa och hospitality varje måndag och när du ber om det"],
-    ["Skriver", "Trendrapporter som idéunderlag"],
-    ["Feedback", "Trender till A0 som underlag för briefer"],
-    ["Kan aldrig", "Göra en trend till fakta innan du verifierat den och lagt den i 00_Underlag, eller skicka internt material till Grok"]
+    ["Reads", "The web and X through Grok, and earlier trend reports in 13_Insikter"],
+    ["Does", "Watches trends in hotels, spas and hospitality every Monday and when you ask"],
+    ["Writes", "Trend reports as ideas, not facts"],
+    ["Feedback", "Trends to A0 as input for briefs"],
+    ["Never", "Turns a trend into fact before you have verified it and put it in 00_Underlag, or sends internal material to Grok"]
   ],
   A2: [
-    ["Läser", "Exporter i 11_Dataimport från LinkedIn (Livv.se, Livv.fi, Unique), GA4, Search Console och X, samt Matregister, Innehallsregister och tidigare analyser"],
-    ["Analyserar", "Resultat per bolag, kanal och objekt. Letar mönster i format, ämne, veckodag och tid, och jämför med tidigare veckor"],
-    ["Skriver", "En veckoanalys i 08_Rapporter med tre till fem lärdomar. Varje lärdom har belägg, rekommendation och säkerhet. Analysen följer också upp förra veckans lärdomar och föreslår värden för resultat_30d"],
-    ["Feedback", "A0 beställer analysen varje måndag och skriver i varje brief vilken lärdom den bygger på"],
-    ["Kan aldrig", "Ändra registret, skriva briefer eller utkast, flytta filer eller röra kampanjer och budgetar. Spärren stoppar det"]
+    ["Reads", "Exports in 11_Dataimport from LinkedIn (Livv.se, Livv.fi, Unique), GA4, Search Console and X, plus Matregister, Innehallsregister and earlier analyses"],
+    ["Analyses", "Results per company, channel and item. Looks for patterns in format, topic, weekday and time, and compares with earlier weeks"],
+    ["Writes", "A weekly analysis in 08_Rapporter with three to five learnings. Each learning has evidence, a recommendation and a confidence level. It also follows up last week's learnings and suggests values for resultat_30d"],
+    ["Feedback", "A0 orders the analysis every Monday and states in each brief which learning it builds on"],
+    ["Never", "Changes the register, writes briefs or drafts, moves files or touches campaigns and budgets. The guard stops it"]
   ],
   A3: [
-    ["Läser", "Briefen, utkastet, källorna i 00_Underlag och listan med godkända påståenden"],
-    ["Gör", "Ger varumärkespoäng 1 till 5 och kontrollerar fakta, skrivregler och brief"],
-    ["Skriver", "Utfallet i registret: Godkänd, Revidera, Eskalera eller Avvisad"],
-    ["Feedback", "En numrerad ändringslista till A4 vid Revidera, och beslutsunderlag till dig vid Eskalera"],
-    ["Kan aldrig", "Skriva briefer eller utkast, eller flytta till Godkänd. Det gör bara du"]
+    ["Reads", "The brief, the draft, the sources in 00_Underlag and the list of approved claims"],
+    ["Does", "Gives a brand score from 1 to 5 and checks facts, writing rules, the brief and that there is no text for the image"],
+    ["Writes", "The outcome in the register: Approved, Revise, Escalate or Rejected"],
+    ["Feedback", "A numbered change list to A4 on Revise, and a basis for your decision on Escalate"],
+    ["Never", "Writes briefs or drafts, or moves an item to Approved. Only you do that"]
   ],
   A4: [
-    ["Läser", "Briefen och underlaget i 00_Underlag"],
-    ["Gör", "Skriver allt material, organiskt och betalt, enligt briefen"],
-    ["Skriver", "Utkast i 02_Utkast. Varje ny version får ett nytt nummer: v01, v02"],
-    ["Feedback", "Tar emot A3:s ändringslista och skriver en ny version"],
-    ["Kan aldrig", "Flytta filer eller hitta på fakta. Saknas något skriver A4 [SAKNAS] och eskalerar"]
+    ["Reads", "The brief and the sources in 00_Underlag"],
+    ["Does", "Writes all material, organic and paid, from the brief"],
+    ["Writes", "Drafts in 02_Utkast. Every new version gets a new number: v01, v02"],
+    ["Feedback", "Takes A3's change list and writes a new version"],
+    ["Never", "Moves files, makes up facts or writes text for the image. If something is missing, A4 writes [SAKNAS] and escalates"]
   ],
   A5: [
-    ["Läser", "GA4, Search Console, Google Ads och Tag Manager med läsrätt"],
-    ["Gör", "SEO, sökord, annonstexter och spårningsplan"],
-    ["Skriver", "Förslag på sökord, annonstexter och ändringar i spårningen"],
-    ["Feedback", "Sökinsikter till A0 och A4"],
-    ["Kan aldrig", "Ändra budget, bud, kampanjer eller taggar"]
+    ["Reads", "GA4, Search Console, Google Ads and Tag Manager, read only"],
+    ["Does", "SEO, keywords, ad copy and a tracking plan"],
+    ["Writes", "Suggested keywords, ad copy and tracking changes"],
+    ["Feedback", "Search insights to A0 and A4"],
+    ["Never", "Changes budgets, bids, campaigns or tags"]
   ],
   A6: [
-    ["Läser", "Meta med läsrätt, när Meta är registrerat"],
-    ["Gör", "Kampanjstruktur, målgrupper och kreativa varianter"],
-    ["Skriver", "Kampanjförslag och optimeringsförslag"],
-    ["Feedback", "Vad som fungerar på Meta till A0 och A4"],
-    ["Kan aldrig", "Ändra budget, bud eller kampanjer"]
+    ["Reads", "Meta, read only, once Meta is registered"],
+    ["Does", "Campaign structure, audiences and creative variants"],
+    ["Writes", "Campaign and optimisation proposals"],
+    ["Feedback", "What works on Meta, to A0 and A4"],
+    ["Never", "Changes budgets, bids or campaigns"]
   ],
   A7: [
-    ["Läser", "Företagssidorna för Livv.se, Livv.fi och Unique med läsrätt"],
-    ["Gör", "Organisk plan och B2B-vinklar för företagssidorna"],
-    ["Skriver", "Kanalanpassade versioner och förslag på annonsupplägg"],
-    ["Feedback", "Vad som fungerar på LinkedIn till A0 och A4"],
-    ["Kan aldrig", "Publicera, och aldrig från en privat profil"]
+    ["Reads", "The company pages for Livv.se, Livv.fi and Unique, read only"],
+    ["Does", "Organic plan and B2B angles for the company pages"],
+    ["Writes", "Channel versions and ad set-up proposals"],
+    ["Feedback", "What works on LinkedIn, to A0 and A4"],
+    ["Never", "Publishes, and never from a personal profile"]
   ],
   A8: [
-    ["Läser", "X via Grok, och Livv Groups konto med läsrätt"],
-    ["Gör", "Format och ton för X, och bevakar samtal i branschen"],
-    ["Skriver", "Kanalanpassade versioner och förslag på svar"],
-    ["Feedback", "Samtal och trender på X till A0"],
-    ["Kan aldrig", "Posta eller svara själv"]
+    ["Reads", "X through Grok, and the Livv Group account, read only"],
+    ["Does", "Format and tone for X, and follows conversations in the industry"],
+    ["Writes", "Channel versions and suggested replies"],
+    ["Feedback", "Conversations and trends on X, to A0"],
+    ["Never", "Posts or replies itself"]
   ],
   M: [
-    ["Läser", "Utkast som A3 har godkänt, via länken under Väntar på dig"],
-    ["Gör", "Godkänner varje objekt och publicerar själv från rätt företagssida"],
-    ["Skriver", "Ditt godkännande till A0, och resultat_30d i registret"],
-    ["Feedback", "Ändringar till A0 när något inte ska godkännas"],
-    ["Regel", "Inget når 04_Godkant eller publiceras utan ditt uttryckliga godkännande för just det objektet"]
+    ["Reads", "Drafts that A3 has approved, under Waiting for you"],
+    ["Does", "Approves every item and publishes from the right company page"],
+    ["Writes", "Your approval on the board or to A0, and resultat_30d in the register"],
+    ["Feedback", "Changes to A0 when something should not be approved"],
+    ["Rule", "Nothing reaches 04_Godkant or is published without your explicit approval of that item"]
   ]
 };
 
@@ -1101,7 +1110,7 @@ function profilHtml(id) {
   var rader = PROFIL[id];
   if (!rader) return "";
   return '<dl class="prof">' + rader.map(function (r) {
-    var nej = r[0] === "Kan aldrig" || r[0] === "Regel";
+    var nej = r[0] === "Never" || r[0] === "Rule";
     return '<dt class="' + (nej ? "nej" : "") + '">' + r[0] + "</dt><dd>" + esc(r[1]) + "</dd>";
   }).join("") + "</dl>";
 }
@@ -1112,7 +1121,7 @@ function visaTip(btn) {
   var a = info(id);
   var tip = document.getElementById("tip");
   tip.innerHTML = '<div class="tip-head">' + miniHtml(id, "sm") + "<div><b>" + a.namn + "</b>" +
-    '<div class="tip-sub">' + rumText(id) + " · " + (/^A\d$/.test(id) ? id + " · " : "") + a.motor + (a.fas > 1 ? " · byggs i fas " + a.fas : "") + "</div></div></div>" + profilHtml(id);
+    '<div class="tip-sub">' + rumText(id) + " · " + (/^A\d$/.test(id) ? id + " · " : "") + a.motor + (a.fas > 1 ? " · built in phase " + a.fas : "") + "</div></div></div>" + profilHtml(id);
   tip.hidden = false;
   var r = btn.getBoundingClientRect(), w = tip.offsetWidth, h = tip.offsetHeight;
   var top = r.bottom + 10 + h < window.innerHeight ? r.bottom + 10 : Math.max(8, r.top - h - 10);
@@ -1135,14 +1144,14 @@ window.addEventListener("scroll", gomTip, { passive: true });
 document.addEventListener("keydown", function (e) { if (e.key === "Escape") gomTip(); });
 
 var STEG = [
-  { n: 1, namn: "Insikter", mapp: "08_Rapporter", vem: ["A1", "A2"], live: true },
+  { n: 1, namn: "Insights", mapp: "08_Rapporter", vem: ["A1", "A2"], live: true },
   { n: 2, namn: "Brief", mapp: "01_Briefer", vem: ["A0"], live: true },
-  { n: 3, namn: "Utkast", mapp: "02_Utkast", vem: ["A4"], live: true },
-  { n: 4, namn: "Kanalanpassning", mapp: "02_Utkast", vem: ["A5", "A6", "A7", "A8"], live: false },
-  { n: 5, namn: "Granskning", mapp: "03_Granskning", vem: ["A3"], live: true },
-  { n: 6, namn: "Godkännande", mapp: "04_Godkant", vem: ["M"], live: true, gate: true },
-  { n: 7, namn: "Publicering", mapp: "05_Publicerat", vem: ["M"], live: true, gate: true },
-  { n: 8, namn: "Mätning", mapp: "11_Dataimport", vem: ["A2", "S"], live: true }
+  { n: 3, namn: "Draft", mapp: "02_Utkast", vem: ["A4"], live: true },
+  { n: 4, namn: "Channel fit", mapp: "02_Utkast", vem: ["A5", "A6", "A7", "A8"], live: false },
+  { n: 5, namn: "Review", mapp: "03_Granskning", vem: ["A3"], live: true },
+  { n: 6, namn: "Approval", mapp: "04_Godkant", vem: ["M"], live: true, gate: true },
+  { n: 7, namn: "Publishing", mapp: "05_Publicerat", vem: ["M"], live: true, gate: true },
+  { n: 8, namn: "Measurement", mapp: "11_Dataimport", vem: ["A2", "S"], live: true }
 ];
 
 var vald = "A0";
@@ -1164,11 +1173,11 @@ var MASKOT = {
 };
 
 // Varje agent bor i ett rum, som dörrskyltarna i Please Disturb.
-var RUM = { A0: "Receptionen", A1: "101", A2: "202", A3: "303", A4: "404", A5: "505", A6: "606", A7: "707", A8: "808", M: "Sviten", S: "Källaren" };
+var RUM = { A0: "Reception", A1: "101", A2: "202", A3: "303", A4: "404", A5: "505", A6: "606", A7: "707", A8: "808", M: "The suite", S: "The basement" };
 function rumText(id) {
   if (id === "Mattias") id = "M";
   var r = RUM[id];
-  return r ? (/^\d+$/.test(r) ? "Rum " + r : r) : "";
+  return r ? (/^\d+$/.test(r) ? "Room " + r : r) : "";
 }
 var FORM = {
   squircle: { d: "M32 8c16 0 24 8 24 24s-8 24-24 24S8 48 8 32 16 8 32 8z", oy: 26 },
@@ -1180,11 +1189,11 @@ var FORM = {
   bubble: { d: "M12 10h40a5 5 0 0 1 5 5v26a5 5 0 0 1-5 5H30l-11 9v-9h-7a5 5 0 0 1-5-5V15a5 5 0 0 1 5-5z", oy: 21 }
 };
 var JOBB = {
-  A0: "fördelar jobben", A1: "hittar trenderna", A2: "läser siffrorna", A3: "vaktar varumärket",
-  A4: "skriver allt material", A5: "syns på Google", A6: "når rätt målgrupp på Meta",
-  A7: "bygger företagssidorna på LinkedIn", A8: "för samtalen på X", M: "godkänner och publicerar", S: "hämtar resultaten"
+  A0: "assigns the work", A1: "finds the trends", A2: "reads the numbers", A3: "guards the brand",
+  A4: "writes all material", A5: "gets found on Google", A6: "reaches the right audience on Meta",
+  A7: "builds the company pages on LinkedIn", A8: "runs the conversations on X", M: "approves and publishes", S: "fetches the results"
 };
-var VERKTYG = { A0: "12 verktyg", A1: "5 verktyg", A2: "5 verktyg", A3: "6 verktyg", A4: "6 verktyg", M: "Grind" };
+var VERKTYG = { A0: "12 tools", A1: "5 tools", A2: "5 tools", A3: "6 tools", A4: "6 tools", M: "Gate" };
 
 var mid = 0;
 function mascot(id) {
@@ -1205,7 +1214,7 @@ function miniHtml(id, size) {
 }
 
 var POS = { A4: -90, A3: -50, M: -10, A5: 30, A6: 70, A7: 110, A8: 150, A1: 190, A2: 230 };
-var KANT = { A4: "brief", A3: "granska", M: "godkänn" };
+var KANT = { A4: "brief", A3: "review", M: "approve" };
 
 function senaste(id) {
   var rader = LOGG.filter(function (r) { return r[2] === id; });
@@ -1245,18 +1254,18 @@ function renderHub() {
 
     var sista = senaste(id);
     var prev;
-    if (id === "M") { var v = vantar().length; prev = '<span class="pt">›</span> ' + (v ? v + " saker väntar på dig" : "inget väntar just nu"); }
-    else if (a.fas > 1) prev = '<span class="pt">›</span> byggs i fas ' + a.fas;
+    if (id === "M") { var v = vantar().length; prev = '<span class="pt">›</span> ' + (v ? v + (v === 1 ? " item is" : " items are") + " waiting for you" : "nothing is waiting"); }
+    else if (a.fas > 1) prev = '<span class="pt">›</span> built in phase ' + a.fas;
     else if (sista) prev = '<span class="pt">›</span> ' + esc(sista[4].toLowerCase()) + (sista[3] ? " " + sista[3] : "") + '<br><span class="pt">' + sedan(tid(sista)) + "</span>";
-    else prev = '<span class="pt">›</span> väntar på första jobbet';
+    else prev = '<span class="pt">›</span> waiting for the first job';
 
-    var badge = a.fas > 1 ? '<span class="ok-badge plan">FAS ' + a.fas + "</span>"
+    var badge = a.fas > 1 ? '<span class="ok-badge plan">PHASE ' + a.fas + "</span>"
       : '<span class="ok-badge"><svg viewBox="0 0 24 24" width="12" height="12" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5" fill="none" stroke="currentColor" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>';
-    var fot = a.fas > 1 ? "<span>" + rumText(id) + " · " + a.motor + "</span><span>fas " + a.fas + "</span>" : "<span>" + rumText(id) + " · " + a.motor + "</span><b>" + (VERKTYG[id] || "") + "</b>";
+    var fot = a.fas > 1 ? "<span>" + rumText(id) + " · " + a.motor + "</span><span>phase " + a.fas + "</span>" : "<span>" + rumText(id) + " · " + a.motor + "</span><b>" + (VERKTYG[id] || "") + "</b>";
 
     html += '<button type="button" class="acard' + (a.fas > 1 ? " future" : "") + '" id="acard-' + id + '" aria-pressed="' + (vald === id) + '" style="left:' + x.toFixed(2) + "%;top:" + y.toFixed(2) + "%;--c-l:" + (m.ink || m.t) + ";--c-d:" + (m.inkD || m.f) + '">' +
       badge +
-      '<span class="ah">' + miniHtml(id, "md") + '<span><span class="an">' + a.kort + (/^A\d$/.test(id) ? '<span class="acode">' + id + "</span>" : "") + '</span><span class="aj">1 jobb: ' + JOBB[id] + "</span></span></span>" +
+      '<span class="ah">' + miniHtml(id, "md") + '<span><span class="an">' + a.kort + (/^A\d$/.test(id) ? '<span class="acode">' + id + "</span>" : "") + '</span><span class="aj">1 job: ' + JOBB[id] + "</span></span></span>" +
       '<span class="preview">' + prev + "</span>" +
       '<span class="af">' + fot + "</span></button>";
   });
@@ -1264,13 +1273,13 @@ function renderHub() {
 
   var aktiva = OBJEKT.filter(function (o) { return ["Brief", "Utkast", "Granskning", "Godkänd", "Schemalagd"].indexOf(o.status) >= 0; }).length;
   var core = '<button type="button" class="hub-core" id="acard-A0" aria-pressed="' + (vald === "A0") + '">' + miniHtml("A0", "xl") +
-    '<span class="core-name">A0 · HJÄRNAN</span><span class="core-sub">Marketing Director · ' + aktiva + " objekt i arbete</span></button>";
+    '<span class="core-name">A0 · THE BRAIN</span><span class="core-sub">Marketing Director · ' + aktiva + " items in progress</span></button>";
 
   var u = OBJEKT.find(function (o) { return o.status === "Utkast"; });
   var b = OBJEKT.find(function (o) { return o.status === "Brief"; });
-  var nasta = u ? { vem: "a3", txt: "Granska " + u.id + ", " + u.titel.toLowerCase() } : b ? { vem: "a4", txt: "Skriv utkast till " + b.id } : null;
-  var cmd = '<div class="cmd"><span class="eyebrow">Nästa uppdrag från A0</span>' +
-    (nasta ? '<span class="c1">/delegera @' + nasta.vem + '</span><span class="c2">' + esc(nasta.txt) + '</span><span class="pill wait">I kö</span>' : '<span class="c2">Inget i kö</span>') + "</div>";
+  var nasta = u ? { vem: "a3", txt: "Review " + u.id + ", " + u.titel.toLowerCase() } : b ? { vem: "a4", txt: "Write a draft for " + b.id } : null;
+  var cmd = '<div class="cmd"><span class="eyebrow">Next job from A0</span>' +
+    (nasta ? '<span class="c1">/delegate @' + nasta.vem + '</span><span class="c2">' + esc(nasta.txt) + '</span><span class="pill wait">Queued</span>' : '<span class="c2">Nothing queued</span>') + "</div>";
 
   var dagar = dagar14();
   var perDag = dagar.map(function (d) { return LOGG.filter(function (r) { return r[0] === d; }).length; });
@@ -1278,9 +1287,9 @@ function renderHub() {
   var mx2 = Math.max.apply(null, perDag) || 1;
   var pts = perDag.map(function (n, i) { return (i * 100 / 13).toFixed(1) + "," + (28 - n / mx2 * 24).toFixed(1); });
   var last = pts[pts.length - 1].split(",");
-  var done = '<div class="done"><span class="dl">Åtgärder, 14 dagar</span><span class="v">' + tot + "</span>" +
+  var done = '<div class="done"><span class="dl">Actions, 14 days</span><span class="v">' + tot + "</span>" +
     '<svg viewBox="0 0 100 30" preserveAspectRatio="none" aria-hidden="true"><polyline points="' + pts.join(" ") + '" fill="none" stroke="#7FD1B4" stroke-width="1.8" vector-effect="non-scaling-stroke" stroke-linejoin="round"/></svg>' +
-    '<span class="dl" style="opacity:0.6">' + OBJEKT.filter(function (o) { return o.godkand_datum; }).length + " objekt godkända av dig</span></div>";
+    '<span class="dl" style="opacity:0.6">' + OBJEKT.filter(function (o) { return o.godkand_datum; }).length + " items approved by you</span></div>";
 
   hub.innerHTML = lines + html + core + cmd + done;
   bindTips(hub);
@@ -1293,25 +1302,25 @@ function renderHub() {
     });
   });
   var iDrift = AGENTER.filter(function (a) { return a.fas === 1; }).length;
-  document.getElementById("online-n").textContent = iDrift + " av 9 agenter i drift";
+  document.getElementById("online-n").textContent = iDrift + " of 9 agents live";
 }
 
 function renderSteps() {
   var s = document.getElementById("steps");
   s.innerHTML = STEG.map(function (st) {
-    var extra = st.n === 5 ? '<span class="sx">Kan skicka tillbaka till 3, högst 2 varv</span>' : st.gate ? '<span class="sx">Mänsklig grind</span>' : "";
-    return '<div class="step' + (st.gate ? " gate" : st.live ? "" : " plan") + '"><span class="sn">STEG ' + st.n + '</span><span class="sl">' + st.namn + '</span><span class="sf">' + st.mapp + "</span>" + extra +
+    var extra = st.n === 5 ? '<span class="sx">Can send back to 3, at most twice</span>' : st.gate ? '<span class="sx">Human gate</span>' : "";
+    return '<div class="step' + (st.gate ? " gate" : st.live ? "" : " plan") + '"><span class="sn">STEP ' + st.n + '</span><span class="sl">' + st.namn + '</span><span class="sf">' + st.mapp + "</span>" + extra +
       '<span class="who">' + st.vem.map(function (id) { return miniHtml(id, "sm"); }).join("") + "</span></div>";
   }).join("");
 }
 
 function statusText(a) {
-  if (a.id === "M") { var v = vantar().length; return { cls: v ? "wait" : "idle", t: v ? v + " saker väntar på dig" : "Inget väntar" }; }
-  if (a.fas > 1) return { cls: "plan", t: "Byggs i fas " + a.fas };
+  if (a.id === "M") { var v = vantar().length; return { cls: v ? "wait" : "idle", t: v ? v + (v === 1 ? " item is" : " items are") + " waiting for you" : "Nothing is waiting" }; }
+  if (a.fas > 1) return { cls: "plan", t: "Built in phase " + a.fas };
   var sista = senaste(a.id);
-  if (!sista) return { cls: "idle", t: "Ingen aktivitet än" };
-  if (NOW - tid(sista) < 15 * 60000) return { cls: "ok", t: "Aktiv nyss" };
-  return { cls: "idle", t: "Senast " + sedan(tid(sista)) };
+  if (!sista) return { cls: "idle", t: "No activity yet" };
+  if (NOW - tid(sista) < 15 * 60000) return { cls: "ok", t: "Active just now" };
+  return { cls: "idle", t: "Last active " + sedan(tid(sista)) };
 }
 
 function renderDetail() {
@@ -1319,12 +1328,12 @@ function renderDetail() {
   var st = statusText(a);
   var stegNamn = a.steg.map(function (n) { return n + " " + STEG[n - 1].namn; }).join(", ");
   document.getElementById("detail").innerHTML =
-    '<div class="d-head">' + miniHtml(vald, "lg") + '<div><div class="eyebrow">' + (/^A\d$/.test(vald) ? vald + " · " : "") + a.motor + "</div><h3>" + a.namn + '</h3><div class="role">1 jobb: ' + JOBB[vald] + "</div></div></div>" +
-    '<div class="d-chips"><span class="pill ' + st.cls + '">' + st.t + '</span><span class="pill idle">Steg ' + stegNamn + "</span></div>" +
+    '<div class="d-head">' + miniHtml(vald, "lg") + '<div><div class="eyebrow">' + (/^A\d$/.test(vald) ? vald + " · " : "") + a.motor + "</div><h3>" + a.namn + '</h3><div class="role">1 job: ' + JOBB[vald] + "</div></div></div>" +
+    '<div class="d-chips"><span class="pill ' + st.cls + '">' + st.t + '</span><span class="pill idle">Step ' + stegNamn + "</span></div>" +
     (PROFIL[vald] ? profilHtml(vald) :
-    '<div class="d-sec"><h4>Gör</h4><ul>' + a.gor.map(function (x) { return "<li>" + esc(x) + "</li>"; }).join("") + "</ul></div>" +
-    '<div class="d-sec never"><h4>Gör aldrig</h4><ul>' + a.aldrig.map(function (x) { return "<li><span>" + esc(x) + "</span></li>"; }).join("") + "</ul></div>") +
-    '<div class="d-sec"><h4>Verktyg och data</h4><p>' + esc(a.verktyg) + "</p></div>";
+    '<div class="d-sec"><h4>Does</h4><ul>' + a.gor.map(function (x) { return "<li>" + esc(x) + "</li>"; }).join("") + "</ul></div>" +
+    '<div class="d-sec never"><h4>Never</h4><ul>' + a.aldrig.map(function (x) { return "<li><span>" + esc(x) + "</span></li>"; }).join("") + "</ul></div>") +
+    '<div class="d-sec"><h4>Tools and data</h4><p>' + esc(a.verktyg) + "</p></div>";
 }
 
 function renderLog2() {
@@ -1334,7 +1343,7 @@ function renderLog2() {
   LOGG.slice(-12).reverse().forEach(function (r) {
     if (r[0] !== dag) {
       dag = r[0];
-      l.appendChild(el("div", "day-sep", new Date(dag + "T12:00:00").toLocaleDateString("sv-SE", { weekday: "long", day: "numeric", month: "long" })));
+      l.appendChild(el("div", "day-sep", new Date(dag + "T12:00:00").toLocaleDateString(DATUMSPRAK, { weekday: "long", day: "numeric", month: "long" })));
     }
     l.appendChild(el("div", "lrow", '<span class="when">' + r[1] + "</span>" + miniHtml(r[2], "sm") +
       '<span class="what"><b class="mono" style="font-size:0.74rem">' + r[2] + "</b> " + esc(r[4]) + (r[3] ? ' <span class="obj">' + r[3] + "</span>" : "") + "</span>"));
@@ -1348,12 +1357,12 @@ function renderWeek() {
     return '<div class="wk-block ' + cls + '"' + (style ? ' style="' + style + '"' : "") + ">" + who(ids) + '<div class="what">' + what + '</div><div class="out">' + out + "</div></div>";
   }
   w.innerHTML =
-    '<div class="wk-day">Måndag</div><div class="wk-day" style="grid-column: span 3">Tisdag till torsdag</div><div class="wk-day">Fredag</div>' +
-    block("", "Lärdomar, trender, prioritering, veckoplan och briefer", "Analys i 08_Rapporter, trendrapport i 13_Insikter, briefer i 01_Briefer", ["A2", "A1", "A0"]) +
-    block("", "Utkast, kanalanpassning och granskning", "Utkast i 02_Utkast, granskade objekt i 03_Granskning", ["A4", "A5", "A6", "A7", "A8", "A3"], "grid-column: span 3") +
-    block("", "Godkännandepass och veckorapport", "Godkända objekt i 04_Godkant, kort rapport", ["M", "A0"]) +
-    '<div class="wk-block band plan"><span class="when">Varje natt</span>' + who(["S"]) + '<span><span class="what">Resultatimport från Google, Meta, LinkedIn och X</span> <span class="out">Nya rader i Matregister</span></span></div>' +
-    '<div class="wk-block band plan"><span class="when">Varje månad</span>' + who(["A2", "A0"]) + '<span><span class="what">Månadsanalys och underlag till CEO-uppföljningen</span> <span class="out">Månadsrapport och uppdaterad statussida</span></span></div>';
+    '<div class="wk-day">Monday</div><div class="wk-day" style="grid-column: span 3">Tuesday to Thursday</div><div class="wk-day">Friday</div>' +
+    block("", "Learnings, trends, priorities, weekly plan and briefs", "Analysis in 08_Rapporter, trend report in 13_Insikter, briefs in 01_Briefer", ["A2", "A1", "A0"]) +
+    block("", "Drafts, channel fit and review", "Drafts in 02_Utkast, reviewed items in 03_Granskning", ["A4", "A5", "A6", "A7", "A8", "A3"], "grid-column: span 3") +
+    block("", "Approval session and weekly report", "Approved items in 04_Godkant, short report", ["M", "A0"]) +
+    '<div class="wk-block band plan"><span class="when">Every night</span>' + who(["S"]) + '<span><span class="what">Results import from Google, Meta, LinkedIn and X</span> <span class="out">New rows in Matregister</span></span></div>' +
+    '<div class="wk-block band plan"><span class="when">Every month</span>' + who(["A2", "A0"]) + '<span><span class="what">Monthly analysis and input for the CEO follow-up</span> <span class="out">Monthly report and updated status page</span></span></div>';
 }
 
 function valj(id) {
@@ -1389,7 +1398,7 @@ function ladda() {
   fetch(EXEMPEL ? "exempeldata.json" : "data.json", { cache: "no-store" })
     .then(function (r) {
       return r.json().then(function (j) {
-        if (!r.ok) throw new Error(j.fel || "svar " + r.status);
+        if (!r.ok) throw new Error(j.fel || "response " + r.status);
         return j;
       });
     })
@@ -1399,12 +1408,12 @@ function ladda() {
       NOW = d.nu ? new Date(d.nu) : new Date();
       renderAll();
       renderTeamet();
-      visaKalla(EXEMPEL ? "Exempeldata" : "SharePoint, hämtat kl. " + String(d.hamtad || "").slice(11, 16), EXEMPEL ? "" : "ok");
+      visaKalla(EXEMPEL ? "Sample data" : "SharePoint, loaded at " + String(d.hamtad || "").slice(11, 16), EXEMPEL ? "" : "ok");
       visaFel((d.varningar || []).join(" "));
     })
     .catch(function (e) {
-      visaKalla("Kunde inte läsa SharePoint", "err");
-      visaFel("Tavlan kunde inte hämta data: " + e.message + ". Kontrollera att .env är ifylld och att tavla.sh körs. Tavlan försöker igen om fem minuter.");
+      visaKalla("Could not read SharePoint", "err");
+      visaFel("The board could not load data: " + e.message + ". Check that .env is filled in and that tavla.sh is running. The board tries again in five minutes.");
       if (!OBJEKT.length && !LOGG.length) { renderAll(); renderTeamet(); }
     });
 }

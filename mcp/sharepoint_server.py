@@ -125,6 +125,16 @@ def _graph_fel(svar: Any) -> str:
     return ": ".join(d for d in delar if d)[:300]
 
 
+def http_detaljer(fel: BaseException) -> tuple[int, str | None] | None:
+    """HTTP-koden och filen (sökväg i Livv Marketing Ops, "" för rotmappen, None om okänd). None om felet inte är ett HTTP-svar."""
+    kod = getattr(getattr(fel, "response", None), "status_code", None)
+    if not isinstance(kod, int):
+        return None
+    url = str(getattr(getattr(fel, "request", None), "url", "") or "")
+    m = re.search(r"/items/[^/:]+:/(.+?):(?:/|$)", url)
+    return kod, unquote(m[1]) if m else "" if "/children" in url else None
+
+
 def felbeskrivning(fel: BaseException, med_text: bool = True,
                    forklaringar: dict[int, str] | None = None,
                    vid_serverfel: str = "tillfälligt fel hos Microsoft. Försök igen om en stund") -> str:
