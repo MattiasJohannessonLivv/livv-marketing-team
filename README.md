@@ -185,7 +185,7 @@ När Mattias har godkänt texten, i chatten eller i teamtavlan, skriver A0 allti
 Engångsinställning:
 1. Skapa mappen `12_Pictures` direkt i Livv Marketing Ops. Agenterna får inte skapa huvudmappar.
 2. Lägg `Bildstil_Please_Disturb.md` (finns i `docs/underlag/`) i 00_Underlag när Mattias har godkänt den.
-3. Ett flöde i Power Automate pingar Anastasia i Teams. Mattias byggde det 23 november 2026 med namnet **Livv bildbrief till Brand Studio**. Testpingen kom fram samma dag, Anastasia har redigeringsrätt i 12_Pictures, och pingen går nu till henne. Kopplingarna till SharePoint och Teams går via Mattias Microsoft-konto tills IT har flyttat dem till ett tjänstekonto. Flödet är uppsatt så här:
+3. Ett flöde i Power Automate pingar Anastasia i Teams. Mattias byggde det 23 november 2026 med namnet **Livv bildbrief till Brand Studio**. Testpingen kom fram samma dag, Anastasia har redigeringsrätt i 12_Pictures, och pingen går nu till henne. Sedan 26 november 2026 ligger flödet hos IT (Jesper Andersson) på ett konto med begränsade behörigheter, och Mattias eget flöde är avstängt. Ändringar i flödet görs av IT. Flödet är uppsatt så här:
    - Utlösare: SharePoint, *When a file is created (properties only)*, webbplatsen livv-group-data-it-ai, biblioteket Dokument.
    - Villkor: *Folder path* innehåller `Livv Marketing Ops/12_Pictures/` och *File name with extension* innehåller `image-brief`.
    - Åtgärd: Microsoft Teams, *Post message in a chat or channel*, som Flow bot i chatt med Anastasia Johannesson. Meddelande:
@@ -250,7 +250,8 @@ Nu:
 - **Integritetspolicyn på livv.se/se/integritetspolicy** är tom och blockerar LinkedIn. Webbansvarig tar fram texten och den som ansvarar för GDPR godkänner den. Begär sedan Community Management API i appen.
 - **Nycklarna för X**: lägg in dem för Livv Groups utvecklarapp, med Read and write, enligt Publicera från tavlan.
 - **A1 Trendspotter:** skapa mappen 13_Insikter och lägg API-nyckeln från xAI i `.env`. Se Trender från A1.
-- **Tjänstekonto för flödet** Livv bildbrief till Brand Studio: Jesper på IT har fått frågan 23 november 2026. Tills det är klart går flödet via ditt konto.
+- **Stäng av ditt eget flöde** Livv bildbrief till Brand Studio i Power Automate, om du inte redan gjort det. IT:s flöde tog över 26 november, och två flöden ger dubbla pingar.
+- **Servern för schemalagda körningar** sätts upp av Jesper på IT. Den behövs för körningar på schema i fas 4.
 
 Senare:
 - Starta API-ansökan hos Google Ads redan nu. Godkännandet kan ta flera veckor och behövs i fas 2.

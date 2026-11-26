@@ -89,7 +89,7 @@ Arkitektur i Claude Code · huvudsession, subagenter, kopplingar
 
 **Var det körs.** Interaktivt arbete sker på Mattias dator, där teamet startas med `./starta.sh` och teamtavlan med `./tavla.sh`. Schemalagda körningar (trendscan, import, veckoplan) behöver en maskin som alltid är igång. Schemalagda uppgifter i skrivbordsappen fungerar bara när datorn är vaken och appen öppen.
 
-Beslut 17 november 2026: de schemalagda körningarna läggs på en liten Linux-server hos IT, som kör Claude Code i headless-läge via cron. Servern behövs först när schemalagda körningar byggs. Underlag till IT:
+Beslut 17 november 2026: de schemalagda körningarna läggs på en liten Linux-server hos IT, som kör Claude Code i headless-läge via cron. Servern behövs först när schemalagda körningar byggs. 26 november 2026: Jesper på IT sätter upp servern. Underlag till IT:
 
 | Del | Krav |
 |---|---|
@@ -200,7 +200,7 @@ Beslut 18 november 2026: Mattias kan publicera godkända objekt med knappen Publ
 **Bildbrief till Brand Studio, 23 november 2026**
 - Mattias har byggt flödet Livv bildbrief till Brand Studio i Power Automate. Det reagerar när en fil med image-brief i namnet skapas i Livv Marketing Ops/12_Pictures och skickar en ping i Teams via Flow bot.
 - Testpingen kom fram. Anastasia har redigeringsrätt i 12_Pictures, och pingen går nu till henne.
-- Kopplingarna går via Mattias Microsoft-konto. Jesper på IT har fått frågan om att flytta dem till ett tjänstekonto.
+- 26 november 2026: Jesper på IT har flyttat flödet till ett konto med begränsade behörigheter. Testpingen kom fram. Mattias eget flöde stängs av, så att det inte blir dubbla pingar.
 
 **A1 Trendspotter, 23 november 2026**
 - Beslut: A1 byggs nu, före grinden till fas 3, medan teamet väntar på LinkedIns ansökan. Grok är godkänt internt.
